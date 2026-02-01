@@ -30,8 +30,8 @@ export const STATUS_SETTING_OPTIONS = [
 // 수강생 상태 매핑 객체(테이블 렌더링용)
 export const STUDENT_STATUS_LABEL = {
   ACTIVE: "재원",
-  DROPPED: "퇴원",
   PAUSED: "휴원",
+  DROPPED: "퇴원",
 };
 
 export const STATUS_SELECT_OPTIONS = [

@@ -18,6 +18,7 @@ import EmptyState from "@/components/common/EmptyState";
 import { phoneNumberFormatter } from "@/utils/phone";
 import StatusLabel from "@/components/common/label/StatusLabel";
 import { EditProfileFormDataType } from "@/types/students.type";
+import { STUDENT_STATUS_LABEL } from "@/constants/students.default";
 
 import EditProfileModal from "./_components/detail-modal/EditProfileModal";
 import AttendanceDetailModal from "./_components/detail-modal/AttendanceDetailModal";
@@ -113,7 +114,7 @@ export default function StudentDetailPage() {
                         <StatusLabel color="red">미등록</StatusLabel>
                       )}
                     </span>
-                    {/* TODO: 상태, 컬러 매핑 객체 만들어 사용 */}
+                    {/* TODO: 상태, 컬러 매핑 객체 만들어 사용 > 라벨 컴포넌트 변경해야함*/}
                     <StatusLabel
                       color={
                         enrollment.status === "ACTIVE"
@@ -123,11 +124,7 @@ export default function StudentDetailPage() {
                             : "red"
                       }
                     >
-                      {enrollment.status === "ACTIVE"
-                        ? "재원"
-                        : enrollment.status === "DROPPED"
-                          ? "탈퇴"
-                          : "휴원"}
+                      {STUDENT_STATUS_LABEL[enrollment.status]}
                     </StatusLabel>
                   </h2>
                   <p className="text-sm text-muted-foreground mt-1">

@@ -3,7 +3,10 @@ import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
 import StatusLabel from "@/components/common/label/StatusLabel";
 import SelectBtn from "@/components/common/button/SelectBtn";
-import { STATUS_SETTING_OPTIONS } from "@/constants/students.default";
+import {
+  STATUS_SETTING_OPTIONS,
+  STUDENT_STATUS_LABEL,
+} from "@/constants/students.default";
 import { Student, StudentStatus } from "@/types/students.type";
 import noProfileImage from "@/assets/images/no-profile.jpg";
 import { formatYMDFromISO } from "@/utils/date";
@@ -71,11 +74,7 @@ export const StudentTableData = ({
               : "red"
         }
       >
-        {row.status === "ACTIVE"
-          ? "재원"
-          : row.status === "DROPPED"
-            ? "탈퇴"
-            : "휴원"}
+        {STUDENT_STATUS_LABEL[row.status]}
       </StatusLabel>
     ),
   },
