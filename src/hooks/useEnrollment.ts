@@ -110,7 +110,7 @@ export const useCreateMassAttendance = () => {
       const today = getTodayYMD();
 
       // 여러 명의 API 호출을 동시에 실행
-      return Promise.all(
+      const results = await Promise.allSettled(
         ids.map((id) =>
           api.createAttendanceAPI(id, {
             date: today,
@@ -118,14 +118,23 @@ export const useCreateMassAttendance = () => {
           })
         )
       );
+      const failures = results.filter((r) => r.status === "rejected");
+      if (failures.length > 0) {
+        throw new Error(`${failures.length}명의 출결 등록에 실패했습니다.`);
+      }
+      return results;
     },
-    onSuccess: () => {
-      // 모든 학생의 출결이 등록되었으므로 수강생 목록 및 관련 쿼리 갱신
+    onSuccess: (_, { ids }) => {
       queryClient.invalidateQueries({ queryKey: ["enrollments"] });
-      alert("오늘의 출결 등록이 완료되었습니다.");
+      alert(`${ids.length}명의 출결 등록이 완료되었습니다.`);
     },
-    onError: () => {
-      alert("출결 등록 중 오류가 발생했습니다.");
+    onError: (error) => {
+      queryClient.invalidateQueries({ queryKey: ["enrollments"] });
+      alert(
+        error instanceof Error
+          ? error.message
+          : "출결 등록 중 오류가 발생했습니다."
+      );
     },
   });
 };
