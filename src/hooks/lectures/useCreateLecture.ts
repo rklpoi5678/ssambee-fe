@@ -23,9 +23,10 @@ export const useCreateLecture = (options?: UseCreateLectureOptions) => {
       options?.onSuccess?.();
     },
     onError: (error) => {
-      const message = error instanceof Error ? error.message : "Unknown error";
-      console.error("강의 생성 실패:", message);
-      options?.onError?.(error as Error);
+      const normalizedError =
+        error instanceof Error ? error : new Error(String(error));
+      console.error("강의 생성 실패:", normalizedError.message);
+      options?.onError?.(normalizedError);
     },
   });
 };

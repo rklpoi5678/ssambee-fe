@@ -24,6 +24,7 @@ export const useLecturesToday = (dayIndex: number) => {
       }),
     select: (data) => {
       const lectures = data.lectures.map(mapLectureApiToView);
+      // TODO: 현재는 첫 번째 강의만 활성화 표시. 추후 시간 기반 로직으로 개선 필요
       const schedules: TodayScheduleItem[] = lectures.map((lecture, index) => ({
         id: lecture.id,
         time: lecture.schedule.time,

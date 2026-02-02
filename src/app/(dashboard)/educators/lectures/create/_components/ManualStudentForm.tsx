@@ -122,10 +122,14 @@ export function ManualStudentForm({ form, disabled }: ManualStudentFormProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label
+                    htmlFor={`student-${index}-name`}
+                    className="block text-sm font-medium mb-2"
+                  >
                     학생 이름 <span className="text-red-500">*</span>
                   </label>
                   <Input
+                    id={`student-${index}-name`}
                     {...register(`students.${index}.name`)}
                     placeholder="예: 김민준"
                     disabled={isLocked}
@@ -137,10 +141,14 @@ export function ManualStudentForm({ form, disabled }: ManualStudentFormProps) {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label
+                    htmlFor={`student-${index}-phone`}
+                    className="block text-sm font-medium mb-2"
+                  >
                     연락처 <span className="text-red-500">*</span>
                   </label>
                   <Input
+                    id={`student-${index}-phone`}
                     {...register(`students.${index}.phone`, {
                       onChange: (event) =>
                         handlePhoneChange(index, "phone", event.target.value),
@@ -158,10 +166,14 @@ export function ManualStudentForm({ form, disabled }: ManualStudentFormProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label
+                    htmlFor={`student-${index}-school`}
+                    className="block text-sm font-medium mb-2"
+                  >
                     학생 학교 <span className="text-red-500">*</span>
                   </label>
                   <Input
+                    id={`student-${index}-school`}
                     {...register(`students.${index}.school`)}
                     placeholder="예: 서울고등학교"
                     disabled={isLocked}
@@ -173,10 +185,14 @@ export function ManualStudentForm({ form, disabled }: ManualStudentFormProps) {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label
+                    htmlFor={`student-${index}-studentGrade`}
+                    className="block text-sm font-medium mb-2"
+                  >
                     학생 학년 <span className="text-red-500">*</span>
                   </label>
                   <Input
+                    id={`student-${index}-studentGrade`}
                     {...register(`students.${index}.studentGrade`)}
                     placeholder="예: 2학년"
                     disabled={isLocked}
@@ -190,10 +206,14 @@ export function ManualStudentForm({ form, disabled }: ManualStudentFormProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label
+                  htmlFor={`student-${index}-parentPhone`}
+                  className="block text-sm font-medium mb-2"
+                >
                   학부모 번호 <span className="text-red-500">*</span>
                 </label>
                 <Input
+                  id={`student-${index}-parentPhone`}
                   {...register(`students.${index}.parentPhone`, {
                     onChange: (event) =>
                       handlePhoneChange(
@@ -213,10 +233,14 @@ export function ManualStudentForm({ form, disabled }: ManualStudentFormProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label
+                  htmlFor={`student-${index}-registrationDate`}
+                  className="block text-sm font-medium mb-2"
+                >
                   학생 등록날짜 <span className="text-red-500">*</span>
                 </label>
                 <Input
+                  id={`student-${index}-registrationDate`}
                   type="date"
                   {...register(`students.${index}.registrationDate`)}
                   disabled={isLocked}
@@ -233,6 +257,7 @@ export function ManualStudentForm({ form, disabled }: ManualStudentFormProps) {
       </div>
 
       <Button
+        type="button"
         onClick={() => append({ ...emptyStudent })}
         variant="outline"
         className="w-full border-dashed"

@@ -18,6 +18,7 @@ type CommonSelectProps = {
   placeholder: string;
   options: SelectOption[];
   className?: string;
+  disabled?: boolean;
 };
 
 export default function SelectBtn({
@@ -27,12 +28,14 @@ export default function SelectBtn({
   placeholder,
   options,
   className,
+  disabled,
 }: CommonSelectProps) {
   return (
-    <Select value={value} onValueChange={onChange}>
+    <Select value={value} onValueChange={onChange} disabled={disabled}>
       <SelectTrigger
         id={id}
         className={`${className ?? ""} gap-2 cursor-pointer`.trim()}
+        disabled={disabled}
       >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>

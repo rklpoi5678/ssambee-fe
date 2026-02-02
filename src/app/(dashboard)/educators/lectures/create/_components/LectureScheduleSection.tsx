@@ -63,7 +63,9 @@ export function LectureScheduleSection({
           <div></div>
         </div>
         <div
-          className={disabled ? "pointer-events-none opacity-60" : undefined}
+          className={disabled ? "pointer-events-none opacity-60" : ""}
+          aria-disabled={disabled}
+          inert={disabled ? true : undefined}
         >
           <ScheduleEditor
             rows={rows}

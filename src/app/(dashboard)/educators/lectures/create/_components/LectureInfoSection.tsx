@@ -93,6 +93,7 @@ export function LectureInfoSection({
                 setValue("grade", value, { shouldValidate: true })
               }
               className="w-full"
+              disabled={disabled}
             />
             {errors.grade && (
               <p className="text-xs text-red-500 mt-1">

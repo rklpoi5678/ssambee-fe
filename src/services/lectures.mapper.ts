@@ -59,13 +59,16 @@ export const buildScheduleFromTimes = (
   ).sort((a, b) => (DAY_ORDER[a] ?? 99) - (DAY_ORDER[b] ?? 99));
 
   const [first] = lectureTimes;
+  const hasValidTime = first.startTime && first.endTime;
   const isSameTime = lectureTimes.every(
     (time) =>
       time.startTime === first.startTime && time.endTime === first.endTime
   );
-  const time = isSameTime
-    ? `${first.startTime} - ${first.endTime}`
-    : "시간표 상이";
+  const time = !hasValidTime
+    ? "시간 미지정"
+    : isSameTime
+      ? `${first.startTime} - ${first.endTime}`
+      : "시간표 상이";
 
   return { days, time };
 };

@@ -48,6 +48,7 @@ export function ScheduleEditor({
             <Input
               type="time"
               value={row.startTime}
+              aria-label="시작 시간"
               onChange={(event) =>
                 onChange(row.id, "startTime", event.target.value)
               }
@@ -57,6 +58,7 @@ export function ScheduleEditor({
             <Input
               type="time"
               value={row.endTime}
+              aria-label="종료 시간"
               onChange={(event) =>
                 onChange(row.id, "endTime", event.target.value)
               }

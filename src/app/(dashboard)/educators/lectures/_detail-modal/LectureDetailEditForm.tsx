@@ -29,7 +29,7 @@ type LectureDetailEditFormProps = {
   onTitleChange: (value: string) => void;
   onSubjectChange: (value: string) => void;
   onGradeChange: (value: string) => void;
-  onStatusChange: (value: LectureStatus) => void;
+  onStatusChange: (value: LectureStatus | "") => void;
   onStartDateChange: (value: string) => void;
   onScheduleAdd: () => void;
   onScheduleRemove: (id: string) => void;
@@ -94,7 +94,7 @@ export function LectureDetailEditForm({
           value={editStatus}
           placeholder="상태 선택"
           options={statusOptions}
-          onChange={(value) => onStatusChange(value as LectureStatus)}
+          onChange={(value) => onStatusChange(value as LectureStatus | "")}
         />
       </InfoRow>
       <InfoRow label="개강일">

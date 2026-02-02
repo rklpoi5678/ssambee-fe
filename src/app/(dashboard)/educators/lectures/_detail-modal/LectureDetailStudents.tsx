@@ -41,15 +41,19 @@ export function LectureDetailStudents({
                 index !== students.length - 1 ? "border-b" : ""
               } hover:bg-muted/50 transition-colors`}
             >
-              <div className="font-medium">{student.name}</div>
+              <div className="font-medium">{student.name || "-"}</div>
               <div className="text-muted-foreground">
-                {student.school} · {student.grade}
+                {student.school && student.grade
+                  ? `${student.school} · ${student.grade}`
+                  : student.school || student.grade || "-"}
               </div>
               <div className="text-muted-foreground">
-                {formatPhoneNumber(student.phone) || student.phone}
+                {formatPhoneNumber(student.phone) || student.phone || "-"}
               </div>
               <div className="text-muted-foreground">
-                {formatPhoneNumber(student.parentPhone) || student.parentPhone}
+                {formatPhoneNumber(student.parentPhone) ||
+                  student.parentPhone ||
+                  "-"}
               </div>
             </div>
           ))}

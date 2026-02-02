@@ -20,9 +20,10 @@ export const useDeleteLecture = (options?: UseDeleteLectureOptions) => {
       options?.onSuccess?.();
     },
     onError: (error) => {
-      const message = error instanceof Error ? error.message : "Unknown error";
-      console.error("강의 삭제 실패:", message);
-      options?.onError?.(error as Error);
+      const normalizedError =
+        error instanceof Error ? error : new Error(String(error));
+      console.error("강의 삭제 실패:", normalizedError.message);
+      options?.onError?.(normalizedError);
     },
   });
 };

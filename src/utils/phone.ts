@@ -10,6 +10,10 @@ export const formatPhoneNumber = (phone: string) => {
   }
 
   // 10자리면 3-3-4, 11자리면 3-4-4
+  // NOTE: 서울 지역번호(02)는 2-4-4 포맷이 필요하나, 현재는 휴대폰 번호만 다루므로 미적용
+  // if (digits.startsWith("02")) {
+  //   return `${digits.slice(0, 2)}-${digits.slice(2, 6)}-${digits.slice(6)}`;
+  // }
   if (digits.length === 10) {
     return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
   }

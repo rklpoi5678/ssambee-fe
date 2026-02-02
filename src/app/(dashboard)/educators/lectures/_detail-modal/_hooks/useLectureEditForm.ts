@@ -89,6 +89,7 @@ export const useLectureEditForm = (params?: UseLectureEditFormParams) => {
     setEditGrade,
     setEditStatus,
     setEditStartDate,
+    setEditInstructor,
     subjectOptions,
     gradeOptions,
     statusOptions,

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Lecture } from "@/types/lectures";
-import { useLectureDetailModalStore } from "@/stores/lectures";
+import { useLectureDetailModalStore, INITIAL_LIMIT } from "@/stores/lectures";
 
 import { LectureDetailModal } from "../_detail-modal/LectureDetailModal";
 
@@ -33,8 +33,16 @@ export function LecturesList({
   const selectedLecture =
     lectures.find((lecture) => lecture.id === selectedLectureId) ?? null;
   const hasMore = totalCount > limit;
-  const isExpanded = limit > 4;
+  const isExpanded = limit > INITIAL_LIMIT;
   const remaining = Math.max(totalCount - limit, 0);
+
+  const handleReset = () => {
+    // 목록 접기 시 열려있는 모달도 닫기 (선택된 강의가 접힌 영역에 있을 수 있음)
+    if (isModalOpen) {
+      closeModal();
+    }
+    onReset();
+  };
 
   return (
     <div className="space-y-6">
@@ -70,7 +78,7 @@ export function LecturesList({
         )}
         {isExpanded && (
           <Button
-            onClick={onReset}
+            onClick={handleReset}
             variant="outline"
             size="lg"
             className="min-w-[200px]"

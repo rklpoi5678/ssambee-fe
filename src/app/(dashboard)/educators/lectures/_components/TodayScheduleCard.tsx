@@ -47,12 +47,18 @@ export function TodayScheduleCard({
             items.map((item) => (
               <div key={item.id} className="flex items-center gap-3">
                 <span
+                  aria-hidden="true"
                   className={`h-2 w-2 rounded-full ${
                     item.isActive ? "bg-primary" : "bg-muted-foreground/40"
                   }`}
                 />
                 <div className="text-xs">
-                  <span className="font-semibold">{item.time}</span>
+                  <span className="font-semibold">
+                    {item.time}
+                    {item.isActive && (
+                      <span className="sr-only"> (진행 중)</span>
+                    )}
+                  </span>
                   <span className="text-muted-foreground"> {item.title}</span>
                 </div>
               </div>
