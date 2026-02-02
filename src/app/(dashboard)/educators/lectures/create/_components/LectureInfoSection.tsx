@@ -4,7 +4,12 @@ import { UseFormReturn } from "react-hook-form";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import SelectBtn from "@/components/common/button/SelectBtn";
 import { LectureFormInput } from "@/validation/lecture.validation";
+import {
+  LECTURE_GRADES,
+  LECTURE_STATUS_OPTIONS,
+} from "@/constants/lectures.constants";
 
 type LectureInfoSectionProps = {
   form: UseFormReturn<LectureFormInput>;
@@ -17,8 +22,16 @@ export function LectureInfoSection({
 }: LectureInfoSectionProps) {
   const {
     register,
+    setValue,
+    watch,
     formState: { errors },
   } = form;
+
+  const gradeValue = watch("grade");
+  const gradeOptions = LECTURE_GRADES.map((grade) => ({
+    label: grade,
+    value: grade,
+  }));
 
   return (
     <Card>
@@ -71,11 +84,15 @@ export function LectureInfoSection({
             >
               학년 <span className="text-red-500">*</span>
             </label>
-            <Input
+            <SelectBtn
               id="lecture-grade"
-              {...register("grade")}
-              placeholder="예: 고3"
-              disabled={disabled}
+              value={gradeValue}
+              placeholder="학년 선택"
+              options={gradeOptions}
+              onChange={(value) =>
+                setValue("grade", value, { shouldValidate: true })
+              }
+              className="w-full"
             />
             {errors.grade && (
               <p className="text-xs text-red-500 mt-1">
@@ -119,9 +136,11 @@ export function LectureInfoSection({
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
             >
               <option value="">선택</option>
-              <option value="개강전">개강전</option>
-              <option value="진행중">진행중</option>
-              <option value="완료">완료</option>
+              {LECTURE_STATUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
             {errors.status && (
               <p className="text-xs text-red-500 mt-1">

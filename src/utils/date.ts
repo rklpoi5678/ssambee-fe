@@ -12,3 +12,11 @@ export const getTodayYMD = () => {
 
   return `${yyyy}-${mm}-${dd}`;
 };
+
+// ISO 8601 -> YYYY-MM-DD (sv-SE)
+export const formatDateYMD = (isoDate?: string | null) => {
+  if (!isoDate) return undefined;
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) return undefined;
+  return date.toLocaleDateString("sv-SE");
+};
