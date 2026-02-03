@@ -1,7 +1,5 @@
 export const formatPhoneNumber = (phone: string) => {
   // 10자리(예: 02-1234-5678)와 11자리(예: 010-1234-5678) 모두 지원
-  const digits = phone.replace(/\D/g, "").slice(0, 11);
-  if (!digits) return "";
 
   const digits = phone.replace(/\D/g, ""); // 숫자 이외 제거
   const size = digits.length;
