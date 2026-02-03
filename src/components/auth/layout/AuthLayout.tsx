@@ -12,7 +12,7 @@ export default function AuthLayout({
 }: AuthLayoutProps) {
   return (
     <div className="flex min-h-screen">
-      <div className="hidden lg:flex lg:w-1/2 bg-background sticky top-0 h-screen items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-brand-700 sticky top-0 h-screen items-center justify-center p-12">
         <div className="max-w-[500px] text-white">
           <span className="text-6xl">🎓 SSAMB</span>
         </div>
