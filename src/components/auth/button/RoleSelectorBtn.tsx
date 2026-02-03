@@ -63,7 +63,11 @@ export default function RoleSelectorBtn<T extends Role>({
   onChange,
 }: RoleSelectorBtnProps<T>) {
   return (
-    <div aria-label="역할 선택" className="w-full flex gap-3 mb-12">
+    <div
+      role="radiogroup"
+      aria-label="역할 선택"
+      className="w-full flex gap-3 mb-12"
+    >
       {options.map((option) => {
         const isSelected = value === option.value;
         const info = ROLE_INFO_MAP[option.value as keyof typeof ROLE_INFO_MAP];
@@ -74,6 +78,13 @@ export default function RoleSelectorBtn<T extends Role>({
             key={option.value}
             role="radio"
             aria-checked={isSelected}
+            tabIndex={isSelected ? 0 : -1}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onChange(option.value);
+              }
+            }}
             onClick={() => onChange(option.value)}
             className={styles.card}
           >

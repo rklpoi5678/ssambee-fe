@@ -94,7 +94,10 @@ export default function LoginForm({ selectedRole }: LoginFormProps) {
             {...register("email")}
             showReset={!!emailValue}
             onReset={() => {
-              setValue("email", "");
+              setValue("email", "", {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
               clearErrors("email");
             }}
           />
@@ -110,7 +113,10 @@ export default function LoginForm({ selectedRole }: LoginFormProps) {
               {...register("password")}
               showReset={!!passwordValue}
               onReset={() => {
-                setValue("password", "");
+                setValue("password", "", {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
                 clearErrors("password");
               }}
             />
@@ -138,11 +144,11 @@ export default function LoginForm({ selectedRole }: LoginFormProps) {
               id="rememberMe"
               type="checkbox"
               {...register("rememberMe")}
-              className="hidden"
+              className="sr-only peer"
             />
             <label
               htmlFor="rememberMe"
-              className="flex items-center gap-2 text-4 text-neutral-300 cursor-pointer"
+              className="flex items-center gap-2 text-4 text-neutral-300 cursor-pointer peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500 rounded-sm"
             >
               {isRememberMe ? (
                 <CheckedIcon size={24} />
