@@ -120,6 +120,7 @@ export const useExamSelectionState = ({
         ...EXAM_FORM_DEFAULTS,
         lectureId,
       });
+      replaceQuestions([]);
       return;
     }
 

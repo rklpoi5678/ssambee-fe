@@ -24,6 +24,10 @@ export const fetchExamDetailAPI = async (
     `/exams/${examId}`
   );
 
+  if (!data?.data) {
+    throw new Error(`시험 정보를 찾을 수 없습니다. (ID: ${examId})`);
+  }
+
   return data.data;
 };
 
@@ -36,6 +40,10 @@ export const createExamAPI = async (
     payload
   );
 
+  if (!data?.data) {
+    throw new Error("시험 생성 결과가 비어 있습니다.");
+  }
+
   return data.data;
 };
 
@@ -47,6 +55,10 @@ export const updateExamAPI = async (
     `/exams/${examId}`,
     payload
   );
+
+  if (!data?.data) {
+    throw new Error(`시험 수정 결과가 비어 있습니다. (ID: ${examId})`);
+  }
 
   return data.data;
 };

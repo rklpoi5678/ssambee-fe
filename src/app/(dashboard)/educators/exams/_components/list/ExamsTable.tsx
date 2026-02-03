@@ -75,7 +75,6 @@ export function ExamsTable({
                 isSelected={selectedIds.includes(exam.id)}
                 onSelect={(checked) => onSelectExam(exam.id, checked)}
                 disableSelection={isSelectionDisabled}
-                disableGrading={isLoading}
               />
             ))
           )}

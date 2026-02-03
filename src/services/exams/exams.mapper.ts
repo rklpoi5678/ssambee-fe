@@ -17,6 +17,7 @@ const mapGradingStatusToView = (status: GradingStatusApi): ExamStatus => {
     COMPLETED: "채점 완료",
   };
 
+  // TODO: 새로운 GradingStatusApi 값이 추가될 경우 기본값 또는 예외 흐름을 고민해야 함
   return statusMap[status];
 };
 

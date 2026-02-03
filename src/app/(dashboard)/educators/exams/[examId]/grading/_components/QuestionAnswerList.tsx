@@ -52,6 +52,7 @@ export function QuestionAnswerList({
                 ? "오답"
                 : "정답";
           const isEssayCorrect = question.status === "정답";
+          const isEssayIncorrect = question.status === "오답";
           const essayAnswer =
             typeof question.studentAnswer === "string"
               ? question.studentAnswer
@@ -125,7 +126,7 @@ export function QuestionAnswerList({
                           </Button>
                           <Button
                             type="button"
-                            variant={!isEssayCorrect ? "default" : "outline"}
+                            variant={isEssayIncorrect ? "default" : "outline"}
                             onClick={() =>
                               onEssayCorrectChange?.(question.number, false)
                             }

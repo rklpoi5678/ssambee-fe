@@ -68,7 +68,10 @@ export const useGradingData = (examId: string): UseGradingDataResult => {
     return new Map(
       examDetail?.questions?.map((question) => [
         question.questionNumber,
-        question,
+        {
+          score: question.score,
+          correctAnswer: question.correctAnswer,
+        },
       ]) ?? []
     );
   }, [examDetail]);
@@ -120,7 +123,7 @@ export const useGradingData = (examId: string): UseGradingDataResult => {
           (a, b) => a.questionNumber - b.questionNumber
         );
       } else {
-        next[studentId] = baseAnswers;
+        next[studentId] = baseAnswers.map((a) => ({ ...a }));
       }
     }
     return next;

@@ -127,11 +127,12 @@ export function ExamsFilterBar({
             🔍
           </span>
         </div>
-        <Select value={sortOrder} onValueChange={onSortChange}>
-          <SelectTrigger
-            className="w-[140px]"
-            disabled={isLoading || !selectedLectureId}
-          >
+        <Select
+          value={sortOrder}
+          onValueChange={onSortChange}
+          disabled={isLoading || !selectedLectureId}
+        >
+          <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="필터" />
           </SelectTrigger>
           <SelectContent>

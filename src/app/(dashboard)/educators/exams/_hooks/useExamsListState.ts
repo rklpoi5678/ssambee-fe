@@ -101,7 +101,8 @@ export const useExamsListState = ({
     toggleSelected(id, checked);
   };
 
-  const handleDeleteSelected = () => {
+  /** 삭제 확인 다이얼로그에서 '삭제' 클릭 시 호출. 선택 상태를 초기화(실제 삭제는 부모/API에서 처리). */
+  const handleClearSelectionAfterDelete = () => {
     if (selectedIds.length > 0) {
       clearSelection();
     }
@@ -141,7 +142,7 @@ export const useExamsListState = ({
     emptyMessage,
     handleSelectAll,
     handleSelectExam,
-    handleDeleteSelected,
+    handleDeleteSelected: handleClearSelectionAfterDelete,
     handleLectureChange,
   };
 };
