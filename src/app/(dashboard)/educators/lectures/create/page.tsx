@@ -1,28 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { ExistingStudentSelector } from "@/app/(dashboard)/educators/lectures/_components/create/ExistingStudentSelector";
-import { CreatePageHeader } from "@/app/(dashboard)/educators/lectures/_components/create/CreatePageHeader";
-import { LectureInfoSection } from "@/app/(dashboard)/educators/lectures/_components/create/LectureInfoSection";
-import { LectureScheduleSection } from "@/app/(dashboard)/educators/lectures/_components/create/LectureScheduleSection";
-import { ManualStudentForm } from "@/app/(dashboard)/educators/lectures/_components/create/ManualStudentForm";
-import { StudentRegistrationSection } from "@/app/(dashboard)/educators/lectures/_components/create/StudentRegistrationSection";
-import { mockStudents } from "@/data/students.mock";
-import { ScheduleData } from "@/types/lecture-form";
+import { useCreateLecture } from "@/hooks/lectures/useCreateLecture";
+import { useLectureCreateStore } from "@/stores/lectures";
 import {
   lectureFormSchema,
   LectureFormInput,
-  scheduleSchema,
 } from "@/validation/lecture.validation";
 
+import { CreatePageHeader } from "./_components/CreatePageHeader";
+import { LectureInfoSection } from "./_components/LectureInfoSection";
+import { LectureScheduleSection } from "./_components/LectureScheduleSection";
+import { ManualStudentForm } from "./_components/ManualStudentForm";
+import { StudentRegistrationSection } from "./_components/StudentRegistrationSection";
+import { useLectureCreateForm } from "./_hooks/useLectureCreateForm";
+
 export default function LectureCreatePage() {
-  const [activeTab, setActiveTab] = useState<"manual" | "existing">("manual");
-  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
-  const [schedules, setSchedules] = useState<number[]>([1]);
-  const [isSaved, setIsSaved] = useState(false);
+  const router = useRouter();
+  const schedules = useLectureCreateStore((state) => state.schedules);
+  const scheduleData = useLectureCreateStore((state) => state.scheduleData);
+  const isSaved = useLectureCreateStore((state) => state.isSaved);
+  const addSchedule = useLectureCreateStore((state) => state.addSchedule);
+  const removeSchedule = useLectureCreateStore((state) => state.removeSchedule);
+  const setScheduleData = useLectureCreateStore(
+    (state) => state.setScheduleData
+  );
+  const setIsSaved = useLectureCreateStore((state) => state.setIsSaved);
+  const resetCreateState = useLectureCreateStore((state) => state.reset);
 
   // React Hook Form 적용
   const lectureForm = useForm<LectureFormInput>({
@@ -47,92 +55,45 @@ export default function LectureCreatePage() {
     },
   });
 
-  const [scheduleData, setScheduleData] = useState<
-    Record<number, ScheduleData>
-  >({});
-
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const toggleStudent = (studentId: string) => {
-    if (isSaved) return;
-    setSelectedStudents((prev) =>
-      prev.includes(studentId)
-        ? prev.filter((id) => id !== studentId)
-        : [...prev, studentId]
-    );
-  };
-
-  const addSchedule = () => {
-    if (isSaved) return;
-    const newId = schedules.length > 0 ? Math.max(...schedules) + 1 : 1;
-    setSchedules([...schedules, newId]);
-  };
-
-  const removeSchedule = (id: number) => {
-    if (isSaved) return;
-    setSchedules(schedules.filter((scheduleId) => scheduleId !== id));
-    const newData = { ...scheduleData };
-    delete newData[id];
-    setScheduleData(newData);
-  };
-
-  const handleSave = lectureForm.handleSubmit((lectureData) => {
-    const hasInvalidSchedule = schedules.some(
-      (id) => !scheduleSchema.safeParse(scheduleData[id]).success
-    );
-
-    if (hasInvalidSchedule) {
-      alert("시간표의 요일/시작/종료 시간을 모두 입력해주세요.");
-      return;
-    }
-
-    const data = {
-      lecture: lectureData,
-      schedules: schedules.map((id) => ({
-        id,
-        day: scheduleData[id]?.day || "",
-        startTime: scheduleData[id]?.startTime || "",
-        endTime: scheduleData[id]?.endTime || "",
-      })),
-      students:
-        activeTab === "manual"
-          ? {
-              type: "manual",
-              data: lectureData.students,
-            }
-          : {
-              type: "existing",
-              selectedIds: selectedStudents,
-              selectedStudents: mockStudents.filter((s) =>
-                selectedStudents.includes(s.id)
-              ),
-            },
+  useEffect(() => {
+    return () => {
+      resetCreateState();
     };
+  }, [resetCreateState]);
 
-    console.log("=== 저장된 데이터 ===");
-    console.log(JSON.stringify(data, null, 2));
-    console.log("==================");
+  const createLectureMutation = useCreateLecture();
 
-    setIsSaved(true);
-    alert("저장되었습니다! (콘솔을 확인하세요)");
+  const handleAddSchedule = () => {
+    if (isSaved) return;
+    addSchedule();
+  };
+
+  const handleRemoveSchedule = (id: number) => {
+    if (isSaved) return;
+    removeSchedule(id);
+  };
+
+  const { handleSave, handleCancel } = useLectureCreateForm({
+    lectureForm,
+    schedules,
+    scheduleData,
+    createLecture: createLectureMutation,
+    setIsSaved,
+    resetCreateState,
+    onSuccess: () => {
+      setIsSaved(true);
+      router.push("/educators/lectures");
+    },
   });
 
-  const handleCancel = () => {
-    if (isSaved) {
-      setIsSaved(false);
-    } else {
-      if (confirm("작성 중인 내용을 취소하시겠습니까?")) {
-        window.history.back();
-      }
-    }
-  };
+  const onCancel = () => handleCancel(isSaved, () => router.back());
 
   return (
     <div className="container mx-auto space-y-6 p-6">
       <CreatePageHeader
         isSaved={isSaved}
         onSave={handleSave}
-        onCancel={handleCancel}
+        onCancel={onCancel}
       />
 
       <LectureInfoSection form={lectureForm} disabled={isSaved} />
@@ -141,28 +102,13 @@ export default function LectureCreatePage() {
         schedules={schedules}
         scheduleData={scheduleData}
         disabled={isSaved}
-        onAdd={addSchedule}
-        onRemove={removeSchedule}
+        onAdd={handleAddSchedule}
+        onRemove={handleRemoveSchedule}
         onScheduleDataChange={setScheduleData}
       />
 
-      <StudentRegistrationSection
-        activeTab={activeTab}
-        disabled={isSaved}
-        onTabChange={setActiveTab}
-      >
-        {activeTab === "manual" ? (
-          <ManualStudentForm form={lectureForm} disabled={isSaved} />
-        ) : (
-          <ExistingStudentSelector
-            students={mockStudents}
-            selectedIds={selectedStudents}
-            searchQuery={searchQuery}
-            disabled={isSaved}
-            onSearchChange={setSearchQuery}
-            onToggle={toggleStudent}
-          />
-        )}
+      <StudentRegistrationSection disabled={isSaved}>
+        <ManualStudentForm form={lectureForm} disabled={isSaved} />
       </StudentRegistrationSection>
     </div>
   );

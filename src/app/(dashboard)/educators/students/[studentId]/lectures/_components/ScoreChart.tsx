@@ -11,7 +11,7 @@ import {
   Legend,
 } from "recharts";
 
-import { LectureExamResult } from "@/types/lecture-exams.type";
+import { LectureExamResult } from "@/types/lectures";
 
 type ScoreChartProps = {
   exams: LectureExamResult[];

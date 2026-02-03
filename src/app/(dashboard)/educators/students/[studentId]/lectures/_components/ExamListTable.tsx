@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { LectureExamResult } from "@/types/lecture-exams.type";
+import { LectureExamResult } from "@/types/lectures";
 
 type ExamListTableProps = {
   exams: LectureExamResult[];

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 type LectureDetailEnrollmentProps = {
   currentStudents: number;
-  maxStudents: number;
+  maxStudents?: number | null;
   onOpenExams: () => void;
 };
 
@@ -13,12 +13,15 @@ export function LectureDetailEnrollment({
   maxStudents,
   onOpenExams,
 }: LectureDetailEnrollmentProps) {
+  const maxText =
+    maxStudents && maxStudents > 0 ? `${maxStudents}명` : "정원 미정";
+
   return (
     <div className="flex items-center justify-between">
       <div>
         <p className="text-sm text-muted-foreground mb-1">수강 인원</p>
         <p className="font-medium">
-          {currentStudents} / {maxStudents}명
+          {currentStudents} / {maxText}
         </p>
       </div>
       <Button

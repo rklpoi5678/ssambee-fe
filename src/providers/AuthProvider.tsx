@@ -14,6 +14,7 @@ import { Role } from "@/types/auth.type";
 type AuthUser = {
   id: string;
   email: string;
+  name?: string;
   userType: Role;
 };
 

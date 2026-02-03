@@ -1,6 +1,7 @@
 "use client";
 
 import { LectureStudent } from "@/types/lectures";
+import { formatPhoneNumber } from "@/utils/phone";
 
 type LectureDetailStudentsProps = {
   students?: LectureStudent[];
@@ -9,7 +10,16 @@ type LectureDetailStudentsProps = {
 export function LectureDetailStudents({
   students,
 }: LectureDetailStudentsProps) {
-  if (!students || students.length === 0) return null;
+  if (!students || students.length === 0) {
+    return (
+      <div>
+        <p className="text-sm text-muted-foreground mb-2">등록 학생 (0명)</p>
+        <div className="rounded-lg border px-3 py-4 text-sm text-muted-foreground">
+          등록된 학생이 없습니다.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -31,12 +41,20 @@ export function LectureDetailStudents({
                 index !== students.length - 1 ? "border-b" : ""
               } hover:bg-muted/50 transition-colors`}
             >
-              <div className="font-medium">{student.name}</div>
+              <div className="font-medium">{student.name || "-"}</div>
               <div className="text-muted-foreground">
-                {student.school} · {student.grade}
+                {student.school && student.grade
+                  ? `${student.school} · ${student.grade}`
+                  : student.school || student.grade || "-"}
               </div>
-              <div className="text-muted-foreground">{student.phone}</div>
-              <div className="text-muted-foreground">{student.parentPhone}</div>
+              <div className="text-muted-foreground">
+                {formatPhoneNumber(student.phone) || student.phone || "-"}
+              </div>
+              <div className="text-muted-foreground">
+                {formatPhoneNumber(student.parentPhone) ||
+                  student.parentPhone ||
+                  "-"}
+              </div>
             </div>
           ))}
         </div>
