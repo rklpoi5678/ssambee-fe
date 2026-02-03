@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   Select,
   SelectContent,
@@ -5,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SelectCloseIcon, SelectOpenIcon } from "@/components/icons/AuthIcons";
 
 type SelectOption = {
   label: string;
@@ -14,10 +17,11 @@ type SelectOption = {
 type CommonSelectProps = {
   id?: string;
   value: string;
-  onChange?: (value: string) => void; // API 연동 후 옵셔널 제거
+  onChange?: (value: string) => void;
   placeholder: string;
   options: SelectOption[];
   className?: string;
+  isError?: boolean;
   disabled?: boolean;
 };
 
@@ -29,22 +33,51 @@ export default function SelectBtn({
   options,
   className,
   disabled,
+  isError,
 }: CommonSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <Select value={value} onValueChange={onChange} disabled={disabled}>
+    <Select
+      value={value}
+      onValueChange={onChange}
+      disabled={disabled}
+      onOpenChange={setIsOpen}
+    >
       <SelectTrigger
         id={id}
-        className={`${className ?? ""} gap-2 cursor-pointer`.trim()}
         disabled={disabled}
+        className={`
+          flex w-full py-4 px-4 items-center justify-between text-gray-500 font-normal rounded-lg border outline-none cursor-pointer
+          [&>svg]:hidden text-base shadow-none!
+          ${
+            isError
+              ? "border-red-600 focus:ring-1 focus:ring-red-600"
+              : "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          }
+
+          /* 비활성화 스타일 */
+          ${disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : ""}
+
+          /* 커스텀 클래스 */
+          ${className ?? ""}
+        `.trim()}
       >
         <SelectValue placeholder={placeholder} />
+        <div className="ml-2 shrink-0">
+          {isOpen ? (
+            <SelectOpenIcon size={24} />
+          ) : (
+            <SelectCloseIcon size={24} />
+          )}
+        </div>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-none!">
         {options.map((option) => (
           <SelectItem
-            className="cursor-pointer"
             key={option.value}
             value={option.value}
+            className="cursor-pointer py-3 px-4 text-base hover:bg-blue-50 focus:bg-blue-50 transition-colors"
           >
             {option.label}
           </SelectItem>
