@@ -4,10 +4,10 @@ import { KR_PHONE_REGEX } from "@/constants/regex";
 
 // 공통 학생 기본 정보
 const studentBaseSchema = z.object({
-  name: z.string().trim().min(1, "학생 이름을 입력해주세요"),
+  studentName: z.string().trim().min(1, "학생 이름을 입력해주세요"),
   school: z.string().trim().min(1, "학교명을 입력해주세요"),
   schoolYear: z.string().min(1, "학년을 입력해주세요"),
-  phoneNumber: z
+  studentPhone: z
     .string()
     .trim()
     .min(1, "학생 연락처를 입력해주세요")
@@ -35,7 +35,10 @@ export const editProfileSchema = studentBaseSchema.extend({
     .string()
     .trim()
     .min(1, "이메일을 입력해주세요")
-    .email("올바른 이메일 형식이 아닙니다"),
+    .email("올바른 이메일 형식이 아닙니다")
+    .optional()
+    .or(z.literal("")), // 빈 문자열 허용(미등록 학생일 경우)
+  memo: z.string().optional(),
 });
 
 export const AttendanceRegisterSchema = z.object({
