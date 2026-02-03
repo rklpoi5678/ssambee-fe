@@ -1,5 +1,7 @@
-export const phoneNumberFormatter = (phone: string | null | undefined) => {
-  if (!phone) return "";
+export const formatPhoneNumber = (phone: string) => {
+  // 10자리(예: 02-1234-5678)와 11자리(예: 010-1234-5678) 모두 지원
+  const digits = phone.replace(/\D/g, "").slice(0, 11);
+  if (!digits) return "";
 
   const digits = phone.replace(/\D/g, ""); // 숫자 이외 제거
   const size = digits.length;
@@ -22,3 +24,6 @@ export const phoneNumberFormatter = (phone: string | null | undefined) => {
   // 11자리 (010-XXXX-XXXX)
   return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
 };
+
+// Backward-compatible named export used in older imports.
+export const phoneNumberFormatter = formatPhoneNumber;

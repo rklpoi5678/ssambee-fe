@@ -1,4 +1,4 @@
-import { LectureExamDetail } from "@/types/lecture-exams.type";
+import { LectureExamDetail } from "@/types/lectures";
 
 export const mockLectureExams: LectureExamDetail[] = [
   {

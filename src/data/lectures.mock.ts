@@ -6,7 +6,6 @@ export const mockLectures: Lecture[] = [
     id: "1",
     name: "고3 수능대비",
     subject: "영어",
-    category: "입시",
     grade: "고2",
     instructor: "배지원", // 동일한 강사
     assistant: "이서준", // 담당 조교
@@ -34,7 +33,6 @@ export const mockLectures: Lecture[] = [
     id: "2",
     name: "고1 수학 기초반",
     subject: "수학",
-    category: "학교",
     grade: "고1",
     instructor: "배지원", // 동일한 강사
     assistant: "박서준", // 담당 조교

@@ -46,6 +46,7 @@ export default function SelectBtn({
     >
       <SelectTrigger
         id={id}
+        disabled={disabled}
         className={`
           flex w-full py-4 px-4 items-center justify-between text-gray-500 font-normal rounded-lg border outline-none cursor-pointer
           [&>svg]:hidden text-base shadow-none!
