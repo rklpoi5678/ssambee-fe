@@ -1,4 +1,4 @@
-import { RouteGuard } from "@/components/guard/guards";
+import { RouteGuard } from "@/components/guard/RouteGuard";
 
 export default function EducatorsAuthLayout({
   children,
