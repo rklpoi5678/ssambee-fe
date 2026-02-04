@@ -10,6 +10,7 @@ import {
   Users,
   FileText,
   FolderOpen,
+  Home,
 } from "lucide-react";
 
 import {
@@ -26,6 +27,11 @@ import { useAuthContext } from "@/providers/AuthProvider";
 import { Role } from "@/types/auth.type";
 
 const instructorMenuItems = [
+  {
+    title: "홈",
+    url: "/educators",
+    icon: Home,
+  },
   {
     title: "학생 관리",
     url: "/educators/students",
