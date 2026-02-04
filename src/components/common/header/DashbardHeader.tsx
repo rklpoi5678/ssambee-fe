@@ -28,6 +28,8 @@ export function DashboardHeader() {
         return "조교";
       case "STUDENT":
         return "학생";
+      case "PARENT":
+        return "학부모";
       default:
         return "";
     }
