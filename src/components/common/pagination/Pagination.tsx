@@ -35,7 +35,7 @@ export function Pagination({ pagination, onPageChange }: PaginationProps) {
   );
 
   return (
-    <div className="mt-6 flex items-center justify-between">
+    <div className="mt-2 flex items-start justify-between">
       <p className="text-center text-sm text-muted-foreground">
         전체 {totalCount}개 중 {startIndex}-{endIndex} 표시
       </p>
