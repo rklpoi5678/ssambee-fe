@@ -76,9 +76,12 @@ export function LectureScheduleSection({
             }
             showAddButton={false}
             layoutVariant="compact"
-            inputClassName="h-14 rounded-[12px] border-[#d6d9e0] text-[16px] text-[#8b90a3]"
+            inputClassName="h-14 rounded-[12px] border-[#d6d9e0] text-[16px] text-[#8b90a3] placeholder:text-[#8b90a3]"
             selectClassName="text-[#8b90a3]"
             selectVariant="figma"
+            timeInputVariant="text"
+            startTimePlaceholder="시작 시간"
+            endTimePlaceholder="종료 시간"
             renderRemoveButton={(id) => (
               <Button
                 type="button"
