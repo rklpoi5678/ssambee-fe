@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,18 +16,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Title from "@/components/common/header/Title";
 import SelectBtn from "@/components/common/button/SelectBtn";
+import StatusLabel from "@/components/common/label/StatusLabel";
 import { useModal } from "@/providers/ModalProvider";
 import { useStudentSelectionStore } from "@/stores/studentsList.store";
-import { mockLectures } from "@/data/lectures.mock";
 import {
   PaginationType,
   SchoolYear,
-  StudentListQuery,
+  EnrollmentListQuery,
   StudentStatus,
 } from "@/types/students.type";
 import {
-  useCreateMassAttendance,
   useEnrollmentList,
+  useLecturesList,
+  useUpdateAllAttendance,
   useUpdateEnrollment,
 } from "@/hooks/useEnrollment";
 import {
@@ -35,6 +36,7 @@ import {
   STATUS_SELECT_OPTIONS,
   STUDENT_STATUS_LABEL,
   STUDENTS_TABLE_COLUMNS,
+  LECTURE_STATUS_LABEL,
 } from "@/constants/students.default";
 import { Pagination } from "@/components/common/pagination/Pagination";
 import { CheckModal } from "@/components/common/modals/CheckModal";
@@ -50,6 +52,8 @@ const PAGE_LIMIT = 10;
 export default function StudentsListPage() {
   const router = useRouter();
   const { openModal } = useModal();
+
+  // 체크박스 스토어
   const {
     selectedStudentIds,
     toggleStudent,
@@ -58,53 +62,76 @@ export default function StudentsListPage() {
     resetSelection,
   } = useStudentSelectionStore();
 
-  const [query, setQuery] = useState<StudentListQuery>({
+  // 강의 목록 불러오기
+  const { data: lectures = [] } = useLecturesList({ page: 1, limit: 20 });
+
+  const lectureOptions = useMemo(
+    () => [
+      { label: "전체 수업", value: "all", status: null },
+      ...lectures.map((l) => ({
+        label: l.title,
+        value: l.id,
+        status: l.status,
+      })),
+    ],
+    [lectures]
+  );
+
+  // 요청 쿼리
+  const [query, setQuery] = useState<EnrollmentListQuery>({
+    page: 1,
+    limit: PAGE_LIMIT,
     keyword: "",
     year: null,
     status: null,
-    lectureId: null,
-    page: 1,
-    limit: PAGE_LIMIT,
+    lecture: null,
+    examId: null,
   });
 
   // 수강생 목록 조회
   const { data, isPending, isError } = useEnrollmentList(query);
-  const students = data?.items || [];
+  const studentList = data?.list || [];
   const pagination: PaginationType = data?.pagination ?? {
     totalCount: 0,
     totalPage: 1,
     currentPage: 1,
-    limit: 10,
+    limit: PAGE_LIMIT,
     hasNextPage: false,
     hasPrevPage: false,
   };
 
-  // 수강생 정보 업데이트
+  // 수강생 재원 상태 수정
   const { mutate: updateStatus } = useUpdateEnrollment();
 
   // 단체 출결 등록
-  const { mutate: createMassAttendance, isPending: isRegistering } =
-    useCreateMassAttendance();
+  const { mutate: updateAllAttendance, isPending: isUpdating } =
+    useUpdateAllAttendance();
+
+  // 현재 선택된 수업의 상세 정보 찾기
+  const selectedLectureInfo = useMemo(() => {
+    if (!query.lecture) return null;
+    return lectures.find((l) => l.id === query.lecture);
+  }, [lectures, query.lecture]);
 
   // 현재 페이지의 모든 학생이 선택되었는지 여부 확인
   const isCurrentPageAllSelected =
-    students.length > 0 &&
-    students.every((s) => selectedStudentIds.includes(s.id));
+    studentList.length > 0 &&
+    studentList.every((s) => selectedStudentIds.includes(s.id));
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      // 현재 페이지 학생들만 스토어에 추가
-      const studentsToSelect = students.map((s) => ({
+      // 현재 페이지 학생들만 스토어에 추가 + 데이터 저장(모달 표시용)
+      const studentsToSelect = studentList.map((s) => ({
         enrollmentId: s.id,
         name: s.studentName,
-        lectureTitle: s.lecture.title,
         phoneNumber: s.studentPhone,
         parentPhone: s.parentPhone,
+        title: s.lecture.title,
       }));
       addStudents(studentsToSelect);
     } else {
       // 현재 페이지 학생들의 ID만 추출하여 스토어에서 제거
-      const currentPageIds = students.map((s) => s.id);
+      const currentPageIds = studentList.map((s) => s.id);
       removeStudents(currentPageIds);
     }
   };
@@ -116,7 +143,7 @@ export default function StudentsListPage() {
 
   // 수강생 재원 상태 변경
   const handleStatusChange = (id: string, status: StudentStatus) => {
-    const student = students.find((s) => s.id === id);
+    const student = studentList.find((s) => s.id === id);
     if (!student) return;
 
     const oldStatusLabel = STUDENT_STATUS_LABEL[student.status];
@@ -153,8 +180,12 @@ export default function StudentsListPage() {
         description={`선택한 ${selectedStudentIds.length}명의 학생을 오늘(${getTodayYMD()})자로 '출석' 처리하시겠습니까?`}
         confirmText="출석 등록"
         onConfirm={() => {
-          createMassAttendance(
-            { ids: selectedStudentIds },
+          updateAllAttendance(
+            {
+              lectureId: query.lecture ?? "",
+              enrollmentIds: selectedStudentIds,
+              status: "PRESENT",
+            },
             {
               onSuccess: () => {
                 resetSelection();
@@ -166,146 +197,170 @@ export default function StudentsListPage() {
     );
   };
 
-  //TODO: 강의 리스트에서 강의 선택 시 필터링 기능 추가(미완)
-  const handleLectureClick = (lectureId: string) => {
-    setQuery((prev) => ({
-      ...prev,
-      lectureId: prev.lectureId === lectureId ? null : lectureId,
-    }));
-  };
-
   if (isError) return <div>조회 실패</div>;
 
+  // 테이블 컬럼 데이터
   const columns = StudentTableData({
     selectedStudents: selectedStudentIds,
     onToggleStudent: (student) =>
       toggleStudent({
         enrollmentId: student.id,
         name: student.studentName,
-        lectureTitle: student.lecture.title,
         phoneNumber: student.studentPhone,
         parentPhone: student.parentPhone,
+        title: student.lecture.title,
       }),
     onNavigate: handleNavigate,
     onStatusChange: handleStatusChange,
   });
 
   return (
-    <div className="container mx-auto px-8 py-8 space-y-6 max-w-[1200px]">
+    <div className="container mx-auto px-8 py-8 max-w-[1400px]">
       <Title
         title="전체 학생 관리"
         description={`총 ${pagination.totalCount}명의 학생 정보를 관리하고 있습니다.`}
       />
-
-      {/* 모달 버튼 */}
-      <div className="flex gap-2">
-        <Button
-          variant="outline"
-          className="cursor-pointer"
-          onClick={() => openModal(<StudentCreateModal />)}
-        >
-          학생 등록
-        </Button>
-        <Button
-          variant="outline"
-          className="cursor-pointer"
-          disabled={selectedStudentIds.length === 0}
-          onClick={() => openModal(<StudentChangeModal />)}
-        >
-          수업 변경
-        </Button>
-        <Button
-          variant="outline"
-          className="cursor-pointer"
-          disabled={selectedStudentIds.length === 0}
-          onClick={() => openModal(<TalkNotificationModal />)}
-        >
-          알림 발송
-        </Button>
-        <Button
-          variant="default"
-          disabled={selectedStudentIds.length === 0 || isRegistering}
-          className="cursor-pointer"
-          onClick={handleAttendanceClick}
-        >
-          {isRegistering ? "등록 중..." : "출결 등록"}
-        </Button>
-      </div>
-
-      {/* 수업 선택 */}
-      <div className="border rounded-lg p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <h2 className="text-lg font-semibold mr-1">수업 선택</h2>
-          <p className="text-sm text-muted-foreground">전체 수업</p>
-          <span className="inline-flex items-center justify-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-            {mockLectures.length}
-          </span>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          {mockLectures.map((lecture) => (
-            <div
-              key={lecture.id}
-              onClick={() => handleLectureClick(lecture.id)}
-              className={`flex-1 min-w-[100px] p-3 border rounded cursor-pointer ${query.lectureId === lecture.id ? "bg-primary/10 border-primary" : ""}`}
-            >
-              <p className="text-sm font-medium truncate">{lecture.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {lecture.currentStudents}/{lecture.maxStudents}명
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* 필터 */}
-      <div className="flex justify-between items-center w-full">
-        <div className="flex gap-2">
-          <Input
-            className="w-full md:w-[200px] lg:w-[300px]"
-            placeholder="이름, 전화번호 검색..."
-            value={query.keyword}
-            onChange={(e) =>
-              setQuery((prev) => ({
-                ...prev,
-                keyword: e.target.value,
-                page: 1,
-              }))
-            }
-          />
-          <SelectBtn
-            className="max-w-[120px]"
-            value={query.year ?? "all"}
-            placeholder="학년 선택"
-            options={GRADE_SELECT_OPTIONS}
-            onChange={(value) =>
-              setQuery((prev) => ({
-                ...prev,
-                year: value === "all" ? null : (value as SchoolYear),
-                page: 1,
-              }))
-            }
-          />
-          <SelectBtn
-            className="max-w-[120px]"
-            value={query.status ?? "all"}
-            placeholder="상태 선택"
-            options={STATUS_SELECT_OPTIONS}
-            onChange={(value) =>
-              setQuery((prev) => ({
-                ...prev,
-                status: value === "all" ? null : (value as StudentStatus),
-                page: 1,
-              }))
-            }
-          />
+      <div className="border rounded-lg p-4 mt-[74px]">
+        <div className="w-full flex flex-col items-start gap-2 mb-3">
+          <h2 className="text-lg font-semibold mr-1">수업 선택</h2>
+
+          <div className="w-full flex flex-wrap items-center gap-4">
+            <div className="w-full lg:w-[280px] shrink-0 h-14">
+              <SelectBtn
+                className="text-base px-4 h-full w-full"
+                optionSize="sm"
+                value={query.lecture ?? "all"}
+                placeholder="전체 수업"
+                options={lectureOptions.map((option) => ({
+                  value: option.value,
+                  label: option.status ? (
+                    <div className="flex items-center gap-2">
+                      <span>{option.label}</span>
+                      <StatusLabel
+                        color={LECTURE_STATUS_LABEL[option.status].color}
+                      >
+                        {LECTURE_STATUS_LABEL[option.status].label}
+                      </StatusLabel>
+                    </div>
+                  ) : (
+                    option.label
+                  ),
+                }))}
+                onChange={(value) =>
+                  setQuery((prev) => ({
+                    ...prev,
+                    lecture: value === "all" ? null : (value as string),
+                    page: 1,
+                  }))
+                }
+              />
+            </div>
+
+            <div className="flex-1 flex flex-wrap sm:flex-nowrap justify-end items-center gap-3 h-ful text-base">
+              <Input
+                className="h-14 w-full sm:flex-1 min-w-[200px] max-w-[400px] p-4 text-base placeholder:text-base"
+                placeholder="이름, 전화번호로 검색해보세요"
+                value={query.keyword ?? ""}
+                onChange={(e) =>
+                  setQuery((prev) => ({
+                    ...prev,
+                    keyword: e.target.value,
+                    page: 1,
+                  }))
+                }
+              />
+              <div className="grid grid-cols-2 gap-2 w-full sm:w-[280px] shrink-0 h-14">
+                <div className="h-full">
+                  <SelectBtn
+                    className="text-base px-4 h-full w-full"
+                    optionSize="sm"
+                    value={query.year ?? "all"}
+                    placeholder="학년 선택"
+                    options={GRADE_SELECT_OPTIONS}
+                    onChange={(value) =>
+                      setQuery((prev) => ({
+                        ...prev,
+                        year: value === "all" ? null : (value as SchoolYear),
+                        page: 1,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="h-full">
+                  <SelectBtn
+                    className="text-base px-4 h-full w-full"
+                    optionSize="sm"
+                    value={query.status ?? "all"}
+                    placeholder="상태 선택"
+                    options={STATUS_SELECT_OPTIONS}
+                    onChange={(value) =>
+                      setQuery((prev) => ({
+                        ...prev,
+                        status:
+                          value === "all" ? null : (value as StudentStatus),
+                        page: 1,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <span className="flex items-end text-sm text-muted-foreground">
-          선택된 학생 {selectedStudentIds.length}명
-        </span>
+      </div>
+
+      <div className="flex justify-between items-center mt-[58px] mb-5">
+        {/* 모달 버튼 */}
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="cursor-pointer"
+            onClick={() => openModal(<StudentCreateModal />)}
+          >
+            학생 등록
+          </Button>
+          <Button
+            variant="outline"
+            className="cursor-pointer"
+            disabled={selectedStudentIds.length === 0}
+            onClick={() => openModal(<StudentChangeModal />)}
+          >
+            수업 변경
+          </Button>
+          <Button
+            variant="outline"
+            className="cursor-pointer"
+            disabled={selectedStudentIds.length === 0}
+            onClick={() => openModal(<TalkNotificationModal />)}
+          >
+            알림 발송
+          </Button>
+          <Button
+            variant="default"
+            disabled={
+              !query.lecture ||
+              selectedStudentIds.length === 0 ||
+              isUpdating ||
+              selectedLectureInfo?.status === "COMPLETED"
+            }
+            className="cursor-pointer"
+            onClick={handleAttendanceClick}
+          >
+            {isUpdating ? "등록 중..." : "출결 등록"}
+          </Button>
+        </div>
+        {selectedStudentIds.length > 0 && (
+          <div>
+            <span className="flex items-end text-sm text-muted-foreground">
+              선택된 학생 {selectedStudentIds.length}명
+            </span>
+          </div>
+        )}
       </div>
 
       {/* 테이블 */}
-      <div className="border rounded-lg overflow-x-auto min-h-[580px]">
+      <div className="border rounded-lg overflow-x-auto min-h-[550px]">
         <Table>
           <TableHeader>
             <TableRow>
@@ -332,17 +387,21 @@ export default function StudentsListPage() {
                   로딩 중...
                 </TableCell>
               </TableRow>
-            ) : students.length === 0 ? (
+            ) : studentList.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={STUDENTS_TABLE_COLUMNS.length + 1}
-                  className="text-center"
+                  className="h-[550px] text-center align-middle"
                 >
-                  검색 결과가 없습니다.
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <span className="text-gray-400 text-lg font-medium">
+                      검색 결과가 없습니다.
+                    </span>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
-              students.map((studentData) => (
+              studentList.map((studentData) => (
                 <TableRow key={studentData.id}>
                   {columns.map((col) => (
                     <TableCell
