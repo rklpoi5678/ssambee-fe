@@ -1,5 +1,7 @@
 "use client";
 
+import { ReactNode } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import SelectBtn from "@/components/common/button/SelectBtn";
@@ -23,6 +25,12 @@ type ScheduleEditorProps = {
   ) => void;
   onAdd: () => void;
   onRemove: (id: string) => void;
+  showAddButton?: boolean;
+  layoutVariant?: "default" | "compact";
+  inputClassName?: string;
+  selectClassName?: string;
+  selectVariant?: "default" | "figma";
+  renderRemoveButton?: (id: string) => ReactNode;
 };
 
 export function ScheduleEditor({
@@ -31,20 +39,33 @@ export function ScheduleEditor({
   onChange,
   onAdd,
   onRemove,
+  showAddButton = true,
+  layoutVariant = "default",
+  inputClassName,
+  selectClassName,
+  selectVariant = "default",
+  renderRemoveButton,
 }: ScheduleEditorProps) {
+  const rowClassName =
+    layoutVariant === "compact"
+      ? "grid grid-cols-[1fr_1fr_1fr_48px] gap-3 items-center"
+      : "grid grid-cols-12 gap-2 items-center";
+
   return (
     <div className="space-y-2">
       {rows.map((row) => (
-        <div key={row.id} className="grid grid-cols-12 gap-2 items-center">
-          <div className="col-span-4">
+        <div key={row.id} className={rowClassName}>
+          <div className={layoutVariant === "compact" ? "" : "col-span-4"}>
             <SelectBtn
               value={row.day}
               placeholder="요일"
               options={dayOptions}
               onChange={(value) => onChange(row.id, "day", value)}
+              className={selectClassName}
+              variant={selectVariant}
             />
           </div>
-          <div className="col-span-3">
+          <div className={layoutVariant === "compact" ? "" : "col-span-3"}>
             <Input
               type="time"
               value={row.startTime}
@@ -52,9 +73,10 @@ export function ScheduleEditor({
               onChange={(event) =>
                 onChange(row.id, "startTime", event.target.value)
               }
+              className={inputClassName}
             />
           </div>
-          <div className="col-span-3">
+          <div className={layoutVariant === "compact" ? "" : "col-span-3"}>
             <Input
               type="time"
               value={row.endTime}
@@ -62,22 +84,33 @@ export function ScheduleEditor({
               onChange={(event) =>
                 onChange(row.id, "endTime", event.target.value)
               }
+              className={inputClassName}
             />
           </div>
-          <div className="col-span-2 text-right">
-            <Button
-              variant="outline"
-              size="default"
-              onClick={() => onRemove(row.id)}
-            >
-              삭제
-            </Button>
+          <div
+            className={
+              layoutVariant === "compact" ? "" : "col-span-2 text-right"
+            }
+          >
+            {renderRemoveButton ? (
+              renderRemoveButton(row.id)
+            ) : (
+              <Button
+                variant="outline"
+                size="default"
+                onClick={() => onRemove(row.id)}
+              >
+                삭제
+              </Button>
+            )}
           </div>
         </div>
       ))}
-      <Button variant="outline" size="default" onClick={onAdd}>
-        + 시간 추가
-      </Button>
+      {showAddButton ? (
+        <Button variant="outline" size="default" onClick={onAdd}>
+          + 시간 추가
+        </Button>
+      ) : null}
     </div>
   );
 }

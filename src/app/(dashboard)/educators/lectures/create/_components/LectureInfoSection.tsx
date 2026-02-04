@@ -1,10 +1,12 @@
 "use client";
 
-import { UseFormReturn, useWatch } from "react-hook-form";
+import { UseFormReturn, useFormState, useWatch } from "react-hook-form";
+import { ChevronDown } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import SelectBtn from "@/components/common/button/SelectBtn";
+import { DatePickerField } from "@/components/common/input/DatePickerField";
 import { LectureFormInput } from "@/validation/lecture.validation";
 import {
   LECTURE_GRADES,
@@ -20,11 +22,8 @@ export function LectureInfoSection({
   form,
   disabled,
 }: LectureInfoSectionProps) {
-  const {
-    register,
-    setValue,
-    formState: { errors },
-  } = form;
+  const { register, setValue } = form;
+  const { errors } = useFormState({ control: form.control });
 
   const schoolYearValue =
     useWatch({ control: form.control, name: "schoolYear" }) ?? "";
@@ -34,124 +33,117 @@ export function LectureInfoSection({
   }));
 
   return (
-    <Card>
-      <div className="p-6 border-b">
-        <h2 className="text-xl font-semibold">📄 강의 기본정보</h2>
-      </div>
-      <CardContent className="p-6 space-y-4">
-        <input type="hidden" {...register("schoolYear")} />
-        <div>
-          <label
-            htmlFor="lecture-name"
-            className="block text-sm font-medium mb-2"
-          >
-            수업명 <span className="text-red-500">*</span>
-          </label>
-          <Input
-            id="lecture-name"
-            {...register("name")}
-            placeholder="예: [고3] 수능 대비 수학 강의"
-            disabled={disabled}
-          />
-          {errors.name && (
-            <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
+    <Card className="rounded-[24px] border-0 shadow-[0_0_14px_rgba(138,138,138,0.08)]">
+      <CardContent className="p-8">
+        <h2 className="text-[24px] font-bold leading-[32px] tracking-[-0.24px] text-[#040405]">
+          강의 기본정보
+        </h2>
+        <div className="mt-8 flex flex-col gap-8">
+          <input type="hidden" {...register("schoolYear")} />
           <div>
-            <label
-              htmlFor="lecture-subject"
-              className="block text-sm font-medium mb-2"
-            >
-              과목 <span className="text-red-500">*</span>
+            <label htmlFor="lecture-name" className="sr-only">
+              수업명
             </label>
             <Input
-              id="lecture-subject"
-              {...register("subject")}
-              placeholder="예: 수학"
+              id="lecture-name"
+              {...register("name")}
+              placeholder="수업명"
               disabled={disabled}
+              className="h-14 rounded-[12px] border-[#d6d9e0] text-[16px] placeholder:text-[#8b90a3]"
             />
-            {errors.subject && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.subject.message}
-              </p>
+            {errors.name && (
+              <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
             )}
           </div>
-          <div>
-            <label
-              htmlFor="lecture-grade"
-              className="block text-sm font-medium mb-2"
-            >
-              학년 <span className="text-red-500">*</span>
-            </label>
-            <SelectBtn
-              id="lecture-grade"
-              value={schoolYearValue}
-              placeholder="학년 선택"
-              options={schoolYearOptions}
-              onChange={(value) =>
-                setValue("schoolYear", value, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                })
-              }
-              className="w-full"
-              disabled={disabled}
-            />
-            {errors.schoolYear && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.schoolYear.message}
-              </p>
-            )}
-          </div>
-        </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="lecture-start-date"
-              className="block text-sm font-medium mb-2"
-            >
-              개강일 <span className="text-red-500">*</span>
-            </label>
-            <Input
-              id="lecture-start-date"
-              type="date"
-              {...register("startDate")}
-              disabled={disabled}
-            />
-            {errors.startDate && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.startDate.message}
-              </p>
-            )}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="lecture-subject" className="sr-only">
+                과목
+              </label>
+              <Input
+                id="lecture-subject"
+                {...register("subject")}
+                placeholder="과목"
+                disabled={disabled}
+                className="h-14 rounded-[12px] border-[#d6d9e0] text-[16px] placeholder:text-[#8b90a3]"
+              />
+              {errors.subject && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.subject.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label htmlFor="lecture-grade" className="sr-only">
+                학년
+              </label>
+              <SelectBtn
+                id="lecture-grade"
+                value={schoolYearValue}
+                placeholder="학년 선택"
+                options={schoolYearOptions}
+                onChange={(value) =>
+                  setValue("schoolYear", value, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
+                variant="figma"
+                className="text-[#8b90a3]"
+                isError={Boolean(errors.schoolYear)}
+                disabled={disabled}
+              />
+              {errors.schoolYear && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.schoolYear.message}
+                </p>
+              )}
+            </div>
           </div>
-          <div>
-            <label
-              htmlFor="lecture-status"
-              className="block text-sm font-medium mb-2"
-            >
-              수업 상태 <span className="text-red-500">*</span>
-            </label>
-            <select
-              id="lecture-status"
-              {...register("status")}
-              disabled={disabled}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <option value="">선택</option>
-              {LECTURE_STATUS_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            {errors.status && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.status.message}
-              </p>
-            )}
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="lecture-start-date" className="sr-only">
+                개강일
+              </label>
+              <DatePickerField
+                control={form.control}
+                name="startDate"
+                placeholder="개강일"
+                disabled={disabled}
+              />
+              {errors.startDate && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.startDate.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label htmlFor="lecture-status" className="sr-only">
+                수업 상태
+              </label>
+              <div className="relative">
+                <select
+                  id="lecture-status"
+                  {...register("status")}
+                  disabled={disabled}
+                  className="flex h-14 w-full appearance-none rounded-[12px] border border-[#d6d9e0] bg-white px-4 pr-10 text-[16px] text-[#8b90a3] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {LECTURE_STATUS_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8b90a3]" />
+              </div>
+              {errors.status && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.status.message}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>

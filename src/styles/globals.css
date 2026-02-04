@@ -1,10 +1,121 @@
 @import "tailwindcss";
+@import "react-day-picker/dist/style.css";
 @import "./typography.css";
 @import "./colors.css";
 
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
+
+.eduops-date-picker.rdp-root {
+  --rdp-accent-color: #3863f6;
+  --rdp-accent-background-color: #f4f6fe;
+  --rdp-day-height: 32px;
+  --rdp-day-width: 32px;
+  --rdp-day_button-height: 32px;
+  --rdp-day_button-width: 32px;
+  --rdp-day_button-border-radius: 999px;
+  --rdp-day_button-border: 0;
+  --rdp-selected-border: 0;
+  --rdp-nav_button-height: 24px;
+  --rdp-nav_button-width: 24px;
+  --rdp-nav-height: 30px;
+  --rdp-weekday-opacity: 1;
+  --rdp-weekday-padding: 0;
+  --rdp-outside-opacity: 1;
+  --rdp-today-color: #3863f6;
+
+  background: #ffffff;
+  border: 1px solid #f4f6fa;
+  border-radius: 12px;
+  box-shadow: 0 0 14px rgba(138, 138, 138, 0.16);
+  padding: 16px 10px;
+}
+
+.eduops-date-picker .rdp-months,
+.eduops-date-picker .rdp-month,
+.eduops-date-picker .rdp-month_grid {
+  width: 230px;
+}
+
+.eduops-date-picker .rdp-month_grid {
+  border-collapse: separate;
+  border-spacing: 1px 0;
+}
+
+.eduops-date-picker .rdp-month_caption {
+  height: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.14px;
+  color: rgba(22, 22, 27, 0.88);
+  justify-content: center;
+}
+
+.eduops-date-picker .rdp-caption_label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.14px;
+}
+
+.eduops-date-picker .rdp-nav {
+  inset: 0;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.eduops-date-picker .rdp-button_previous,
+.eduops-date-picker .rdp-button_next {
+  color: #8b90a3;
+}
+
+.eduops-date-picker .rdp-chevron {
+  fill: #8b90a3;
+}
+
+.eduops-date-picker .rdp-weekday {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  letter-spacing: -0.13px;
+  color: rgba(22, 22, 27, 0.4);
+}
+
+.eduops-date-picker .rdp-week {
+  height: 32px;
+}
+
+.eduops-date-picker .rdp-day {
+  width: 32px;
+  height: 32px;
+}
+
+.eduops-date-picker .rdp-day_button {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.14px;
+  color: rgba(22, 22, 27, 0.88);
+}
+
+.eduops-date-picker .rdp-selected .rdp-day_button {
+  background: #3863f6;
+  color: #ffffff;
+}
+
+.eduops-date-picker .rdp-today:not(.rdp-selected) .rdp-day_button {
+  background: #f4f6fe;
+  color: #3863f6;
+}
+
+.eduops-date-picker .rdp-outside .rdp-day_button {
+  color: rgba(22, 22, 27, 0.2);
+}
 
 @theme inline {
   --color-background: var(--background);
