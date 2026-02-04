@@ -67,7 +67,7 @@ export function StudentCreateModal() {
     const { assignedClass: lectureId, ...rest } = data;
 
     createEnrollment(
-      { lectureId, data: rest as CreateEnrollment },
+      { lectureId, data: { ...rest, lectureId } },
       {
         onSuccess: () => {
           alert("등록되었습니다.");

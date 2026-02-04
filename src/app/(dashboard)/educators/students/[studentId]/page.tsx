@@ -257,7 +257,7 @@ export default function StudentDetailPage() {
                         {lecture.subject}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {enrollmentData.schoolYear}
+                        {lecture.schoolYear}
                       </span>
                     </div>
                     <h4 className="font-semibold text-lg">{lecture.title}</h4>
