@@ -90,16 +90,6 @@ export default function StudentsListPage() {
     hasPrevPage: false,
   };
 
-  // 선택된 학생들의 데이터 상세 정보
-  const selectedFullProfiles = studentList.filter((s) =>
-    selectedStudentIds.includes(s.id)
-  );
-
-  // ACTIVE가 아닌 학생 포함 여부 (서버 롤백 방지용)
-  const hasNonActiveStudent = selectedFullProfiles.some(
-    (s) => s.status !== "ACTIVE"
-  );
-
   // 수강생 재원 상태 수정
   const { mutate: updateStatus } = useUpdateEnrollment();
 

@@ -8,7 +8,6 @@ import {
   CreateEnrollment,
   CreateEnrollmentAttendance,
   EnrollmentListQuery,
-  MigrateStudents,
   UpdateEnrollmentInfo,
 } from "@/types/students.type";
 import { getTodayYMD } from "@/utils/date";
