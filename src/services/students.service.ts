@@ -28,12 +28,12 @@ export const getEnrollmentsAPI = (query?: EnrollmentListQuery) =>
 // 수강생 등록
 export const createEnrollmentAPI = (
   lectureId: string,
-  data: CreateEnrollment
+  data: Omit<CreateEnrollment, "lectureId"> // payload에서 lectureId를 제외한 나머지
 ) =>
   axiosClient
     .post<
       ApiResponse<CreateEnrollment>
-    >(`/lectures/${lectureId}/enrollments`, data)
+    >(`/lectures/${lectureId}/enrollments`, { ...data, lectureId })
     .then((res) => res.data);
 
 // 강의 목록 조회
