@@ -50,7 +50,7 @@ export function DashboardHeader() {
                 return (
                   <React.Fragment key={index}>
                     {index > 0 && (
-                      <BreadcrumbSeparator className="px-[10px] py-[6px] text-[#b0b4c2]">
+                      <BreadcrumbSeparator className="inline-flex h-6 items-center px-[10px] py-0 text-[#b0b4c2]">
                         /
                       </BreadcrumbSeparator>
                     )}
@@ -58,13 +58,13 @@ export function DashboardHeader() {
                       {crumb.href ? (
                         <BreadcrumbLink
                           href={crumb.href}
-                          className={`rounded-full px-[10px] py-[6px] font-semibold ${textColor}`}
+                          className={`inline-flex h-6 items-center rounded-full px-[10px] py-0 font-semibold ${textColor}`}
                         >
                           {crumb.label}
                         </BreadcrumbLink>
                       ) : (
                         <BreadcrumbPage
-                          className={`rounded-full px-[10px] py-[6px] font-semibold ${textColor}`}
+                          className={`inline-flex h-6 items-center rounded-full px-[10px] py-0 font-semibold ${textColor}`}
                         >
                           {crumb.label}
                         </BreadcrumbPage>
