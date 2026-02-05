@@ -16,8 +16,6 @@ import {
 import { InputForm } from "@/components/common/input/InputForm";
 import TiptapEditor from "@/components/common/editor/TiptapEditor";
 
-import ContentsTypeFilter from "./_components/setting/PostTypeSelect";
-import NotificationFilter from "./_components/setting/PostSetting";
 import PostTypeSelect from "./_components/setting/PostTypeSelect";
 import PostSetting from "./_components/setting/PostSetting";
 
@@ -55,14 +53,6 @@ export default function CreateInquiryPage() {
     }
 
     // TODO: API 호출
-    console.log({
-      title,
-      content,
-      postType: selectedPostType,
-      readPermission,
-      notifyStudents: selectedStudentIds,
-      notifyType: recipientType,
-    });
 
     alert("게시글이 등록되었습니다.");
     router.push("/educators/communication");

@@ -51,3 +51,21 @@ export type AnswerComment = {
   writer: string; // 작성자
   file?: File; // 첨부파일(강사만)
 };
+
+/**
+ * 게시글 등록 페이지--------------------------------------------------------
+ */
+export type ClassInfo = {
+  id: string;
+  name: string;
+};
+
+export type Student = {
+  id: string;
+  name: string;
+  classId: string;
+  className: string;
+  studentPhone: string;
+  parentPhone: string;
+  schoolYear: string;
+};

@@ -1,6 +1,8 @@
 import {
+  ClassInfo,
   InstructorWritePost,
   LearnersWriteInquiry,
+  Student,
 } from "../types/communication.type";
 
 // 학생/학부모가 작성한 문의글 목록
@@ -92,5 +94,80 @@ export const MOCK_INSTRUCTOR_POSTS: InstructorWritePost[] = [
     notifyTargetIds: ["student4", "student5"],
     notifyType: "PARENT",
     date: "2026-02-03",
+  },
+];
+
+// 게시글 등록
+export const MOCK_CLASSES: ClassInfo[] = [
+  { id: "ALL", name: "전체 클래스" },
+  { id: "class1", name: "수학 A반" },
+  { id: "class2", name: "수학 B반" },
+  { id: "class3", name: "영어 A반" },
+  { id: "class4", name: "영어 B반" },
+];
+
+export const MOCK_STUDENTS: Student[] = [
+  {
+    id: "student1",
+    name: "김학생",
+    schoolYear: "고1",
+    classId: "class1",
+    className: "수학 A반",
+    studentPhone: "010-1234-5678",
+    parentPhone: "010-9876-5432",
+  },
+  {
+    id: "student2",
+    name: "이학생",
+    schoolYear: "고1",
+    classId: "class1",
+    className: "수학 A반",
+    studentPhone: "010-2345-6789",
+    parentPhone: "010-8765-4321",
+  },
+  {
+    id: "student4",
+    name: "최학생",
+    schoolYear: "고1",
+    classId: "class2",
+    className: "수학 B반",
+    studentPhone: "010-4567-8901",
+    parentPhone: "010-6543-2109",
+  },
+  {
+    id: "student5",
+    name: "정학생",
+    schoolYear: "고1",
+    classId: "class2",
+    className: "수학 B반",
+    studentPhone: "010-5678-9012",
+    parentPhone: "010-5432-1098",
+  },
+  {
+    id: "student6",
+    name: "강학생",
+    schoolYear: "고1",
+    classId: "class3",
+    className: "영어 A반",
+    studentPhone: "010-6789-0123",
+    parentPhone: "010-4321-0987",
+  },
+  {
+    id: "student7",
+    name: "조학생",
+    schoolYear: "고1",
+    classId: "class3",
+    className: "영어 A반",
+    studentPhone: "010-7890-1234",
+    parentPhone: "010-3210-9876",
+  },
+  {
+    id: "student8",
+    name: "윤학생",
+    schoolYear: "고1",
+    classId: "class4",
+    className: "영어 B반",
+    studentPhone: "010-8901-2345",
+    parentPhone: "010-2109-8765",
   },
 ];

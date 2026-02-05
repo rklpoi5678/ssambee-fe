@@ -7,110 +7,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import SelectBtn from "@/components/common/button/SelectBtn";
-import { NoticeType, ReadPermissionType } from "@/types/communication.type";
+import {
+  NoticeType,
+  ReadPermissionType,
+  Student,
+} from "@/types/communication.type";
 import {
   NOTICE_TYPE_OPTIONS,
   READ_PERMISSION_OPTIONS,
 } from "@/constants/communication.default";
-
-type Class = {
-  id: string;
-  name: string;
-};
-
-type Student = {
-  id: string;
-  name: string;
-  classId: string;
-  className: string;
-  studentPhone: string;
-  parentPhone: string;
-  schoolYear: string;
-};
-
-// 목 데이터
-const MOCK_CLASSES: Class[] = [
-  { id: "ALL", name: "전체 클래스" },
-  { id: "class1", name: "수학 A반" },
-  { id: "class2", name: "수학 B반" },
-  { id: "class3", name: "영어 A반" },
-  { id: "class4", name: "영어 B반" },
-];
-
-const MOCK_STUDENTS: Student[] = [
-  {
-    id: "student1",
-    name: "김학생",
-    schoolYear: "고1",
-    classId: "class1",
-    className: "수학 A반",
-    studentPhone: "010-1234-5678",
-    parentPhone: "010-9876-5432",
-  },
-  {
-    id: "student2",
-    name: "이학생",
-    schoolYear: "고1",
-    classId: "class1",
-    className: "수학 A반",
-    studentPhone: "010-2345-6789",
-    parentPhone: "010-8765-4321",
-  },
-  {
-    id: "student4",
-    name: "최학생",
-    schoolYear: "고1",
-    classId: "class2",
-    className: "수학 B반",
-    studentPhone: "010-4567-8901",
-    parentPhone: "010-6543-2109",
-  },
-  {
-    id: "student5",
-    name: "정학생",
-    schoolYear: "고1",
-    classId: "class2",
-    className: "수학 B반",
-    studentPhone: "010-5678-9012",
-    parentPhone: "010-5432-1098",
-  },
-  {
-    id: "student6",
-    name: "강학생",
-    schoolYear: "고1",
-    classId: "class3",
-    className: "영어 A반",
-    studentPhone: "010-6789-0123",
-    parentPhone: "010-4321-0987",
-  },
-  {
-    id: "student7",
-    name: "조학생",
-    schoolYear: "고1",
-    classId: "class3",
-    className: "영어 A반",
-    studentPhone: "010-7890-1234",
-    parentPhone: "010-3210-9876",
-  },
-  {
-    id: "student8",
-    name: "윤학생",
-    schoolYear: "고1",
-    classId: "class4",
-    className: "영어 B반",
-    studentPhone: "010-8901-2345",
-    parentPhone: "010-2109-8765",
-  },
-  {
-    id: "student9",
-    name: "장학생",
-    schoolYear: "고1",
-    classId: "class4",
-    className: "영어 B반",
-    studentPhone: "010-9012-3456",
-    parentPhone: "010-1098-7654",
-  },
-];
+import { MOCK_STUDENTS } from "@/data/communication.mock";
+import { MOCK_CLASSES } from "@/data/communication.mock";
 
 type PostSettingProps = {
   selectedStudentIds: string[];
