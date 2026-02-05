@@ -1,20 +1,20 @@
 import StatusLabel from "@/components/common/label/StatusLabel";
-import { InstructorWriteContents } from "@/types/communication.type";
+import { InstructorWritePost } from "@/types/communication.type";
 import {
   CONTENT_TYPE_LABEL,
   NOTICE_TYPE_LABEL,
 } from "@/constants/communication.default";
 import { ColumnDefinition } from "@/components/common/table/DataTable";
 
-export const INSTRUCTOR_POST_COLUMNS: ColumnDefinition<InstructorWriteContents>[] =
+export const INSTRUCTOR_POST_COLUMNS: ColumnDefinition<InstructorWritePost>[] =
   [
     {
-      key: "contentsType",
+      key: "postType",
       label: "분류",
       render: (row) => (
         <div className="w-[50px] flex items-center">
-          <StatusLabel color={CONTENT_TYPE_LABEL[row.contentsType].color}>
-            {CONTENT_TYPE_LABEL[row.contentsType].label}
+          <StatusLabel color={CONTENT_TYPE_LABEL[row.postType].color}>
+            {CONTENT_TYPE_LABEL[row.postType].label}
           </StatusLabel>
         </div>
       ),

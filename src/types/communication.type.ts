@@ -1,4 +1,4 @@
-export type ContentsType = "NOTICE" | "SHARE"; // 게시글 분류
+export type PostType = "NOTICE" | "SHARE"; // 게시글 분류
 export type NoticeType = "ALL" | "STUDENT" | "PARENT"; // 알림 수신 대상
 export type ReadPermissionType = "ALL" | "STUDENT" | "PARENT"; // 열람 권한
 
@@ -27,13 +27,13 @@ export type LearnersWriteInquiry = {
 };
 
 // 강사가 작성한 게시글(공지/자료공유)
-export type InstructorWriteContents = {
+export type InstructorWritePost = {
   id: string;
   title: string; // 제목
   contents: string; // 내용
   file?: File; // 첨부파일
   name: string; // 작성자(강사 자신)
-  contentsType: ContentsType; // 게시글 분류(공지/자료공유)
+  postType: PostType; // 게시글 분류(공지/자료공유)
   classId: string | null; // 클래스 ID (null이면 전체 클래스)
   className?: string; // 클래스명
   readPermission: ReadPermissionType; // 열람 권한(전체/학생/학부모)

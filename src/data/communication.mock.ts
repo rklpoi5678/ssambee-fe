@@ -1,5 +1,5 @@
 import {
-  InstructorWriteContents,
+  InstructorWritePost,
   LearnersWriteInquiry,
 } from "../types/communication.type";
 
@@ -43,14 +43,14 @@ export const MOCK_LEARNER_INQUIRIES: LearnersWriteInquiry[] = [
 ];
 
 // 강사가 작성한 게시글(공지/자료공유) 목록
-export const MOCK_INSTRUCTOR_POSTS: InstructorWriteContents[] = [
+export const MOCK_INSTRUCTOR_POSTS: InstructorWritePost[] = [
   {
     id: "POST-2026-101",
     title: "[필독] 2월 설 연휴 학원 휴강 안내",
     contents:
       "안녕하세요. 이강사입니다. 2월 설 연휴 기간 동안 모든 수업은 휴강입니다. 가족과 즐거운 시간 보내세요.",
     name: "이강사",
-    contentsType: "NOTICE",
+    postType: "NOTICE",
     classId: null, // 전체 클래스
     readPermission: "ALL",
     notifyTargetIds: [],
@@ -71,7 +71,7 @@ export const MOCK_INSTRUCTOR_POSTS: InstructorWriteContents[] = [
     contents:
       "지난 3개년 기출문제를 정리한 자료입니다. 학생들은 다운로드하여 풀어보세요.",
     name: "이강사",
-    contentsType: "SHARE",
+    postType: "SHARE",
     classId: "class1",
     className: "수학 A반",
     readPermission: "STUDENT",
@@ -85,7 +85,7 @@ export const MOCK_INSTRUCTOR_POSTS: InstructorWriteContents[] = [
     contents:
       "다음 주 수요일 저녁 7시에 온라인 입시설명회가 진행될 예정입니다.",
     name: "이강사",
-    contentsType: "NOTICE",
+    postType: "NOTICE",
     classId: "class2",
     className: "수학 B반",
     readPermission: "PARENT",
