@@ -17,6 +17,12 @@ export const fetchExamsByLectureAPI = async (
   return data.data ?? [];
 };
 
+export const fetchExamsAllAPI = async (): Promise<ExamApi[]> => {
+  const { data } = await axiosClient.get<ApiResponse<ExamApi[]>>(`/exams`);
+
+  return data.data ?? [];
+};
+
 export const fetchExamDetailAPI = async (
   examId: string
 ): Promise<ExamDetailApi> => {
@@ -61,4 +67,12 @@ export const updateExamAPI = async (
   }
 
   return data.data;
+};
+
+export const deleteExamAPI = async (examId: string) => {
+  const { data } = await axiosClient.delete<ApiResponse<void>>(
+    `/exams/${examId}`
+  );
+
+  return data;
 };
