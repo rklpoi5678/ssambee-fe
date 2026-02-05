@@ -1,4 +1,7 @@
+import { useMemo } from "react";
+
 import { Card, CardContent } from "@/components/ui/card";
+import { useClinicsList } from "@/hooks/clinics/useClinicsList";
 import type { Exam } from "@/types/exams";
 
 type ExamsStatsProps = {
@@ -8,7 +11,11 @@ type ExamsStatsProps = {
 
 export function ExamsStats({ exams, isLoading = false }: ExamsStatsProps) {
   const totalExams = exams.length;
-  const clinicExams = exams.filter((exam) => exam.status === "진행 중").length;
+  const { data: clinics } = useClinicsList({});
+  const clinicExams = useMemo(() => {
+    const examIds = new Set((clinics ?? []).map((clinic) => clinic.exam.id));
+    return examIds.size;
+  }, [clinics]);
   const totalLabel = isLoading ? "-" : `${totalExams}개`;
   const clinicLabel = isLoading ? "-" : `${clinicExams}개`;
 

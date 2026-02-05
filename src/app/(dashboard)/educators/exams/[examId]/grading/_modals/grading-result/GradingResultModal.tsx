@@ -8,15 +8,15 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import type {
+  GradingReportOverview,
+  GradingReportQuestionStat,
+  GradingReportStudentRow,
+} from "@/types/exams";
 
 import { GradingResultSummary } from "./GradingResultSummary";
 import { StudentScoreTable } from "./StudentScoreTable";
 import { QuestionStatsTable } from "./QuestionStatsTable";
-import {
-  GradingReportOverview,
-  GradingReportQuestionStat,
-  GradingReportStudentRow,
-} from "./types";
 
 type GradingResultModalProps = {
   open: boolean;
@@ -57,11 +57,8 @@ export function GradingResultModal({
 
         <Separator />
 
-        <div className="flex justify-end gap-2 pt-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            취소
-          </Button>
-          <Button onClick={() => onOpenChange(false)}>최종 저장</Button>
+        <div className="flex justify-end pt-2">
+          <Button onClick={() => onOpenChange(false)}>닫기</Button>
         </div>
       </DialogContent>
     </Dialog>
