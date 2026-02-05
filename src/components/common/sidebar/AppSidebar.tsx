@@ -133,7 +133,7 @@ export function AppSidebar() {
                       pathname === item.url ||
                       pathname?.startsWith(item.url + "/")
                     }
-                    className="h-14 gap-[14px] rounded-[12px] px-6 text-[18px] leading-[26px] tracking-[-0.18px] font-semibold text-[rgba(22,22,27,0.28)] hover:bg-transparent hover:text-inherit data-[active=true]:bg-[#f4f6fe] data-[active=true]:text-[#4b72f7] data-[active=true]:font-bold"
+                    className="h-14 gap-[14px] rounded-[12px] px-6 py-4 text-[18px] leading-[26px] tracking-[-0.18px] font-semibold text-[rgba(22,22,27,0.28)] hover:bg-transparent hover:text-inherit data-[active=true]:bg-[#f4f6fe] data-[active=true]:text-[#4b72f7] data-[active=true]:font-bold"
                   >
                     <Link href={item.url}>
                       <item.icon className="size-[18px] text-current" />
@@ -152,7 +152,7 @@ export function AppSidebar() {
             <SidebarMenuButton
               onClick={handleLogout}
               disabled={loading}
-              className="h-14 gap-[14px] rounded-[12px] px-6 text-[18px] leading-[26px] tracking-[-0.18px] font-semibold text-[rgba(22,22,27,0.28)] hover:bg-transparent hover:text-inherit"
+              className="h-14 gap-[14px] rounded-[12px] px-6 py-4 text-[18px] leading-[26px] tracking-[-0.18px] font-semibold text-[rgba(22,22,27,0.28)] hover:bg-transparent hover:text-inherit"
             >
               <LogOut className="size-[18px] text-current" />
               <span>{loading ? "로그아웃 중..." : "로그아웃"}</span>
