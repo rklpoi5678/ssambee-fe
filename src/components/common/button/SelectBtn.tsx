@@ -10,7 +10,7 @@ import {
 import { SelectCloseIcon, SelectOpenIcon } from "@/components/icons/AuthIcons";
 
 type SelectOption = {
-  label: string;
+  label: string | React.ReactNode;
   value: string;
 };
 
@@ -23,6 +23,7 @@ type CommonSelectProps = {
   className?: string;
   isError?: boolean;
   disabled?: boolean;
+  optionSize?: "sm" | "lg";
 };
 
 export default function SelectBtn({
@@ -34,8 +35,15 @@ export default function SelectBtn({
   className,
   disabled,
   isError,
+  optionSize = "lg",
 }: CommonSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  // optionSize
+  const sizeStyles = {
+    sm: "py-1.5 text-sm",
+    lg: "py-3 px-4 text-base",
+  };
 
   return (
     <Select
@@ -50,11 +58,7 @@ export default function SelectBtn({
         className={`
           flex w-full py-4 px-4 items-center justify-between text-gray-500 font-normal rounded-lg border outline-none cursor-pointer
           [&>svg]:hidden text-base shadow-none!
-          ${
-            isError
-              ? "border-red-600 focus:ring-1 focus:ring-red-600"
-              : "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          }
+          ${isError ? "border-red-600" : "border-gray-300"}
 
           /* 비활성화 스타일 */
           ${disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : ""}
@@ -77,7 +81,9 @@ export default function SelectBtn({
           <SelectItem
             key={option.value}
             value={option.value}
-            className="cursor-pointer py-3 px-4 text-base hover:bg-blue-50 focus:bg-blue-50 transition-colors"
+            className={`cursor-pointer hover:bg-blue-50 focus:bg-blue-50 transition-colors
+              ${sizeStyles[optionSize]}
+            `.trim()}
           >
             {option.label}
           </SelectItem>
