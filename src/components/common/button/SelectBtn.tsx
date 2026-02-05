@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { ReactNode } from "react";
 
 import {
   Select,
@@ -8,9 +9,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SelectCloseIcon, SelectOpenIcon } from "@/components/icons/AuthIcons";
+import { cn } from "@/lib/utils";
 
 type SelectOption = {
-  label: string | React.ReactNode;
+  label: string | ReactNode;
   value: string;
 };
 
@@ -23,6 +25,7 @@ type CommonSelectProps = {
   className?: string;
   isError?: boolean;
   disabled?: boolean;
+  variant?: "default" | "figma";
   optionSize?: "sm" | "lg";
 };
 
@@ -35,15 +38,34 @@ export default function SelectBtn({
   className,
   disabled,
   isError,
+  variant = "default",
   optionSize = "lg",
 }: CommonSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // optionSize
   const sizeStyles = {
     sm: "py-1.5 text-sm",
     lg: "py-3 px-4 text-base",
   };
+
+  const baseClasses =
+    variant === "figma"
+      ? "flex w-full h-14 items-center justify-between rounded-[12px] border bg-white px-4 text-[16px] font-medium text-[#8b90a3] shadow-none"
+      : "flex w-full py-4 px-4 items-center justify-between text-gray-500 font-normal rounded-lg border outline-none cursor-pointer text-base shadow-none!";
+
+  const stateClasses =
+    variant === "figma"
+      ? isError
+        ? "border-red-600"
+        : "border-[#d6d9e0]"
+      : isError
+        ? "border-red-600 focus:ring-1 focus:ring-red-600"
+        : "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent";
+
+  const disabledClasses =
+    variant === "figma"
+      ? "bg-gray-100 cursor-not-allowed opacity-70"
+      : "bg-gray-100 cursor-not-allowed opacity-70";
 
   return (
     <Select
@@ -55,17 +77,13 @@ export default function SelectBtn({
       <SelectTrigger
         id={id}
         disabled={disabled}
-        className={`
-          flex w-full py-4 px-4 items-center justify-between text-gray-500 font-normal rounded-lg border outline-none cursor-pointer
-          [&>svg]:hidden text-base shadow-none!
-          ${isError ? "border-red-600" : "border-gray-300"}
-
-          /* 비활성화 스타일 */
-          ${disabled ? "bg-gray-100 cursor-not-allowed opacity-70" : ""}
-
-          /* 커스텀 클래스 */
-          ${className ?? ""}
-        `.trim()}
+        className={cn(
+          baseClasses,
+          "[&>svg]:hidden outline-none",
+          stateClasses,
+          disabled ? disabledClasses : "",
+          className
+        )}
       >
         <SelectValue placeholder={placeholder} />
         <div className="ml-2 shrink-0">
@@ -81,9 +99,10 @@ export default function SelectBtn({
           <SelectItem
             key={option.value}
             value={option.value}
-            className={`cursor-pointer hover:bg-blue-50 focus:bg-blue-50 transition-colors
-              ${sizeStyles[optionSize]}
-            `.trim()}
+            className={cn(
+              "cursor-pointer hover:bg-blue-50 focus:bg-blue-50 transition-colors",
+              sizeStyles[optionSize]
+            )}
           >
             {option.label}
           </SelectItem>

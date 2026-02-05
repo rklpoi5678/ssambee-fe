@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useCreateLecture } from "@/hooks/lectures/useCreateLecture";
@@ -62,6 +62,11 @@ export default function LectureCreatePage() {
     },
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control: lectureForm.control,
+    name: "students",
+  });
+
   useEffect(() => {
     return () => {
       resetCreateState();
@@ -96,27 +101,52 @@ export default function LectureCreatePage() {
   const onCancel = () => handleCancel(isSaved, () => router.back());
 
   return (
-    <div className="container mx-auto space-y-6 p-6">
+    <div className="min-h-screen bg-[#f4f6fa]">
       <CreatePageHeader
         isSaved={isSaved}
         onSave={handleSave}
         onCancel={onCancel}
       />
+      <div className="py-20">
+        <div className="mx-auto flex max-w-[1440px] gap-10 px-[140px]">
+          <div className="flex flex-1 flex-col gap-10">
+            <LectureInfoSection form={lectureForm} disabled={isSaved} />
 
-      <LectureInfoSection form={lectureForm} disabled={isSaved} />
+            <LectureScheduleSection
+              schedules={schedules}
+              scheduleData={scheduleData}
+              disabled={isSaved}
+              onAdd={handleAddSchedule}
+              onRemove={handleRemoveSchedule}
+              onScheduleDataChange={setScheduleData}
+            />
+          </div>
 
-      <LectureScheduleSection
-        schedules={schedules}
-        scheduleData={scheduleData}
-        disabled={isSaved}
-        onAdd={handleAddSchedule}
-        onRemove={handleRemoveSchedule}
-        onScheduleDataChange={setScheduleData}
-      />
-
-      <StudentRegistrationSection disabled={isSaved}>
-        <ManualStudentForm form={lectureForm} disabled={isSaved} />
-      </StudentRegistrationSection>
+          <div className="flex flex-1 flex-col">
+            <StudentRegistrationSection
+              disabled={isSaved}
+              actionLabel="+ 학생 추가"
+              onAction={() =>
+                append({
+                  name: "",
+                  phone: "",
+                  school: "",
+                  studentGrade: "",
+                  parentPhone: "",
+                  registrationDate: "",
+                })
+              }
+            >
+              <ManualStudentForm
+                form={lectureForm}
+                fields={fields}
+                onRemove={remove}
+                disabled={isSaved}
+              />
+            </StudentRegistrationSection>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
