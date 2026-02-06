@@ -130,25 +130,6 @@ export default function PostSetting({
             </p>
           </div>
 
-          {/* 열람 권한 */}
-          <div className="space-y-2">
-            <Label className="text-base font-medium">열람 권한</Label>
-            <SelectBtn
-              id="readPermissionSelect"
-              value={readPermission}
-              onChange={(value) =>
-                onReadPermissionChange(value as ReadPermissionType)
-              }
-              placeholder="열람 권한 선택"
-              optionSize="sm"
-              className="h-[58px] w-full my-2"
-              options={READ_PERMISSION_OPTIONS}
-            />
-            <p className="text-xs text-muted-foreground">
-              * 게시글을 열람할 수 있는 대상을 설정합니다.
-            </p>
-          </div>
-
           {/* 알림 수신 대상 */}
           <div className="space-y-2">
             <Label className="text-base font-medium">알림 수신 대상</Label>
