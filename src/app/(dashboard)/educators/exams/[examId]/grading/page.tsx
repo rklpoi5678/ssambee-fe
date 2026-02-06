@@ -44,7 +44,13 @@ export default function GradingPage() {
     isSubmitting,
   } = useGradingPage();
 
-  const { overview, studentRows, questionStats } = useGradingReport({
+  const {
+    overview,
+    studentRows,
+    questionStats,
+    isLoading: isReportLoading,
+    isError: isReportError,
+  } = useGradingReport({
     examId: examDetail?.id ?? "",
     open: isResultModalOpen,
     examDetail,
@@ -147,6 +153,8 @@ export default function GradingPage() {
         overview={overview}
         studentRows={studentRows}
         questionStats={questionStats}
+        isLoading={isReportLoading}
+        isError={isReportError}
       />
     </div>
   );

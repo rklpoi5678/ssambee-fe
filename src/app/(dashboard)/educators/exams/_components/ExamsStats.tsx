@@ -11,13 +11,19 @@ type ExamsStatsProps = {
 
 export function ExamsStats({ exams, isLoading = false }: ExamsStatsProps) {
   const totalExams = exams.length;
-  const { data: clinics } = useClinicsList({});
+  const clinicsQuery = useClinicsList({});
+  const clinics = clinicsQuery.data;
   const clinicExams = useMemo(() => {
     const examIds = new Set((clinics ?? []).map((clinic) => clinic.exam.id));
     return examIds.size;
   }, [clinics]);
   const totalLabel = isLoading ? "-" : `${totalExams}개`;
-  const clinicLabel = isLoading ? "-" : `${clinicExams}개`;
+  const clinicsLoading =
+    isLoading ||
+    clinicsQuery.isLoading ||
+    clinicsQuery.isPending ||
+    clinicsQuery.isFetching;
+  const clinicLabel = clinicsLoading ? "-" : `${clinicExams}개`;
 
   return (
     <div className="grid gap-4 md:grid-cols-2">

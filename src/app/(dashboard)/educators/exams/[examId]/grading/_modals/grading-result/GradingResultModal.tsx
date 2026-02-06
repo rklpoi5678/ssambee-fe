@@ -26,6 +26,8 @@ type GradingResultModalProps = {
   overview: GradingReportOverview;
   studentRows: GradingReportStudentRow[];
   questionStats: GradingReportQuestionStat[];
+  isLoading?: boolean;
+  isError?: boolean;
 };
 
 export function GradingResultModal({
@@ -36,6 +38,8 @@ export function GradingResultModal({
   overview,
   studentRows,
   questionStats,
+  isLoading,
+  isError,
 }: GradingResultModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -49,11 +53,21 @@ export function GradingResultModal({
 
         <Separator />
 
-        <div className="space-y-5">
-          <GradingResultSummary overview={overview} />
-          <StudentScoreTable rows={studentRows} />
-          <QuestionStatsTable stats={questionStats} />
-        </div>
+        {isLoading ? (
+          <div className="py-16 text-center text-sm text-muted-foreground">
+            통계 데이터를 불러오는 중입니다.
+          </div>
+        ) : isError ? (
+          <div className="py-16 text-center text-sm text-red-500">
+            통계 데이터를 불러오지 못했습니다.
+          </div>
+        ) : (
+          <div className="space-y-5">
+            <GradingResultSummary overview={overview} />
+            <StudentScoreTable rows={studentRows} />
+            <QuestionStatsTable stats={questionStats} />
+          </div>
+        )}
 
         <Separator />
 

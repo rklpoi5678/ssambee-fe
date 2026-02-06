@@ -51,7 +51,7 @@ export const useGradingReport = ({
       const statistics = await fetchExamStatisticsAPI(examId);
       return buildReportFromStatistics(examDetail, statistics);
     },
-    enabled: Boolean(open && examId),
+    enabled: Boolean(open && examId && examDetail),
     staleTime: 0,
     refetchOnWindowFocus: false,
   });

@@ -100,8 +100,13 @@ export const useGradingAnswers = ({
 
   const completeGradingMutation = useCompleteGrading({
     onSuccess: async () => {
-      await calculateExamStatisticsAPI(examId);
-      onCompleteSuccess();
+      try {
+        await calculateExamStatisticsAPI(examId);
+      } catch (err) {
+        console.error("통계 갱신 실패:", err);
+      } finally {
+        onCompleteSuccess();
+      }
     },
     onError: (error) => {
       alert(error.message);
