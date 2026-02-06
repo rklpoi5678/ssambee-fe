@@ -1,16 +1,17 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useGradingPage } from "@/app/(dashboard)/educators/exams/[examId]/grading/_hooks/useGradingPage";
-import { useSetBreadcrumb } from "@/hooks/useBreadcrumb";
+import { Button } from "@/components/ui/button";
 
 import { GradingPageHeader } from "./_components/GradingPageHeader";
 import { StudentListSidebar } from "./_components/StudentListSidebar";
 import { GradingSummaryCards } from "./_components/GradingSummaryCards";
 import { QuestionAnswerList } from "./_components/QuestionAnswerList";
 import { GradingResultModal } from "./_modals/grading-result/GradingResultModal";
+import { useGradingReport } from "./_hooks/useGradingReport";
 
 export default function GradingPage() {
+  const containerClassName = "container mx-auto p-6";
   const {
     examDetail,
     isPending,
@@ -43,14 +44,21 @@ export default function GradingPage() {
     isSubmitting,
   } = useGradingPage();
 
-  useSetBreadcrumb([
-    { label: "시험 관리", href: "/educators/exams" },
-    { label: "채점 관리" },
-  ]);
+  const {
+    overview,
+    studentRows,
+    questionStats,
+    isLoading: isReportLoading,
+    isError: isReportError,
+  } = useGradingReport({
+    examId: examDetail?.id ?? "",
+    open: isResultModalOpen,
+    examDetail,
+  });
 
   if (isPending) {
     return (
-      <div className="container mx-auto p-6">
+      <div className={containerClassName}>
         <div className="text-sm text-muted-foreground">
           시험 정보를 불러오는 중입니다.
         </div>
@@ -60,7 +68,7 @@ export default function GradingPage() {
 
   if (isError || !examDetail) {
     return (
-      <div className="container mx-auto p-6">
+      <div className={containerClassName}>
         <div className="text-sm text-red-500">
           시험 정보를 불러오지 못했습니다.
         </div>
@@ -69,7 +77,7 @@ export default function GradingPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className={containerClassName}>
       <GradingPageHeader
         examName={examName}
         lectureName={lectureName}
@@ -142,14 +150,11 @@ export default function GradingPage() {
         onOpenChange={(open) => (open ? openResultModal() : closeResultModal())}
         title={examName}
         subtitle={`${examSubtitle} ${examName}`}
-        overview={{
-          examDate: "-",
-          averageScore: 0,
-          top30AverageScore: 0,
-          maxScore: 0,
-        }}
-        studentRows={[]}
-        questionStats={[]}
+        overview={overview}
+        studentRows={studentRows}
+        questionStats={questionStats}
+        isLoading={isReportLoading}
+        isError={isReportError}
       />
     </div>
   );
