@@ -97,7 +97,7 @@ export const MOCK_INSTRUCTOR_POSTS: InstructorWritePost[] = [
   },
 ];
 
-// 게시글 등록
+// 클래스 목록
 export const MOCK_CLASSES: ClassInfo[] = [
   { id: "ALL", name: "전체 클래스" },
   { id: "class1", name: "수학 A반" },

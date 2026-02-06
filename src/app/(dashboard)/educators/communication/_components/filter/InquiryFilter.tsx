@@ -33,18 +33,19 @@ export default function InquiryFilter() {
               options={ANSWER_STATUS_OPTIONS}
             />
           </div>
-
           <div className="flex items-center gap-2 h-14 border rounded-lg px-3 w-full md:w-auto justify-between bg-white">
             <Input
               type="date"
+              aria-label="시작일"
               className="flex-1 border-none focus-visible:ring-0 text-base min-w-[110px] p-0"
             />
             <span className="text-gray-400">~</span>
             <Input
               type="date"
+              aria-label="종료일"
               className="flex-1 border-none focus-visible:ring-0 text-base min-w-[110px] p-0"
             />
-          </div>
+          </div>{" "}
         </div>
       </div>
     </div>

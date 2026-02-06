@@ -12,10 +12,7 @@ import {
   ReadPermissionType,
   Student,
 } from "@/types/communication.type";
-import {
-  NOTICE_TYPE_OPTIONS,
-  READ_PERMISSION_OPTIONS,
-} from "@/constants/communication.default";
+import { NOTICE_TYPE_OPTIONS } from "@/constants/communication.default";
 import { MOCK_STUDENTS } from "@/data/communication.mock";
 import { MOCK_CLASSES } from "@/data/communication.mock";
 
@@ -33,8 +30,6 @@ export default function PostSetting({
   onStudentIdsChange,
   recipientType,
   onRecipientTypeChange,
-  readPermission,
-  onReadPermissionChange,
 }: PostSettingProps) {
   const [selectedClassId, setSelectedClassId] = useState<string>("");
   const [studentSearchQuery, setStudentSearchQuery] = useState("");
@@ -70,7 +65,10 @@ export default function PostSetting({
 
   // 전체 선택/해제
   const toggleAllStudents = () => {
-    if (selectedStudentIds.length === filteredStudents.length) {
+    const allFilteredSelected = filteredStudents.every((s) =>
+      selectedStudentIds.includes(s.id)
+    );
+    if (allFilteredSelected) {
       onStudentIdsChange([]);
     } else {
       onStudentIdsChange(filteredStudents.map((s) => s.id));

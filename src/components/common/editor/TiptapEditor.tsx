@@ -1,11 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { Bold, Italic, List, ListOrdered, Undo, Redo } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+
 import "./tiptap-styles.css";
 
 type TiptapEditorProps = {
@@ -46,6 +48,21 @@ export default function TiptapEditor({
       },
     },
   });
+
+  useEffect(() => {
+    if (!editor) return;
+
+    // 현재 에디터 내용과 외부에서 들어온 content가 다를 때만 업데이트 (무한 루프 방지)
+    if (content !== editor.getHTML()) {
+      editor.commands.setContent(content, { emitUpdate: false }); // false는 undo history를 보존할지 여부
+    }
+  }, [content, editor]);
+
+  // readOnly 상태값 변화도 실시간으로 에디터에 반영 ---
+  useEffect(() => {
+    if (!editor) return;
+    editor.setEditable(!readOnly);
+  }, [readOnly, editor]);
 
   if (!editor) return null;
 
