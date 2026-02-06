@@ -43,7 +43,7 @@ export default function StudentDetailPage() {
     isError: isDetailError,
   } = useEnrollmentDetail(studentId);
 
-  // SCHEDULED 상태인 강의들 1차 필터링
+  // IN_PROGRESS 상태인 강의들 1차 필터링
   const scheduledLectures =
     enrollmentData?.lectures?.filter(
       (lecture) => lecture.status === "IN_PROGRESS"
