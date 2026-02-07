@@ -34,8 +34,8 @@ export const TextareaForm = forwardRef<HTMLTextAreaElement, TextareaFormProps>(
           htmlFor={id}
           className={cn(
             "absolute left-4 top-6 text-base text-gray-400 transition-all duration-200 pointer-events-none origin-left",
-            "peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-600 peer-focus:bg-white peer-focus:px-1",
-            "peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-1",
+            "peer-focus:top-0 peer-focus:text-xs peer-focus:text-blue-600 peer-focus:bg-white peer-focus:px-1 peer-focus:-translate-y-1/2 peer-focus:left-3",
+            "peer-[:not(:placeholder-shown)]:top-0 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:bg-white peer-[:not(:placeholder-shown)]:px-1 peer-[:not(:placeholder-shown)]:-translate-y-1/2 peer-[:not(:placeholder-shown)]:left-3",
             error && "peer-focus:text-red-600"
           )}
         >

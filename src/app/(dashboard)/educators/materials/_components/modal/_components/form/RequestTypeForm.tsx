@@ -3,24 +3,31 @@
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { InputForm } from "@/components/common/input/InputForm";
 import { TextareaForm } from "@/components/common/input/TextareaForm";
 import FileUploadField from "@/components/common/input/FileUploadField";
-import { RequestFormData } from "@/types/materials.type";
+import { RequestFormData, FormMode, Materials } from "@/types/materials.type";
 import { requestFormSchema } from "@/validation/materials.validation";
 import { getRequestFormDefaults } from "@/constants/materials.default";
 
 type RequestTypeFormProps = {
+  mode?: FormMode;
+  initialData?: Materials;
   onDataChange?: (data: RequestFormData, isValid: boolean) => void;
   userName: string;
 };
 
 export default function RequestTypeForm({
+  mode = "create",
+  initialData,
   onDataChange,
   userName,
 }: RequestTypeFormProps) {
+  const isDisabled = mode === "view";
+
   const {
     register,
     setValue,
@@ -28,25 +35,42 @@ export default function RequestTypeForm({
     getValues,
     formState: { errors, isValid },
   } = useForm<RequestFormData>({
-    resolver: zodResolver(requestFormSchema),
+    resolver: mode === "view" ? undefined : zodResolver(requestFormSchema),
     mode: "onChange",
-    defaultValues: getRequestFormDefaults(),
+    defaultValues: initialData
+      ? {
+          title: initialData.title,
+          writer: initialData.writer,
+          className: initialData.className || "",
+          description: initialData.description,
+          file: initialData.file || null,
+          driveLink: initialData.link || "",
+        }
+      : getRequestFormDefaults(),
   });
 
   const file = useWatch({ control, name: "file" });
 
   useEffect(() => {
-    const formData = getValues();
-    onDataChange?.(formData, isValid);
-  }, [file, isValid, getValues, onDataChange]);
+    if (mode !== "view") {
+      const formData = getValues();
+      onDataChange?.(formData, isValid);
+    }
+  }, [file, isValid, getValues, onDataChange, mode]);
 
   return (
     <Card>
       <CardContent className="p-6 space-y-6">
         <div>
-          <h3 className="font-semibold text-lg mb-2">요청 자료 등록</h3>
+          <h3 className="font-semibold text-lg mb-2">
+            {mode === "create" ? "요청 자료 등록" : "요청 자료"}
+          </h3>
           <p className="text-sm text-muted-foreground">
-            강사가 조교에게 전달할 업무 자료입니다.
+            {mode === "create"
+              ? "강사가 조교에게 전달할 업무 자료입니다."
+              : mode === "view"
+                ? "요청 자료 정보를 확인합니다."
+                : "요청 자료 정보를 수정합니다."}
           </p>
         </div>
 
@@ -55,6 +79,7 @@ export default function RequestTypeForm({
             label="제목"
             id="title"
             error={errors.title?.message}
+            disabled={isDisabled}
             {...register("title")}
           />
 
@@ -63,16 +88,16 @@ export default function RequestTypeForm({
               label="클래스명"
               id="className"
               error={errors.className?.message}
+              disabled={isDisabled}
               {...register("className")}
             />
 
             <InputForm
               label="등록자"
               id="writer"
-              disabled
+              readOnly
               className="bg-gray-50"
               value={userName}
-              readOnly
             />
           </div>
 
@@ -80,25 +105,54 @@ export default function RequestTypeForm({
             label="세부 내용"
             id="description"
             error={errors.description?.message}
+            disabled={isDisabled}
             {...register("description")}
           />
 
-          <FileUploadField
-            label="첨부 파일"
-            file={file}
-            onFileChange={(file) =>
-              setValue("file", file, { shouldValidate: true })
-            }
-            accept="*"
-            error={errors.file?.message as string}
-          />
+          {!isDisabled && (
+            <FileUploadField
+              label="첨부 파일"
+              file={file}
+              onFileChange={(file) =>
+                setValue("file", file, { shouldValidate: true })
+              }
+              accept="*"
+              error={errors.file?.message as string}
+            />
+          )}
 
-          <InputForm
-            label="구글 드라이브 링크 (선택)"
-            id="driveLink"
-            error={errors.driveLink?.message}
-            {...register("driveLink")}
-          />
+          {isDisabled && file && (
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">
+                첨부 파일
+              </label>
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <p className="text-sm text-gray-900">{file.name}</p>
+              </div>
+            </div>
+          )}
+
+          <div className="relative space-y-2">
+            <InputForm
+              label="구글 드라이브 링크 (선택)"
+              id="driveLink"
+              error={errors.driveLink?.message}
+              disabled={isDisabled}
+              {...register("driveLink")}
+              value={getValues("driveLink") || ""}
+            />
+
+            {isDisabled && initialData?.link && (
+              <Link
+                href={initialData.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute left-0 right-0 bottom-0 top-0 z-20 cursor-pointer rounded-lg hover:bg-blue-50/30 transition-colors"
+              >
+                <span className="sr-only">링크 열기</span>
+              </Link>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

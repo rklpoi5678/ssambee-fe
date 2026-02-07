@@ -11,6 +11,9 @@ import {
 export type MaterialsType = "PAPER" | "VIDEO" | "REQUEST" | "OTHER";
 export type SortOption = "LATEST" | "OLDEST";
 
+// 폼 모드
+export type FormMode = "create" | "view" | "edit";
+
 // RHF
 export type PaperFormData = z.infer<typeof paperFormSchema>;
 export type VideoFormData = z.infer<typeof videoFormSchema>;
@@ -37,6 +40,7 @@ export type Materials = {
   title: string; // 제목
   description: string; // 소개 또는 세부 내용
   file?: File | null; // 첨부파일(시험지, 요청 자료)
+  image?: File | string | null; // 이미지 파일 또는 URL
   link?: string; // 동영상 링크
   writer: string; // 작성자
   date: string; // 작성일

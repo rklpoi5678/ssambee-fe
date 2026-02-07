@@ -12,12 +12,12 @@ import { MATERIALS_TABLE_COLUMNS } from "./MaterialsTableColumns";
 export default function MaterialsTable() {
   const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
 
-  // 1. 전체 선택 여부 계산
+  // 전체 선택 여부 계산
   const isAllSelected =
     MOCK_MATERIALS.length > 0 &&
     selectedMaterials.length === MOCK_MATERIALS.length;
 
-  // 2. 전체 선택/해제 핸들러
+  // 전체 선택/해제
   const handleToggleAll = () => {
     if (isAllSelected) {
       // 이미 다 선택되어 있다면 모두 해제
@@ -37,6 +37,19 @@ export default function MaterialsTable() {
     );
   };
 
+  // 파일 다운로드 핸들러
+  const handleDownload = (material: Materials) => {
+    if (!material.file) {
+      alert("다운로드할 파일이 없습니다.");
+      return;
+    }
+
+    // TODO: 실제 API에서는 파일 URL을 받아서 다운로드
+    // 임시로 File 객체의 이름만 사용
+    const fileName = material.file.name || `${material.title}.pdf`;
+    alert(`다운로드: ${fileName}`);
+  };
+
   return (
     <div className="min-h-[550px]">
       <DataTable
@@ -46,9 +59,8 @@ export default function MaterialsTable() {
           onToggleMaterial: handleToggleMaterial,
           onToggleAllMaterials: handleToggleAll,
           isCurrentPageAllSelected: isAllSelected,
+          onDownload: handleDownload,
         })}
-        // 만약 행의 '빈 공간'을 눌렀을 때도 상세로 보내고 싶다면 아래 추가 (선택사항)
-        // onRowClick={(record) => router.push(`/educators/materials/${record.id}`)}
       />
 
       <Pagination

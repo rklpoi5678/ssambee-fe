@@ -7,46 +7,76 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent } from "@/components/ui/card";
 import { InputForm } from "@/components/common/input/InputForm";
 import { TextareaForm } from "@/components/common/input/TextareaForm";
-import { VideoFormData } from "@/types/materials.type";
+import { VideoFormData, FormMode, Materials } from "@/types/materials.type";
 import { videoFormSchema } from "@/validation/materials.validation";
 import { getVideoFormDefaults } from "@/constants/materials.default";
-import { getYoutubeVideoId } from "@/utils/youtubeLink";
+
+// YouTube 링크에서 비디오 ID 추출
+const extractVideoId = (url: string) => {
+  if (!url) return "";
+  const pattern =
+    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s?]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(pattern);
+  return match ? match[1] : "";
+};
 
 type VideoTypeFormProps = {
+  mode?: FormMode;
+  initialData?: Materials;
   onDataChange?: (data: VideoFormData, isValid: boolean) => void;
   userName: string;
 };
 
 export default function VideoTypeForm({
+  mode = "create",
+  initialData,
   onDataChange,
   userName,
 }: VideoTypeFormProps) {
+  const isDisabled = mode === "view";
+
   const {
     register,
     control,
     getValues,
     formState: { errors, isValid },
   } = useForm<VideoFormData>({
-    resolver: zodResolver(videoFormSchema),
+    resolver: mode === "view" ? undefined : zodResolver(videoFormSchema),
     mode: "onChange",
-    defaultValues: getVideoFormDefaults(),
+    defaultValues: initialData
+      ? {
+          title: initialData.title,
+          writer: initialData.writer,
+          className: initialData.className || "",
+          description: initialData.description,
+          youtubeLink: initialData.link || "",
+        }
+      : getVideoFormDefaults(),
   });
 
   const youtubeLink = useWatch({ control, name: "youtubeLink" });
-  const videoId = getYoutubeVideoId(youtubeLink || "");
+  const videoId = extractVideoId(youtubeLink || "");
 
   useEffect(() => {
-    const formData = getValues();
-    onDataChange?.(formData, isValid);
-  }, [youtubeLink, isValid, getValues, onDataChange]);
+    if (mode !== "view") {
+      const formData = getValues();
+      onDataChange?.(formData, isValid);
+    }
+  }, [youtubeLink, isValid, getValues, onDataChange, mode]);
 
   return (
     <Card>
       <CardContent className="p-6 space-y-6">
         <div>
-          <h3 className="font-semibold text-lg mb-2">동영상 강의 등록</h3>
+          <h3 className="font-semibold text-lg mb-2">
+            {mode === "create" ? "동영상 강의 등록" : "동영상 강의"}
+          </h3>
           <p className="text-sm text-muted-foreground">
-            동영상 강의를 YouTube 링크로 등록합니다.
+            {mode === "create"
+              ? "동영상 강의를 YouTube 링크로 등록합니다."
+              : mode === "view"
+                ? "동영상 강의 정보를 확인합니다."
+                : "동영상 강의 정보를 수정합니다."}
           </p>
         </div>
 
@@ -55,6 +85,7 @@ export default function VideoTypeForm({
             label="제목"
             id="title"
             error={errors.title?.message}
+            disabled={isDisabled}
             {...register("title")}
           />
 
@@ -63,16 +94,16 @@ export default function VideoTypeForm({
               label="클래스명"
               id="className"
               error={errors.className?.message}
+              disabled={isDisabled}
               {...register("className")}
             />
 
             <InputForm
               label="등록자"
               id="writer"
-              disabled
+              readOnly
               className="bg-gray-50"
               value={userName}
-              readOnly
             />
           </div>
 
@@ -80,6 +111,7 @@ export default function VideoTypeForm({
             label="세부 내용"
             id="description"
             error={errors.description?.message}
+            disabled={isDisabled}
             {...register("description")}
           />
 
@@ -87,6 +119,7 @@ export default function VideoTypeForm({
             label="YouTube 링크"
             id="youtubeLink"
             error={errors.youtubeLink?.message}
+            disabled={isDisabled}
             {...register("youtubeLink")}
           />
 
