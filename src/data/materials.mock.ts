@@ -1,0 +1,57 @@
+import { Materials } from "@/types/materials.type";
+
+export const MOCK_MATERIALS: Materials[] = [
+  {
+    id: "MAT-2026-001",
+    title: "2026 2월 영어 시험지",
+    description: "2026년도도 2월 영어 시험지입니다.",
+    file: {
+      name: "2026 2월 영어 시험지.pdf",
+      file: new File([], "2026 2월 영어 시험지.pdf"),
+    },
+    writer: "김강사",
+    date: "2026-02-01",
+    type: "PAPER",
+    classId: "class-eng-b1",
+    className: "영어 A반",
+  },
+  {
+    id: "MAT-2026-002",
+    title: "2026 2월 영어 독해 영상",
+    description: "2026년도도 2월 영어 독해 영상입니다.",
+    link: "https://www.youtube.com",
+    writer: "김강사",
+    date: "2026-02-02",
+    type: "VIDEO",
+    classId: "class-eng-b1",
+    className: "영어 A반",
+  },
+  {
+    id: "MAT-2026-003",
+    title: "2026 2월 영어 요청 자료",
+    description: "2026년도도 2월 영어 요청 자료입니다.",
+    file: {
+      name: "2026 2월 영어 요청 자료.pdf",
+      file: new File([], "2026 2월 영어 요청 자료.pdf"),
+    },
+    writer: "최조교",
+    date: "2026-02-03",
+    type: "REQUEST",
+    classId: "class-eng-b1",
+    className: "영어 A반",
+  },
+  {
+    id: "MAT-2026-004",
+    title: "수능 대비 고3 A반 수업 자료",
+    description: "수능 대비 고3 A반 추가 수업 자료입니다.",
+    file: {
+      name: "수능 대비 고3 A반 수업 자료.pdf",
+      file: new File([], "수능 대비 고3 A반 수업 자료.pdf"),
+    },
+    writer: "이조교",
+    date: "2026-02-04",
+    type: "OTHER",
+    classId: "class-eng-a1",
+    className: "영어 A반",
+  },
+];
