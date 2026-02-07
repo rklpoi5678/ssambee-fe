@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Download, Edit, Trash2 } from "lucide-react";
+import { Download, Edit, Trash2, Send } from "lucide-react";
 
 import Title from "@/components/common/header/Title";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import PaperTypeForm from "../_components/modal/_components/form/PaperTypeForm";
 import VideoTypeForm from "../_components/modal/_components/form/VideoTypeForm";
 import RequestTypeForm from "../_components/modal/_components/form/RequestTypeForm";
 import OtherTypeForm from "../_components/modal/_components/form/OtherTypeForm";
+import { ExportToNoticeModal } from "../_components/modal/ExportToNoticeModal";
 
 export default function MaterialsDetailPage() {
   const params = useParams();
@@ -101,6 +102,10 @@ export default function MaterialsDetailPage() {
     // TODO: 실제 파일 다운로드 구현
   };
 
+  const handleExportToNotice = () => {
+    openModal(<ExportToNoticeModal material={material} />);
+  };
+
   const renderForm = () => {
     switch (material.type) {
       case "PAPER":
@@ -159,6 +164,14 @@ export default function MaterialsDetailPage() {
         <div className="flex gap-2">
           {mode === "view" ? (
             <>
+              <Button
+                variant="default"
+                onClick={handleExportToNotice}
+                className="cursor-pointer bg-green-600 hover:bg-green-700"
+              >
+                <Send className="h-4 w-4 mr-2" />
+                공지로 내보내기
+              </Button>
               {material.type !== "VIDEO" && (
                 <Button
                   variant="outline"
