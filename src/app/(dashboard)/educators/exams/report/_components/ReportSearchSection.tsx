@@ -88,7 +88,9 @@ export function ReportSearchSection() {
                 <p className="py-4 text-center text-sm text-muted-foreground">
                   {searchTerm
                     ? "검색 결과가 없습니다."
-                    : "수업명을 검색해주세요."}
+                    : classes.length === 0
+                      ? "등록된 수업이 없습니다."
+                      : "수업명을 검색해주세요."}
                 </p>
               ) : (
                 <div className="space-y-1">

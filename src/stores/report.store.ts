@@ -156,13 +156,14 @@ export const useReportStore = create<ReportStore>((set, get) => ({
         enrollments,
         examStatsById: nextStatsById,
       });
+
+      if (get().selectedClassId === classId) {
+        set({ isLoadingExams: false });
+      }
     } catch (error) {
       console.error("시험 목록 로드 실패:", error);
       if (get().selectedClassId !== classId) return;
-      set({ exams: [], enrollments: [] });
-    } finally {
-      if (get().selectedClassId !== classId) return;
-      set({ isLoadingExams: false });
+      set({ exams: [], enrollments: [], isLoadingExams: false });
     }
   },
   selectExam: async (examId) => {
@@ -274,13 +275,14 @@ export const useReportStore = create<ReportStore>((set, get) => ({
           [examId]: stats,
         },
       }));
+
+      if (get().selectedExamId === examId) {
+        set({ isLoadingStudents: false });
+      }
     } catch (error) {
       console.error("학생 성적 로드 실패:", error);
       if (get().selectedExamId !== examId) return;
-      set({ students: [] });
-    } finally {
-      if (get().selectedExamId !== examId) return;
-      set({ isLoadingStudents: false });
+      set({ students: [], isLoadingStudents: false });
     }
   },
   selectStudent: async (studentId) => {

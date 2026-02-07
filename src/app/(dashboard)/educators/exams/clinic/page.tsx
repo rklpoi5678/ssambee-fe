@@ -67,6 +67,7 @@ export default function ClinicPage() {
 
   const examOptions = useMemo(
     () => [
+      { value: ALL_VALUE, label: "전체 시험" },
       ...examOptionsSource
         .filter((exam) => {
           if (!examSearch.trim()) return true;
@@ -142,7 +143,9 @@ export default function ClinicPage() {
   }, [filteredStudents, dateSort, incompleteFirst]);
 
   const pagedStudents = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
+    const totalPage = Math.max(1, Math.ceil(sortedStudents.length / pageSize));
+    const safeCurrentPage = Math.min(currentPage, totalPage);
+    const start = (safeCurrentPage - 1) * pageSize;
     return sortedStudents.slice(start, start + pageSize);
   }, [currentPage, pageSize, sortedStudents]);
 

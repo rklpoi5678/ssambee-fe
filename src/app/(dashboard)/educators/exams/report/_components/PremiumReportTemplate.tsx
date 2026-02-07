@@ -663,7 +663,7 @@ export function PremiumReportTemplate({
                   {questionResults.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={5}
+                        colSpan={6}
                         className="border p-4 text-center text-sm text-muted-foreground"
                       >
                         표시할 문항별 응시 결과가 없습니다.
