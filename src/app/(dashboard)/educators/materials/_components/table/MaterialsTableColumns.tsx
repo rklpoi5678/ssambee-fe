@@ -67,7 +67,7 @@ export const MATERIALS_TABLE_COLUMNS = ({
   },
   {
     key: "date",
-    label: "작성일",
+    label: "등록일",
     render: (row: Materials) => <span>{row.date}</span>,
   },
   {

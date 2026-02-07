@@ -15,7 +15,7 @@ export const MOCK_MATERIALS: Materials[] = [
   {
     id: "MAT-2026-002",
     title: "2026 2월 영어 독해 영상",
-    description: "2026년도도 2월 영어 독해 영상입니다.",
+    description: "2026년도 2월 영어 독해 영상입니다.",
     link: "https://www.youtube.com/watch?v=KLtSyVBwePI&t=3s",
     writer: "김강사",
     date: "2026-02-02",
@@ -26,7 +26,7 @@ export const MOCK_MATERIALS: Materials[] = [
   {
     id: "MAT-2026-003",
     title: "2026 2월 영어 요청 자료",
-    description: "2026년도도 2월 영어 요청 자료입니다.",
+    description: "2026년도 2월 영어 요청 자료입니다.",
     file: new File([], "2026 2월 영어 요청 자료.pdf"),
     link: "https://naver.com",
     writer: "최조교",

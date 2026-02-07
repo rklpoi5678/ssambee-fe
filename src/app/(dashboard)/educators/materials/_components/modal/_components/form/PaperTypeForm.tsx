@@ -93,7 +93,7 @@ export default function PaperTypeForm({
             <InputForm
               label="등록자"
               id="writer"
-              readOnly
+              disabled
               className="bg-gray-50"
               value={userName}
             />

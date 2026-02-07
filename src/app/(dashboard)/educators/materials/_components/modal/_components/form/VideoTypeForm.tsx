@@ -101,7 +101,7 @@ export default function VideoTypeForm({
             <InputForm
               label="등록자"
               id="writer"
-              readOnly
+              disabled
               className="bg-gray-50"
               value={userName}
             />
