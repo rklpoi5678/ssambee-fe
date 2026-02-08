@@ -10,15 +10,7 @@ import { TextareaForm } from "@/components/common/input/TextareaForm";
 import { VideoFormData, FormMode, Materials } from "@/types/materials.type";
 import { videoFormSchema } from "@/validation/materials.validation";
 import { getVideoFormDefaults } from "@/constants/materials.default";
-
-// YouTube 링크에서 비디오 ID 추출
-const extractVideoId = (url: string) => {
-  if (!url) return "";
-  const pattern =
-    /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s?]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/;
-  const match = url.match(pattern);
-  return match ? match[1] : "";
-};
+import { getYoutubeVideoId } from "@/utils/youtubeLink";
 
 type VideoTypeFormProps = {
   mode?: FormMode;
@@ -56,7 +48,7 @@ export default function VideoTypeForm({
 
   const watchedFields = useWatch({ control });
   const youtubeLink = watchedFields.youtubeLink;
-  const videoId = extractVideoId(youtubeLink || "");
+  const videoId = getYoutubeVideoId(youtubeLink || "");
 
   useEffect(() => {
     if (mode !== "view") {
