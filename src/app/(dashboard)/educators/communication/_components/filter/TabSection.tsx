@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import CommonDataTable, {
+import DataTable, {
   ColumnDefinition,
 } from "@/components/common/table/DataTable";
 import { Pagination } from "@/components/common/pagination/Pagination";
@@ -62,27 +62,27 @@ export default function TabSection() {
 
       {/* 테이블 영역 */}
       <div className="min-h-[550px]">
-        <CommonDataTable
+        <DataTable
           data={currentData as LearnersWriteInquiry[]}
           columns={currentColumns as ColumnDefinition<LearnersWriteInquiry>[]}
           onRowClick={(row) =>
             router.push(`/educators/communication/${row.id}`)
           }
         />
-      </div>
 
-      {/* 페이지네이션 */}
-      <Pagination
-        pagination={{
-          totalCount: currentData.length,
-          totalPage: 1,
-          currentPage: 1,
-          limit: 10,
-          hasNextPage: false,
-          hasPrevPage: false,
-        }}
-        onPageChange={(page) => console.log(page)}
-      />
+        {/* 페이지네이션 */}
+        <Pagination
+          pagination={{
+            totalCount: currentData.length,
+            totalPage: Math.ceil(currentData.length / 10),
+            currentPage: 1,
+            limit: 10,
+            hasNextPage: currentData.length > 10,
+            hasPrevPage: false,
+          }}
+          onPageChange={() => {}}
+        />
+      </div>
     </div>
   );
 }
