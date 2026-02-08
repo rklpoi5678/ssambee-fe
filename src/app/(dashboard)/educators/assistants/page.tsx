@@ -1,52 +1,50 @@
 "use client";
 
-import {
-  Briefcase,
-  CalendarCheck,
-  CheckSquare,
-  ClipboardCheck,
-  ClipboardList,
-  Paperclip,
-  Search,
-  Users,
-} from "lucide-react";
+import { Briefcase, CalendarCheck, ClipboardList, Users } from "lucide-react";
 import { useMemo, useState } from "react";
-import Link from "next/link";
 
-import Title from "@/components/common/header/Title";
-import StatusLabel from "@/components/common/label/StatusLabel";
-import { Pagination } from "@/components/common/pagination/Pagination";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import AssistantsFiltersBar from "@/app/(dashboard)/educators/assistants/_components/AssistantsFiltersBar";
+import AssistantsHeader from "@/app/(dashboard)/educators/assistants/_components/AssistantsHeader";
+import AssistantsStatsGrid from "@/app/(dashboard)/educators/assistants/_components/AssistantsStatsGrid";
+import AssistantsTable from "@/app/(dashboard)/educators/assistants/_components/AssistantsTable";
+import AssistantDetailModal from "@/app/(dashboard)/educators/assistants/_modals/AssistantDetailModal";
+import ContractManageModal from "@/app/(dashboard)/educators/assistants/_modals/ContractManageModal";
+import ContractSendModal from "@/app/(dashboard)/educators/assistants/_modals/ContractSendModal";
+import ResourceLibraryModal from "@/app/(dashboard)/educators/assistants/_modals/ResourceLibraryModal";
+import TaskCreateModal from "@/app/(dashboard)/educators/assistants/_modals/TaskCreateModal";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Textarea } from "@/components/ui/textarea";
+  assistants,
+  type Assistant,
+  type AssistantDetailDraft,
+  contractRecords,
+  contractStatusClassMap,
+  contractTemplateOptions,
+  createAssistantDetailDraft,
+  editableStatusOptions,
+  PAGE_LIMIT,
+  resourceCategoryOptions,
+  resourceLibraryItems,
+  statusColorMap,
+  type AssistantsListView,
+} from "@/app/(dashboard)/educators/assistants/_types/assistants";
+import { useSetBreadcrumb } from "@/hooks/useBreadcrumb";
 
-const stats = [
+type AssistantsModalType =
+  | "none"
+  | "task"
+  | "contractManage"
+  | "sendContract"
+  | "assistantDetail";
+
+const stats: Array<{
+  label: string;
+  value: string;
+  delta: string;
+  icon: typeof Users;
+  accent: string;
+  href?: string;
+  modal?: AssistantsModalType;
+}> = [
   {
     label: "전체 배정 조교",
     value: "5",
@@ -67,6 +65,7 @@ const stats = [
     delta: "미제출 2건",
     icon: ClipboardList,
     accent: "text-amber-300",
+    modal: "contractManage",
   },
   {
     label: "업무 지시 내역",
@@ -74,355 +73,388 @@ const stats = [
     delta: "이번 주 +12건",
     icon: CalendarCheck,
     accent: "text-emerald-300",
+    href: "/educators/assistants/history",
   },
 ];
-
-const statusOptions = ["근무중", "휴가", "퇴사"] as const;
-
-type AssistantStatus = (typeof statusOptions)[number];
-
-type Assistant = {
-  id: string;
-  name: string;
-  subject: string;
-  phone: string;
-  className: string;
-  task: string;
-  status: AssistantStatus;
-  badge: string;
-};
-
-const assistants: Assistant[] = [
-  {
-    id: "1",
-    name: "김민수",
-    subject: "수학",
-    phone: "010-1234-5678",
-    className: "중2 수학 심화반",
-    task: "주간 테스트 채점",
-    status: "근무중",
-    badge: "bg-emerald-400/20 text-emerald-200",
-  },
-  {
-    id: "2",
-    name: "이진은",
-    subject: "영어",
-    phone: "010-9876-5432",
-    className: "고1 영어 내신대비",
-    task: "단어 시험 감독",
-    status: "근무중",
-    badge: "bg-emerald-400/20 text-emerald-200",
-  },
-  {
-    id: "3",
-    name: "박성호",
-    subject: "과학",
-    phone: "010-5555-4444",
-    className: "초6 창의과학 실험",
-    task: "업무 배정 예정",
-    status: "퇴사",
-    badge: "bg-slate-500/20 text-slate-300",
-  },
-  {
-    id: "4",
-    name: "최유리",
-    subject: "국어",
-    phone: "010-1111-2222",
-    className: "중3 국어 문법특강",
-    task: "학생 상담",
-    status: "휴가",
-    badge: "bg-amber-300/20 text-amber-100",
-  },
-  {
-    id: "5",
-    name: "정우성",
-    subject: "과학",
-    phone: "010-3333-7777",
-    className: "고2 물리 개념완성",
-    task: "업무 배정 예정",
-    status: "퇴사",
-    badge: "bg-slate-500/20 text-slate-300",
-  },
-];
-
-const statusColorMap: Record<AssistantStatus, "green" | "yellow" | "gray"> = {
-  근무중: "green",
-  휴가: "yellow",
-  퇴사: "gray",
-};
-
-const PAGE_LIMIT = 5;
 
 export default function AssistantsPage() {
+  useSetBreadcrumb([{ label: "조교 관리" }]);
+
+  const [assistantRecords, setAssistantRecords] =
+    useState<Assistant[]>(assistants);
+  const [assistantsListView, setAssistantsListView] =
+    useState<AssistantsListView>("active");
   const [currentPage, setCurrentPage] = useState(1);
-  const [isTaskModalOpen, setTaskModalOpen] = useState(false);
-  const totalCount = assistants.length;
+  const [activeModal, setActiveModal] = useState<AssistantsModalType>("none");
+  const [selectedAssistantId, setSelectedAssistantId] = useState(
+    assistants[0]?.id ?? ""
+  );
+  const [assistantDetailDraft, setAssistantDetailDraft] =
+    useState<AssistantDetailDraft>(() =>
+      createAssistantDetailDraft(assistants[0])
+    );
+  const [isEditingAssistantDetail, setIsEditingAssistantDetail] =
+    useState(false);
+  const [sendTargetId, setSendTargetId] = useState(
+    contractRecords[0]?.assistantId ?? assistants[0]?.id ?? ""
+  );
+  const [sendTemplate, setSendTemplate] = useState<
+    (typeof contractTemplateOptions)[number]
+  >(contractTemplateOptions[0]);
+  const [uploadFileName, setUploadFileName] = useState("선택된 파일 없음");
+  const [taskInstructionContent, setTaskInstructionContent] = useState("");
+  const [isResourceLibraryModalOpen, setResourceLibraryModalOpen] =
+    useState(false);
+  const [attachedResourceIds, setAttachedResourceIds] = useState<string[]>([]);
+  const [libraryDraftResourceIds, setLibraryDraftResourceIds] = useState<
+    string[]
+  >([]);
+  const [resourceSearchKeyword, setResourceSearchKeyword] = useState("");
+  const [resourceCategoryFilter, setResourceCategoryFilter] =
+    useState<(typeof resourceCategoryOptions)[number]>("전체");
+  const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const filteredAssistants = useMemo(
+    () =>
+      assistantRecords.filter((assistant) =>
+        assistantsListView === "retired"
+          ? assistant.status === "퇴사"
+          : assistant.status !== "퇴사"
+      ),
+    [assistantRecords, assistantsListView]
+  );
+
+  const totalCount = filteredAssistants.length;
   const totalPage = Math.max(1, Math.ceil(totalCount / PAGE_LIMIT));
-  const hasNextPage = currentPage < totalPage;
-  const hasPrevPage = currentPage > 1;
+  const resolvedCurrentPage = Math.min(currentPage, totalPage);
+  const hasNextPage = resolvedCurrentPage < totalPage;
+  const hasPrevPage = resolvedCurrentPage > 1;
   const paginatedAssistants = useMemo(() => {
-    const startIndex = (currentPage - 1) * PAGE_LIMIT;
-    return assistants.slice(startIndex, startIndex + PAGE_LIMIT);
-  }, [currentPage]);
+    const startIndex = (resolvedCurrentPage - 1) * PAGE_LIMIT;
+    return filteredAssistants.slice(startIndex, startIndex + PAGE_LIMIT);
+  }, [filteredAssistants, resolvedCurrentPage]);
 
   const pagination = {
     totalCount,
     totalPage,
-    currentPage,
+    currentPage: resolvedCurrentPage,
     limit: PAGE_LIMIT,
     hasNextPage,
     hasPrevPage,
   };
 
+  const selectedAssistant =
+    assistantRecords.find(
+      (assistant) => assistant.id === selectedAssistantId
+    ) ?? assistantRecords[0];
+
+  const selectedTargetAssistant =
+    assistantRecords.find((assistant) => assistant.id === sendTargetId) ??
+    assistantRecords[0];
+
+  const attachedResources = useMemo(
+    () =>
+      resourceLibraryItems.filter((item) =>
+        attachedResourceIds.includes(item.id)
+      ),
+    [attachedResourceIds]
+  );
+
+  const filteredResourceLibraryItems = useMemo(() => {
+    const normalizedKeyword = resourceSearchKeyword.trim().toLowerCase();
+
+    return resourceLibraryItems.filter((resource) => {
+      const categoryMatched =
+        resourceCategoryFilter === "전체" ||
+        resource.category === resourceCategoryFilter;
+      const keywordMatched =
+        normalizedKeyword.length === 0 ||
+        resource.title.toLowerCase().includes(normalizedKeyword) ||
+        resource.category.toLowerCase().includes(normalizedKeyword);
+
+      return categoryMatched && keywordMatched;
+    });
+  }, [resourceCategoryFilter, resourceSearchKeyword]);
+
+  const openAssistantDetailModal = (assistantId: string) => {
+    const assistant = assistantRecords.find((item) => item.id === assistantId);
+    if (!assistant) {
+      return;
+    }
+
+    setSelectedAssistantId(assistant.id);
+    setAssistantDetailDraft(createAssistantDetailDraft(assistant));
+    setIsEditingAssistantDetail(false);
+    setActiveModal("assistantDetail");
+  };
+
+  const closeAssistantDetailModal = () => {
+    setIsEditingAssistantDetail(false);
+    setActiveModal("none");
+  };
+
+  const saveAssistantDetail = () => {
+    setAssistantRecords((prev) =>
+      prev.map((assistant) =>
+        assistant.id === selectedAssistantId
+          ? {
+              ...assistant,
+              status: assistantDetailDraft.status,
+              memo: assistantDetailDraft.memo,
+            }
+          : assistant
+      )
+    );
+    setIsEditingAssistantDetail(false);
+    setPreviewNotice("조교 상세 정보가 저장되었습니다. (UI-only)");
+  };
+
+  const retireAssistant = () => {
+    if (!selectedAssistant || selectedAssistant.status === "퇴사") {
+      return;
+    }
+
+    setAssistantRecords((prev) =>
+      prev.map((assistant) =>
+        assistant.id === selectedAssistant.id
+          ? {
+              ...assistant,
+              status: "퇴사",
+            }
+          : assistant
+      )
+    );
+    setAssistantsListView("retired");
+    setCurrentPage(1);
+    setIsEditingAssistantDetail(false);
+    setPreviewNotice(
+      `${selectedAssistant.name} 조교가 퇴사자로 이동되었습니다. (UI-only)`
+    );
+    closeAssistantDetailModal();
+  };
+
+  const openContractSendModal = () => {
+    setActiveModal("sendContract");
+  };
+
+  const openContractManageModal = () => {
+    setActiveModal("contractManage");
+  };
+
+  const setPreviewNotice = (message: string) => {
+    setActionNotice(message);
+  };
+
+  const openResourceLibraryModal = () => {
+    setLibraryDraftResourceIds(attachedResourceIds);
+    setResourceLibraryModalOpen(true);
+  };
+
+  const closeResourceLibraryModal = () => {
+    setResourceLibraryModalOpen(false);
+    setResourceSearchKeyword("");
+    setResourceCategoryFilter("전체");
+    setLibraryDraftResourceIds([]);
+  };
+
+  const toggleDraftResourceSelection = (resourceId: string) => {
+    setLibraryDraftResourceIds((prev) =>
+      prev.includes(resourceId)
+        ? prev.filter((id) => id !== resourceId)
+        : [...prev, resourceId]
+    );
+  };
+
+  const applyResourceSelection = () => {
+    setAttachedResourceIds(libraryDraftResourceIds);
+    setPreviewNotice(
+      `자료실 첨부 항목 ${libraryDraftResourceIds.length}건이 반영되었습니다. (UI-only)`
+    );
+    closeResourceLibraryModal();
+  };
+
+  const removeAttachedResource = (resourceId: string) => {
+    setAttachedResourceIds((prev) => prev.filter((id) => id !== resourceId));
+  };
+
+  const closeTaskModal = () => {
+    setTaskInstructionContent("");
+    setAttachedResourceIds([]);
+    setLibraryDraftResourceIds([]);
+    setResourceSearchKeyword("");
+    setResourceCategoryFilter("전체");
+    setResourceLibraryModalOpen(false);
+    setActiveModal("none");
+  };
+
   return (
     <div className="container mx-auto space-y-8 p-6">
-      <div className="space-y-6">
-        <Title
-          title="조교 관리"
-          description="배정된 조교를 조회하고 업무를 배정/평가합니다."
-        />
+      <AssistantsHeader
+        activeTab={
+          activeModal === "contractManage" || activeModal === "sendContract"
+            ? "contracts"
+            : "manage"
+        }
+        onTabClick={(tab) => {
+          if (tab === "contracts") {
+            openContractManageModal();
+            return;
+          }
 
-        <div className="flex flex-wrap items-center gap-2">
-          <Button asChild className="rounded-full">
-            <Link href="/educators/assistants">조교 관리</Link>
-          </Button>
-          <Button asChild variant="outline" className="rounded-full">
-            <Link href="/educators/assistants/approval">조교 승인</Link>
-          </Button>
-          <Button
-            className="rounded-full"
-            onClick={() => setTaskModalOpen(true)}
-          >
-            <CheckSquare className="mr-2 h-4 w-4" />
-            조교 업무 지시
-          </Button>
-        </div>
-      </div>
+          if (tab === "manage") {
+            setActiveModal("none");
+          }
+        }}
+        onOpenTaskModal={() => setActiveModal("task")}
+        actionNotice={actionNotice}
+      />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.label}>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      {stat.label}
-                    </p>
-                    <p className="mt-2 text-3xl font-bold">{stat.value}</p>
-                    <p className={`mt-2 text-xs ${stat.accent}`}>
-                      {stat.delta}
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-muted p-3 text-muted-foreground">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+      <AssistantsStatsGrid
+        stats={stats}
+        onOpenContractManageModal={openContractManageModal}
+      />
+
+      <AssistantsFiltersBar
+        listView={assistantsListView}
+        onChangeListView={(view) => {
+          setAssistantsListView(view);
+          setCurrentPage(1);
+        }}
+      />
+
+      <AssistantsTable
+        listView={assistantsListView}
+        totalCount={totalCount}
+        assistants={paginatedAssistants}
+        statusColorMap={statusColorMap}
+        pagination={pagination}
+        onOpenAssistantDetail={openAssistantDetailModal}
+        onPageChange={setCurrentPage}
+      />
+
+      <ContractManageModal
+        open={activeModal === "contractManage"}
+        onOpenChange={(open) => {
+          if (open) {
+            openContractManageModal();
+            return;
+          }
+
+          setActiveModal("none");
+        }}
+        contractRecords={contractRecords}
+        assistantRecords={assistantRecords}
+        contractStatusClassMap={contractStatusClassMap}
+        onOpenContractSend={openContractSendModal}
+        onPreviewNotice={setPreviewNotice}
+      />
+
+      <ContractSendModal
+        open={activeModal === "sendContract"}
+        onOpenChange={(open) => {
+          if (open) {
+            openContractSendModal();
+            return;
+          }
+
+          setActiveModal("none");
+        }}
+        assistantRecords={assistantRecords}
+        sendTargetId={sendTargetId}
+        onChangeSendTargetId={setSendTargetId}
+        selectedTargetAssistant={selectedTargetAssistant}
+        sendTemplate={sendTemplate}
+        contractTemplateOptions={contractTemplateOptions}
+        onChangeSendTemplate={(template) =>
+          setSendTemplate(template as (typeof contractTemplateOptions)[number])
+        }
+        uploadFileName={uploadFileName}
+        onChangeUploadFileName={setUploadFileName}
+        onOpenContractManage={openContractManageModal}
+        onPreviewNotice={setPreviewNotice}
+      />
+
+      <AssistantDetailModal
+        open={activeModal === "assistantDetail"}
+        onOpenChange={(open) => {
+          if (open) {
+            setActiveModal("assistantDetail");
+            return;
+          }
+
+          closeAssistantDetailModal();
+        }}
+        selectedAssistant={selectedAssistant}
+        assistantDetailDraft={assistantDetailDraft}
+        isEditingAssistantDetail={isEditingAssistantDetail}
+        editableStatusOptions={editableStatusOptions}
+        onChangeStatus={(status) =>
+          setAssistantDetailDraft((prev) => ({
+            ...prev,
+            status,
+          }))
+        }
+        onChangeMemo={(memo) =>
+          setAssistantDetailDraft((prev) => ({
+            ...prev,
+            memo,
+          }))
+        }
+        onRetireAssistant={retireAssistant}
+        onCancelEdit={() => {
+          setAssistantDetailDraft(
+            createAssistantDetailDraft(selectedAssistant)
           );
-        })}
-      </div>
+          setIsEditingAssistantDetail(false);
+        }}
+        onSaveDetail={saveAssistantDetail}
+        onCloseDetail={closeAssistantDetailModal}
+        onStartEdit={() => {
+          setAssistantDetailDraft(
+            createAssistantDetailDraft(selectedAssistant)
+          );
+          setIsEditingAssistantDetail(true);
+          setPreviewNotice("수정 모드가 활성화되었습니다.");
+        }}
+      />
 
-      <Card>
-        <CardContent className="space-y-4 pt-6">
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="relative flex-1 min-w-[240px]">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder="조교 이름 또는 연락처 검색"
-                className="pl-9"
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <TaskCreateModal
+        open={activeModal === "task"}
+        onOpenChange={(open) =>
+          open ? setActiveModal("task") : closeTaskModal()
+        }
+        taskInstructionContent={taskInstructionContent}
+        onChangeTaskInstructionContent={setTaskInstructionContent}
+        attachedResources={attachedResources}
+        onOpenResourceLibraryModal={openResourceLibraryModal}
+        onRemoveAttachedResource={removeAttachedResource}
+        onCancel={closeTaskModal}
+        onSubmit={() => {
+          setPreviewNotice("업무 지시 등록은 UI 미리보기 단계입니다.");
+          closeTaskModal();
+        }}
+      />
 
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>총 {totalCount}명의 조교</span>
-          </div>
+      <ResourceLibraryModal
+        open={isResourceLibraryModalOpen}
+        onOpenChange={(open) => {
+          if (open) {
+            openResourceLibraryModal();
+            return;
+          }
 
-          <div className="mt-4 rounded-lg border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[50px]">
-                    <Checkbox />
-                  </TableHead>
-                  <TableHead>조교명</TableHead>
-                  <TableHead>담당 과목</TableHead>
-                  <TableHead>연락처</TableHead>
-                  <TableHead>배정 클래스</TableHead>
-                  <TableHead>최근 업무</TableHead>
-                  <TableHead>상태</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedAssistants.map((assistant) => (
-                  <TableRow key={assistant.id}>
-                    <TableCell>
-                      <Checkbox />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-9 w-9">
-                          <AvatarFallback>
-                            {assistant.name.slice(0, 1)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium">{assistant.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-                        {assistant.subject}
-                      </span>
-                    </TableCell>
-                    <TableCell>{assistant.phone}</TableCell>
-                    <TableCell>{assistant.className}</TableCell>
-                    <TableCell>{assistant.task}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <StatusLabel color={statusColorMap[assistant.status]}>
-                          {assistant.status}
-                        </StatusLabel>
-                        <Select defaultValue={assistant.status}>
-                          <SelectTrigger className="h-8 w-[96px] rounded-full text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {statusOptions.map((option) => (
-                              <SelectItem key={option} value={option}>
-                                {option}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          <Pagination pagination={pagination} onPageChange={setCurrentPage} />
-        </CardContent>
-      </Card>
-
-      <Dialog open={isTaskModalOpen} onOpenChange={setTaskModalOpen}>
-        <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
-          <DialogHeader className="text-left">
-            <div className="flex items-center gap-3">
-              <div className="rounded-full bg-primary/10 p-2 text-primary">
-                <ClipboardCheck className="h-5 w-5" />
-              </div>
-              <div>
-                <DialogTitle className="text-xl font-bold">
-                  새 업무 지시 등록
-                </DialogTitle>
-                <DialogDescription className="mt-1">
-                  김민수 조교에게 업무를 전달합니다.
-                </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
-
-          <div className="rounded-lg border bg-muted/40 px-4 py-3 text-xs text-muted-foreground">
-            업무 지시는 상세 모달 기준으로 저장되어 조교에게 즉시 전달됩니다.
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-sm font-semibold">대상 조교</p>
-            <div className="flex items-center gap-3 rounded-lg border bg-background px-4 py-3">
-              <Avatar className="h-10 w-10">
-                <AvatarFallback>김</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="text-sm font-semibold">김민수</p>
-                <p className="text-xs text-muted-foreground">010-1234-5678</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">지시자</label>
-              <Input placeholder="강사 담당자" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">업무명</label>
-              <Input placeholder="예: 중등 2학년 1학기 기말고사 채점" />
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">업무 분류/요약</label>
-              <Input placeholder="예: 고3 수능 기출 / 25문항" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">우선순위</label>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" className="rounded-full">
-                  높음
-                </Button>
-                <Button className="rounded-full">보통</Button>
-                <Button variant="secondary" className="rounded-full">
-                  낮음
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">지시 일자</label>
-              <Input type="date" />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">업무 내용</label>
-            <Textarea
-              placeholder="업무에 대한 상세한 내용을 입력해주세요."
-              className="min-h-[120px]"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">첨부파일</label>
-            <label
-              htmlFor="task-file"
-              className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-muted-foreground/40 bg-muted/30 px-4 py-6 text-sm text-muted-foreground"
-            >
-              <Paperclip className="h-4 w-4" />
-              파일 첨부 (PDF/JPG/PNG)
-            </label>
-            <Input id="task-file" type="file" className="hidden" />
-          </div>
-
-          <DialogFooter className="gap-2">
-            <Button
-              variant="outline"
-              className="rounded-full"
-              onClick={() => setTaskModalOpen(false)}
-            >
-              취소
-            </Button>
-            <Button
-              className="rounded-full"
-              onClick={() => setTaskModalOpen(false)}
-            >
-              <CheckSquare className="h-4 w-4" />
-              지시 등록
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          closeResourceLibraryModal();
+        }}
+        resourceSearchKeyword={resourceSearchKeyword}
+        onChangeResourceSearchKeyword={setResourceSearchKeyword}
+        resourceCategoryFilter={resourceCategoryFilter}
+        resourceCategoryOptions={resourceCategoryOptions}
+        onChangeResourceCategoryFilter={setResourceCategoryFilter}
+        filteredResourceLibraryItems={filteredResourceLibraryItems}
+        libraryDraftResourceIds={libraryDraftResourceIds}
+        onToggleDraftResourceSelection={toggleDraftResourceSelection}
+        onCancel={closeResourceLibraryModal}
+        onApply={applyResourceSelection}
+      />
     </div>
   );
 }
