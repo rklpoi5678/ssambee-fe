@@ -44,7 +44,7 @@ export const StudentTableData = ({
     key: "profile",
     render: (row: GetEnrollmentList) => (
       <Image
-        src={noProfileImage.src}
+        src={noProfileImage}
         alt={row.studentName}
         width={32}
         height={32}

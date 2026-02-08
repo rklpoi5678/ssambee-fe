@@ -27,7 +27,9 @@ export default function OtherTypeForm({
   userName,
 }: OtherTypeFormProps) {
   const isDisabled = mode === "view";
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(
+    initialData?.image instanceof File ? initialData.image : null
+  );
 
   const {
     register,
