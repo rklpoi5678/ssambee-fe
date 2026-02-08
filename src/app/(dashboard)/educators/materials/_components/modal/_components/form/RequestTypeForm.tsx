@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { InputForm } from "@/components/common/input/InputForm";
