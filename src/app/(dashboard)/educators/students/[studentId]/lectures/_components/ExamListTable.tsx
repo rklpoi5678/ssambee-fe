@@ -47,7 +47,7 @@ export default function ExamListTable({
         <TableBody>
           {exams.slice(0, visibleCount).map((data) => {
             const { exam, grade } = data;
-            const examKey = `${exam.title}-${exam.examDate}-${exam.subject}`;
+            const examKey = `${exam.title}-${exam.examDate}`;
             const isSelected = selectedExamIds.includes(examKey);
 
             return (
