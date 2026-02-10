@@ -51,6 +51,10 @@ export async function getServerSession(
   try {
     const baseURL = role === "MGMT" ? API_BASE_URL : API_BASE_URL_SVC;
     const cookieHeader = await getCookieHeader();
+    if (!baseURL) {
+      console.error(`Missing API base URL for role: ${role}`);
+      return null;
+    }
 
     const response = await fetch(`${baseURL}/auth/session`, {
       method: "GET",
@@ -117,10 +121,23 @@ export async function requireAuthWithRole(options: {
 }
 
 // 로그인 상태면 대시보드로 리다이렉트
-export async function requireGuest(dashboardPath: string): Promise<void> {
-  const isAuthenticated = await hasSession();
+export async function requireGuest(
+  dashboardPath: string,
+  role: "MGMT" | "SVC" = "MGMT" // 어떤 세션을 체크할지
+): Promise<void> {
+  const isCookieExist = await hasSession();
 
-  if (isAuthenticated) {
+  // 쿠키가 아예 없으면 게스트니까 통과
+  if (!isCookieExist) return;
+
+  // 쿠키가 있다면 실제로 유효한 세션인지 확인
+  const user = await getServerSession(role);
+
+  // 실제 유효한 유저 정보가 있으면 리다이렉트
+  if (user) {
     redirect(dashboardPath);
   }
+
+  // 쿠키는 있는데 user가 null이면 세션 만료
+  // 리다이렉트하지 않고 로그인 페이지를 보여줌 (무한 루프 탈출)
 }
