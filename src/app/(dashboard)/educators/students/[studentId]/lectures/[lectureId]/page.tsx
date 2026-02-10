@@ -33,7 +33,16 @@ export default function LectureDetailPage() {
     );
   }
 
-  const { lecture, grades } = data?.data;
+  const { lecture, grades } = data.data ?? {};
+
+  if (!lecture || !grades) {
+    return (
+      <EmptyState
+        message="성적 정보를 불러올 수 없습니다."
+        showBackButton={true}
+      />
+    );
+  }
 
   // 시험 리스트(테이블) 클릭
   const handleSelectExam = (examId: string) => {

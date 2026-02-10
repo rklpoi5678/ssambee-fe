@@ -111,7 +111,7 @@ export const createAttendanceAPI = (
     >(`/lectures/${lectureId}/enrollments/${enrollmentId}/attendances`, data)
     .then((res) => res.data);
 
-// 강의 시험 조회
+// 강의 성적 차트 조회
 export const getLectureEnrollmentDetailAPI = (lectureEnrollmentId: string) =>
   axiosClient
     .get<

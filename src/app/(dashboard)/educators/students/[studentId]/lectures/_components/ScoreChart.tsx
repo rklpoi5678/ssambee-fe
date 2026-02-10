@@ -122,7 +122,7 @@ const CustomTooltip = ({
     const data = payload[0].payload;
 
     return (
-      <div className="bg-white p-3 border rounded-lg shadow-lg text-sm p-6">
+      <div className="bg-white p-6 border rounded-lg shadow-lg text-sm">
         <div className="flex flex-col gap-y-6">
           <div>
             <p className="text-neutral-300 mb-2">시험명</p>

@@ -172,7 +172,7 @@ export const useCreateAttendance = (
   });
 };
 
-// 강의 시험 조회
+// 강의 성적 차트 조회
 export const useLectureEnrollmentDetail = (lectureEnrollmentId: string) =>
   useQuery({
     queryKey: ["enrollments", "lectureEnrollmentDetail", lectureEnrollmentId],

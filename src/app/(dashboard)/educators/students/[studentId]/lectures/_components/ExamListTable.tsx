@@ -47,17 +47,16 @@ export default function ExamListTable({
         <TableBody>
           {exams.slice(0, visibleCount).map((data) => {
             const { exam, grade } = data;
-            const isSelected = selectedExamIds.includes(
-              `${exam.title}-${exam.examDate}`
-            );
+            const examKey = `${exam.title}-${exam.examDate}-${exam.subject}`;
+            const isSelected = selectedExamIds.includes(examKey);
 
             return (
               <TableRow
-                key={`${exam.title}-${exam.examDate}`}
+                key={examKey}
                 className={`cursor-pointer hover:bg-muted/50 ${
                   isSelected ? "bg-primary/10" : ""
                 }`}
-                onClick={() => onSelectExam(`${exam.title}-${exam.examDate}`)}
+                onClick={() => onSelectExam(examKey)}
               >
                 <TableCell className="font-medium">{exam.title}</TableCell>
                 <TableCell>{formatYMDFromISO(exam.examDate)}</TableCell>
