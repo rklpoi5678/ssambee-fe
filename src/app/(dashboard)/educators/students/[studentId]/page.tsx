@@ -257,7 +257,11 @@ export default function StudentDetailPage() {
               <Card
                 key={lecture.id}
                 className="hover:shadow-md transition-shadow relative cursor-pointer"
-                onClick={() => router.push(`/educators/lectures/${lecture.id}`)}
+                onClick={() =>
+                  router.push(
+                    `/educators/students/${studentId}/lectures/${lecture.lectureEnrollmentId}`
+                  )
+                }
               >
                 <CardContent className="w-full">
                   <div className="absolute top-0 left-0 w-full h-[40%] bg-blue-500 rounded-t-lg"></div>

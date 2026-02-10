@@ -11,10 +11,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { LectureExamResult } from "@/types/lectures";
+import { LectureEnrollmentDetail } from "@/types/students.type";
+import { formatYMDFromISO } from "@/utils/date";
 
 type ExamListTableProps = {
-  exams: LectureExamResult[];
+  exams: LectureEnrollmentDetail["grades"];
   selectedExamIds: string[];
   onSelectExam: (examId: string) => void;
 };
@@ -44,28 +45,33 @@ export default function ExamListTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {exams.slice(0, visibleCount).map((exam) => (
-            <TableRow
-              key={exam.examId}
-              className={`cursor-pointer hover:bg-muted/50 ${
-                selectedExamIds.includes(exam.examId) ? "bg-primary/10" : ""
-              }`}
-              onClick={() => onSelectExam(exam.examId)}
-            >
-              <TableCell className="font-medium">{exam.examName}</TableCell>
-              <TableCell>{exam.examDate}</TableCell>
-              <TableCell className="text-center">{exam.subject}</TableCell>
-              <TableCell className="text-center font-semibold">
-                {exam.score}점
-              </TableCell>
-              <TableCell className="text-center">
-                {exam.classAverage}점
-              </TableCell>
-              <TableCell className="text-center">
-                {exam.classRank}등 / {exam.totalStudents}명
-              </TableCell>
-            </TableRow>
-          ))}
+          {exams.slice(0, visibleCount).map((data) => {
+            const { exam, grade } = data;
+            const isSelected = selectedExamIds.includes(
+              `${exam.title}-${exam.examDate}`
+            );
+
+            return (
+              <TableRow
+                key={`${exam.title}-${exam.examDate}`}
+                className={`cursor-pointer hover:bg-muted/50 ${
+                  isSelected ? "bg-primary/10" : ""
+                }`}
+                onClick={() => onSelectExam(`${exam.title}-${exam.examDate}`)}
+              >
+                <TableCell className="font-medium">{exam.title}</TableCell>
+                <TableCell>{formatYMDFromISO(exam.examDate)}</TableCell>
+                <TableCell className="text-center">{exam.subject}</TableCell>
+                <TableCell className="text-center font-semibold">
+                  {grade.score}점
+                </TableCell>
+                <TableCell className="text-center">{exam.average}점</TableCell>
+                <TableCell className="text-center">
+                  {grade.rank}등 / {exam.totalExaminees}명
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
 

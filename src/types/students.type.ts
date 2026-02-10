@@ -146,6 +146,7 @@ export type GetEnrollmentDetail = {
     schoolYear: string;
     description: string;
     status: LectureStatus;
+    lectureEnrollmentId: string;
     lectureTimes: {
       day: string;
       startTime: string;
@@ -202,4 +203,36 @@ export type CreateEnrollmentAttendance = {
   date: string;
   status: AttendanceStatus;
   memo?: string | null;
+};
+
+// 강의 시험 조회: GET /lectureEnrollments/:lectureEnrollmentsId
+export type LectureEnrollmentDetail = {
+  lectureEnrollmentId: string;
+  lecture: {
+    title: string;
+    instructor: {
+      name: string;
+    };
+    subject: string;
+    schoolYear: string;
+  };
+  enrollment: {
+    name: string;
+    school: string;
+    status: "ACTIVE" | "PAUSED" | "DROPPED";
+  };
+  grades: {
+    exam: {
+      id: string;
+      title: string;
+      examDate: string;
+      subject: string;
+      average: number;
+      totalExaminees: number;
+    };
+    grade: {
+      score: number;
+      rank: number;
+    };
+  }[];
 };

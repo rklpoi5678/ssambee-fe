@@ -11,6 +11,7 @@ import {
   GetEnrollmentAttendanceStats,
   LectureStatus,
   MigrateStudents,
+  LectureEnrollmentDetail,
 } from "@/types/students.type";
 
 import { axiosClient } from "./axiosClient";
@@ -108,4 +109,12 @@ export const createAttendanceAPI = (
     .post<
       ApiResponse<CreateEnrollmentAttendance>
     >(`/lectures/${lectureId}/enrollments/${enrollmentId}/attendances`, data)
+    .then((res) => res.data);
+
+// 강의 시험 조회
+export const getLectureEnrollmentDetailAPI = (lectureEnrollmentId: string) =>
+  axiosClient
+    .get<
+      ApiResponse<LectureEnrollmentDetail>
+    >(`/lectureEnrollments/${lectureEnrollmentId}`)
     .then((res) => res.data);
