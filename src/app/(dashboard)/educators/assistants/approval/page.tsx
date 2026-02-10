@@ -7,8 +7,9 @@ import {
   KeyRound,
   UserPlus,
 } from "lucide-react";
-import Link from "next/link";
+import { useMemo, useState } from "react";
 
+import AssistantsTabs from "@/app/(dashboard)/educators/assistants/_components/AssistantsTabs";
 import Title from "@/components/common/header/Title";
 import StatusLabel from "@/components/common/label/StatusLabel";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -21,14 +22,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSetBreadcrumb } from "@/hooks/useBreadcrumb";
 
 const approvalCode = "UCBW-NPZ7";
 
-const approvalStats = [
-  { label: "승인 대기", count: 1, active: true },
-  { label: "승인 완료", count: 1, active: false },
-  { label: "반려됨", count: 1, active: false },
-];
+const approvalStats = ["승인 대기", "승인 완료", "반려됨"] as const;
+type ApprovalStatus = (typeof approvalStats)[number];
 
 const applications = [
   {
@@ -44,15 +43,26 @@ const applications = [
 ];
 
 export default function AssistantsApprovalPage() {
+  useSetBreadcrumb([{ label: "조교 승인" }]);
+
+  const [activeStatusFilter, setActiveStatusFilter] =
+    useState<ApprovalStatus>("승인 대기");
+  const [actionNotice, setActionNotice] = useState<string | null>(null);
+
+  const filteredApplications = useMemo(
+    () =>
+      applications.filter(
+        (application) => application.status === activeStatusFilter
+      ),
+    [activeStatusFilter]
+  );
+
   return (
     <div className="container mx-auto space-y-8 p-6">
       <Card>
         <CardContent className="space-y-6 pt-6">
-          <div className="flex flex-wrap items-start justify-between gap-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-2">
-              <p className="text-xs text-muted-foreground">
-                설정 · 사용자 관리 · 조교 승인
-              </p>
               <Title
                 title="조교 가입 승인"
                 description="승인 대기 중인 조교들의 정보를 확인하고 처리하세요."
@@ -60,20 +70,36 @@ export default function AssistantsApprovalPage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <Button asChild variant="outline" className="rounded-full">
-                <Link href="/educators/assistants">조교 관리</Link>
-              </Button>
-              <Button className="rounded-full">조교 승인</Button>
-              <Button variant="outline" className="rounded-full">
+              <Button
+                variant="outline"
+                className="rounded-full"
+                onClick={() =>
+                  setActionNotice("인증 코드 생성은 UI 미리보기 단계입니다.")
+                }
+              >
                 <KeyRound className="h-4 w-4" />
                 인증 코드 생성
               </Button>
-              <Button variant="outline" className="rounded-full">
+              <Button
+                variant="outline"
+                className="rounded-full"
+                onClick={() =>
+                  setActionNotice("가입 링크 복사는 UI 미리보기 단계입니다.")
+                }
+              >
                 <Copy className="h-4 w-4" />
                 가입 링크 복사
               </Button>
             </div>
           </div>
+
+          <AssistantsTabs active="approval" />
+
+          {actionNotice ? (
+            <div className="rounded-lg border bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+              {actionNotice}
+            </div>
+          ) : null}
 
           <div className="inline-flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
             <KeyRound className="h-3 w-3" />
@@ -93,13 +119,18 @@ export default function AssistantsApprovalPage() {
           <div className="flex flex-wrap items-center gap-2">
             {approvalStats.map((stat) => (
               <Button
-                key={stat.label}
-                variant={stat.active ? "default" : "secondary"}
+                key={stat}
+                variant={stat === activeStatusFilter ? "default" : "secondary"}
                 className="rounded-full"
+                onClick={() => setActiveStatusFilter(stat)}
               >
-                {stat.label}
+                {stat}
                 <span className="ml-2 rounded-full bg-white/20 px-2 py-0.5 text-xs">
-                  {stat.count}
+                  {
+                    applications.filter(
+                      (application) => application.status === stat
+                    ).length
+                  }
                 </span>
               </Button>
             ))}
@@ -126,51 +157,75 @@ export default function AssistantsApprovalPage() {
           </div>
 
           <div className="space-y-3">
-            {applications.map((application) => (
-              <div
-                key={application.id}
-                className="flex flex-wrap items-center gap-4 rounded-lg border bg-background p-4"
-              >
-                <Avatar className="h-12 w-12">
-                  <AvatarFallback>
-                    {application.name.slice(0, 1)}
-                  </AvatarFallback>
-                </Avatar>
-
-                <div className="min-w-[200px] flex-1 space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold">{application.name}</span>
-                    <StatusLabel color="blue">{application.status}</StatusLabel>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {application.phone} · {application.email}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    신청일: {application.appliedAt}
-                  </p>
-                </div>
-
-                <div className="min-w-[160px] rounded-md border px-3 py-2 text-xs">
-                  <p className="text-muted-foreground">담당 강사</p>
-                  <p className="font-medium">{application.mentor}</p>
-                </div>
-
-                <div className="min-w-[160px] rounded-md border px-3 py-2 text-xs">
-                  <p className="text-muted-foreground">지원 역할</p>
-                  <p className="font-medium">{application.role}</p>
-                </div>
-
-                <div className="ml-auto flex flex-wrap gap-2">
-                  <Button variant="secondary" className="rounded-full">
-                    <CheckCircle2 className="h-4 w-4" />
-                    승인
-                  </Button>
-                  <Button variant="outline" className="rounded-full">
-                    반려
-                  </Button>
-                </div>
+            {filteredApplications.length === 0 ? (
+              <div className="rounded-lg border border-dashed bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
+                선택한 상태의 신청 내역이 없습니다.
               </div>
-            ))}
+            ) : (
+              filteredApplications.map((application) => (
+                <div
+                  key={application.id}
+                  className="flex flex-wrap items-center gap-4 rounded-lg border bg-background p-4"
+                >
+                  <Avatar className="h-12 w-12">
+                    <AvatarFallback>
+                      {application.name.slice(0, 1)}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div className="min-w-[200px] flex-1 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold">{application.name}</span>
+                      <StatusLabel color="blue">
+                        {application.status}
+                      </StatusLabel>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {application.phone} · {application.email}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      신청일: {application.appliedAt}
+                    </p>
+                  </div>
+
+                  <div className="min-w-[160px] rounded-md border px-3 py-2 text-xs">
+                    <p className="text-muted-foreground">담당 강사</p>
+                    <p className="font-medium">{application.mentor}</p>
+                  </div>
+
+                  <div className="min-w-[160px] rounded-md border px-3 py-2 text-xs">
+                    <p className="text-muted-foreground">지원 역할</p>
+                    <p className="font-medium">{application.role}</p>
+                  </div>
+
+                  <div className="ml-auto flex flex-wrap gap-2">
+                    <Button
+                      variant="secondary"
+                      className="rounded-full"
+                      onClick={() =>
+                        setActionNotice(
+                          `${application.name} 승인 처리는 UI 미리보기 단계입니다.`
+                        )
+                      }
+                    >
+                      <CheckCircle2 className="h-4 w-4" />
+                      승인
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="rounded-full"
+                      onClick={() =>
+                        setActionNotice(
+                          `${application.name} 반려 처리는 UI 미리보기 단계입니다.`
+                        )
+                      }
+                    >
+                      반려
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>
