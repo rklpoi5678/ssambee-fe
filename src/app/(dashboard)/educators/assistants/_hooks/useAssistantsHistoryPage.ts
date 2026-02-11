@@ -59,8 +59,6 @@ const priorityDetailClassMap: Record<TaskPriority, string> = {
   낮음: "bg-slate-100 text-slate-600",
 };
 
-const now = new Date();
-
 const normalizePriority = (
   priority: AssistantOrderApi["priority"]
 ): TaskPriority => {
@@ -96,7 +94,7 @@ function getDateByPeriod(period: (typeof periodOptions)[number]) {
     return null;
   }
 
-  const base = new Date(now);
+  const base = new Date();
   if (period === "최근 1개월") {
     base.setMonth(base.getMonth() - 1);
     return base;
@@ -122,6 +120,7 @@ export const useAssistantsHistoryPage = () => {
   const filteredTasks = useMemo(() => {
     const lowerKeyword = searchKeyword.trim().toLowerCase();
     const periodStartDate = getDateByPeriod(periodFilter);
+    const now = new Date();
 
     return taskRecords.filter((task) => {
       const keywordMatched =
@@ -135,10 +134,16 @@ export const useAssistantsHistoryPage = () => {
       const priorityMatched =
         priorityFilter === "전체" || task.priority === priorityFilter;
 
-      const issuedDate = new Date(task.issuedAt.replace(" ", "T"));
+      const issuedDate =
+        task.issuedAt === "-"
+          ? null
+          : new Date(task.issuedAt.replace(" ", "T"));
       const periodMatched =
         periodStartDate === null ||
-        (issuedDate >= periodStartDate && issuedDate <= now);
+        (issuedDate !== null &&
+          !Number.isNaN(issuedDate.getTime()) &&
+          issuedDate >= periodStartDate &&
+          issuedDate <= now);
 
       return (
         keywordMatched && statusMatched && priorityMatched && periodMatched

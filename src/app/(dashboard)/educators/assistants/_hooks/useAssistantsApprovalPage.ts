@@ -129,7 +129,6 @@ export const useAssistantsApprovalPage = () => {
       const createdCode = await createAssistantCodeAPI();
       setApprovalCode(createdCode.code);
       setActionNotice("인증 코드가 생성되었습니다.");
-      await loadAssistantCode();
     } catch (error) {
       setActionNotice(getErrorMessage(error));
     } finally {

@@ -52,6 +52,16 @@ export default function AssistantsTable({
               </TableRow>
             </TableHeader>
             <TableBody>
+              {assistants.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={3}
+                    className="py-8 text-center text-muted-foreground"
+                  >
+                    조교가 없습니다.
+                  </TableCell>
+                </TableRow>
+              )}
               {assistants.map((assistant) => (
                 <TableRow key={assistant.id}>
                   <TableCell className="px-4">
@@ -67,7 +77,9 @@ export default function AssistantsTable({
                     {assistant.phone}
                   </TableCell>
                   <TableCell className="px-4">
-                    <StatusLabel color={statusColorMap[assistant.status]}>
+                    <StatusLabel
+                      color={statusColorMap[assistant.status] ?? "gray"}
+                    >
                       {assistant.status}
                     </StatusLabel>
                   </TableCell>
