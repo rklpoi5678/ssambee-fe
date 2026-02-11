@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -50,14 +50,23 @@ export default function VideoTypeForm({
   // 모든 폼 필드 실시간 추적
   const watchedValues = useWatch({ control });
 
-  const link = watchedValues.link || initialData?.link;
+  const link = watchedValues.link ?? initialData?.link;
   const videoId = getYoutubeVideoId(link || "");
 
+  // onDataChange를 ref로 관리하여 의존성 배열에서 제외
+  const onDataChangeRef = useRef(onDataChange);
   useEffect(() => {
-    if (mode !== "view" && onDataChange) {
-      onDataChange(getValues(), isValid);
+    onDataChangeRef.current = onDataChange;
+  }, [onDataChange]);
+
+  useEffect(() => {
+    if (mode !== "view" && onDataChangeRef.current) {
+      // 다음 렌더링 사이클로 연기
+      queueMicrotask(() => {
+        onDataChangeRef.current?.(getValues(), isValid);
+      });
     }
-  }, [watchedValues, isValid, mode, onDataChange, getValues]);
+  }, [watchedValues, isValid, mode, getValues]);
 
   // mode가 view로 변경될 때 (취소 시) 폼 초기화
   useEffect(() => {

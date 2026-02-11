@@ -91,8 +91,8 @@ export default function MaterialsTable({
         pagination={{
           totalCount: data?.pagination.totalCount || 0,
           totalPage: data?.pagination.totalPage || 0,
-          currentPage: data?.pagination.currentPage || 0,
-          limit: data?.pagination.limit || 0,
+          currentPage: data?.pagination.currentPage || 1,
+          limit: data?.pagination.limit || limit,
           hasNextPage: data?.pagination.hasNextPage || false,
           hasPrevPage: data?.pagination.hasPrevPage || false,
         }}

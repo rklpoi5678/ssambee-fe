@@ -197,7 +197,7 @@ export const otherFormSchema = z.object({
     )
     .refine(
       (file) => {
-        if (!file) return true;
+        if (!file) return false;
         if (file !== null && typeof file === "object" && "url" in file)
           return true;
         return file.size <= 5 * 1024 * 1024;
