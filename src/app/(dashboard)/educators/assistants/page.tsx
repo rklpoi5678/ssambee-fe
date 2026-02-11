@@ -38,6 +38,7 @@ export default function AssistantsPage() {
     selectedAssistant,
     assistantDetailDraft,
     isEditingAssistantDetail,
+    isRetiringAssistant,
     setAssistantDetailDraft,
     setIsEditingAssistantDetail,
     editableStatusOptions,
@@ -169,6 +170,7 @@ export default function AssistantsPage() {
         selectedAssistant={selectedAssistant}
         assistantDetailDraft={assistantDetailDraft}
         isEditingAssistantDetail={isEditingAssistantDetail}
+        isRetiringAssistant={isRetiringAssistant}
         editableStatusOptions={editableStatusOptions}
         onChangeStatus={(status) =>
           setAssistantDetailDraft((prev) => ({

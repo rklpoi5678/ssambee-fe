@@ -1,5 +1,5 @@
 import { Briefcase, CalendarCheck, ClipboardList, Users } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 import { DEFAULT_ACTIVE_STATUS_FILTER } from "@/app/(dashboard)/educators/assistants/_constants/assistants.constants";
 import { useAssistantsLoader } from "@/app/(dashboard)/educators/assistants/_hooks/useAssistantsLoader";
@@ -58,6 +58,8 @@ export const useAssistantsManagePage = () => {
   const [resourceCategoryFilter, setResourceCategoryFilter] =
     useState<(typeof resourceCategoryOptions)[number]>("전체");
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const [isRetiringAssistant, setIsRetiringAssistant] = useState(false);
+  const retireInFlightRef = useRef(false);
 
   const {
     assistantRecords,
@@ -245,16 +247,25 @@ export const useAssistantsManagePage = () => {
   };
 
   const retireAssistant = async () => {
-    if (!selectedAssistant || selectedAssistant.status === "퇴사") {
+    if (
+      !selectedAssistant ||
+      selectedAssistant.status === "퇴사" ||
+      retireInFlightRef.current
+    ) {
       return;
     }
 
+    const targetAssistantId = selectedAssistant.id;
+    const targetAssistantName = selectedAssistant.name;
+    retireInFlightRef.current = true;
+    setIsRetiringAssistant(true);
+
     try {
-      await signAssistantAPI(selectedAssistant.id, "expire");
+      await signAssistantAPI(targetAssistantId, "expire");
 
       setAssistantRecords((prev) =>
         prev.map((assistant) =>
-          assistant.id === selectedAssistant.id
+          assistant.id === targetAssistantId
             ? {
                 ...assistant,
                 status: "퇴사",
@@ -265,10 +276,13 @@ export const useAssistantsManagePage = () => {
       setActiveStatusFilter("퇴사");
       setCurrentPage(1);
       setIsEditingAssistantDetail(false);
-      setActionNotice(`${selectedAssistant.name} 조교가 퇴사 처리되었습니다.`);
+      setActionNotice(`${targetAssistantName} 조교가 퇴사 처리되었습니다.`);
       closeAssistantDetailModal();
     } catch (error) {
       setActionNotice(getErrorMessage(error));
+    } finally {
+      retireInFlightRef.current = false;
+      setIsRetiringAssistant(false);
     }
   };
 
@@ -359,6 +373,7 @@ export const useAssistantsManagePage = () => {
     selectedAssistant,
     assistantDetailDraft,
     isEditingAssistantDetail,
+    isRetiringAssistant,
     setAssistantDetailDraft,
     setIsEditingAssistantDetail,
     editableStatusOptions,
