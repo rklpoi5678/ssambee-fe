@@ -171,3 +171,12 @@ export const useCreateAttendance = (
     },
   });
 };
+
+// 강의 성적 차트 조회
+export const useLectureEnrollmentDetail = (lectureEnrollmentId: string) =>
+  useQuery({
+    queryKey: ["enrollments", "lectureEnrollmentDetail", lectureEnrollmentId],
+    queryFn: () => api.getLectureEnrollmentDetailAPI(lectureEnrollmentId),
+    enabled: !!lectureEnrollmentId, // ID가 있을 때만 실행
+    staleTime: 1000 * 60,
+  });
