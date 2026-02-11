@@ -29,8 +29,8 @@ export default function VideoTypeForm({
 
   const {
     register,
-    control,
     getValues,
+    control,
     formState: { errors, isValid },
   } = useForm<VideoFormData>({
     resolver: mode === "view" ? undefined : zodResolver(videoFormSchema),
@@ -41,21 +41,22 @@ export default function VideoTypeForm({
           writer: initialData?.writer ? initialData.writer : userName,
           className: initialData.className || "",
           description: initialData.description,
-          youtubeLink: initialData.link || "",
+          link: initialData.link || "",
         }
       : { ...getVideoFormDefaults(), writer: userName },
   });
 
-  const watchedFields = useWatch({ control });
-  const youtubeLink = watchedFields.youtubeLink;
-  const videoId = getYoutubeVideoId(youtubeLink || "");
+  // 모든 폼 필드 실시간 추적
+  const watchedValues = useWatch({ control });
+
+  const link = watchedValues.link || initialData?.link;
+  const videoId = getYoutubeVideoId(link || "");
 
   useEffect(() => {
-    if (mode !== "view") {
-      const formData = getValues();
-      onDataChange?.(formData, isValid);
+    if (mode !== "view" && onDataChange) {
+      onDataChange(getValues(), isValid);
     }
-  }, [watchedFields, isValid, getValues, onDataChange, mode]);
+  }, [watchedValues, isValid, mode, onDataChange, getValues]);
 
   return (
     <Card>
@@ -110,13 +111,13 @@ export default function VideoTypeForm({
 
           <InputForm
             label="YouTube 링크"
-            id="youtubeLink"
-            error={errors.youtubeLink?.message}
+            id="link"
+            error={errors.link?.message}
             disabled={isDisabled}
-            {...register("youtubeLink")}
+            {...register("link")}
           />
 
-          {youtubeLink && videoId && (
+          {link && videoId && videoId.length > 0 && (
             <div className="mt-4">
               <p className="text-sm font-medium text-gray-700 mb-2">미리보기</p>
               <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black">

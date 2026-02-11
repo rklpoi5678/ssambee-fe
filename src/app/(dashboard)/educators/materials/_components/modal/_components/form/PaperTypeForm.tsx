@@ -50,11 +50,10 @@ export default function PaperTypeForm({
   const watchedValues = useWatch({ control });
 
   useEffect(() => {
-    if (mode !== "view") {
-      const formData = getValues();
-      onDataChange?.(formData, isValid);
+    if (mode !== "view" && onDataChange) {
+      onDataChange(getValues(), isValid);
     }
-  }, [watchedValues, isValid, getValues, onDataChange, mode]);
+  }, [watchedValues, isValid, mode, onDataChange, getValues]);
 
   return (
     <Card>
@@ -114,20 +113,18 @@ export default function PaperTypeForm({
               onFileChange={(file) =>
                 setValue("file", file, { shouldValidate: true })
               }
-              accept=".pdf,.doc,.docx"
+              accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsm,.xlsx,.hwp,.hwpx"
               error={errors.file?.message as string}
             />
           )}
 
-          {isDisabled && watchedValues.file && (
+          {isDisabled && initialData?.file && (
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 첨부 파일
               </label>
               <div className="border rounded-lg p-4 bg-gray-50">
-                <p className="text-sm text-gray-900">
-                  {watchedValues.file.name}
-                </p>
+                <p className="text-sm text-gray-900">{initialData.file.name}</p>
               </div>
             </div>
           )}

@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Download, Edit, Trash2, Send } from "lucide-react";
+import { Download, Edit, Loader2, Trash2 } from "lucide-react";
 
 import Title from "@/components/common/header/Title";
 import { Button } from "@/components/ui/button";
-import { MOCK_MATERIALS } from "@/data/materials.mock";
 import {
   FormMode,
   OtherFormData,
@@ -16,27 +15,43 @@ import {
 } from "@/types/materials.type";
 import { useModal } from "@/providers/ModalProvider";
 import { CheckModal } from "@/components/common/modals/CheckModal";
+import { useMaterialDetail, useMaterials } from "@/hooks/useMaterials";
+import { materialsService } from "@/services/materials.service";
 
 import PaperTypeForm from "../_components/modal/_components/form/PaperTypeForm";
 import VideoTypeForm from "../_components/modal/_components/form/VideoTypeForm";
 import RequestTypeForm from "../_components/modal/_components/form/RequestTypeForm";
 import OtherTypeForm from "../_components/modal/_components/form/OtherTypeForm";
-import { ExportToNoticeModal } from "../_components/modal/ExportToNoticeModal";
 
 export default function MaterialsDetailPage() {
-  const params = useParams();
+  const { materialsId } = useParams();
   const router = useRouter();
   const { openModal } = useModal();
-  const materialsId = params.materialsId as string;
 
-  // TODO: API에서 데이터 가져오기
-  const material = MOCK_MATERIALS.find((m) => m.id === materialsId);
+  const { updateMutation, deleteMutation } = useMaterials({
+    page: 1,
+    limit: 10,
+    type: "ALL",
+    sort: "latest",
+  });
+
+  const { data: material, isLoading } = useMaterialDetail(
+    materialsId as string
+  );
 
   const [mode, setMode] = useState<FormMode>("view");
   const [formData, setFormData] = useState<
     PaperFormData | VideoFormData | RequestFormData | OtherFormData | null
   >(null);
   const [isFormValid, setIsFormValid] = useState(false);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-8 py-32 flex justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!material) {
     return (
@@ -65,15 +80,49 @@ export default function MaterialsDetailPage() {
   };
 
   const handleSave = () => {
-    if (!isFormValid) {
+    if (!isFormValid || !formData) {
       alert("필수 항목을 모두 입력해주세요.");
       return;
     }
 
-    // TODO: API 호출하여 수정
-    console.log("수정 데이터:", formData);
-    alert("자료가 수정되었습니다.");
-    setMode("view");
+    const body = new FormData();
+    body.append("title", formData.title || "");
+    body.append("description", formData.description || "");
+
+    // VIDEO 타입: youtubeUrl 업데이트
+    if (material.type === "VIDEO") {
+      const videoData = formData as VideoFormData;
+      body.append("youtubeUrl", videoData.link || "");
+    } else if (material.type === "REQUEST") {
+      // REQUEST: 파일 + 외부 다운로드 링크
+      const requestData = formData as RequestFormData;
+      if (requestData.file instanceof File) {
+        body.append("file", requestData.file);
+      }
+      if (requestData.driveLink) {
+        body.append("externalDownloadUrl", requestData.driveLink);
+      }
+    } else {
+      // PAPER, OTHER: 파일만 전송
+      const fileData = formData as PaperFormData | OtherFormData;
+      const fileField =
+        material.type === "OTHER"
+          ? (fileData as OtherFormData).image
+          : (fileData as PaperFormData).file;
+
+      if (fileField instanceof File) {
+        body.append("file", fileField);
+      }
+    }
+
+    updateMutation.mutate(
+      { materialId: material.id, payload: body },
+      {
+        onSuccess: () => {
+          router.push("/educators/materials");
+        },
+      }
+    );
   };
 
   const handleDelete = () => {
@@ -83,68 +132,45 @@ export default function MaterialsDetailPage() {
         description={`"${material.title}" 자료를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`}
         confirmText="삭제"
         onConfirm={() => {
-          // TODO: API 호출하여 삭제
-          alert("자료가 삭제되었습니다.");
-          router.push("/educators/materials");
+          deleteMutation.mutate(material.id, {
+            onSuccess: () => {
+              router.push("/educators/materials");
+            },
+          });
         }}
       />
     );
   };
 
-  const handleDownload = () => {
-    if (!material.file) {
-      alert("다운로드할 파일이 없습니다.");
-      return;
+  const handleDownload = async () => {
+    try {
+      const response = await materialsService.getDownloadUrl(material.id);
+
+      // 파일이든 YouTube든 새 탭에서 열기
+      window.open(response.url, "_blank");
+    } catch (error) {
+      console.error("다운로드 링크를 가져오는데 실패했습니다.", error);
+      alert("다운로드 링크를 가져오는데 실패했습니다.");
     }
-
-    const fileName =
-      material.file instanceof File ? material.file.name : material.title;
-    alert(`다운로드: ${fileName}`);
-    // TODO: 실제 파일 다운로드 구현
-  };
-
-  const handleExportToNotice = () => {
-    openModal(<ExportToNoticeModal material={material} />);
   };
 
   const renderForm = () => {
+    const commonProps = {
+      mode,
+      initialData: material,
+      onDataChange: handleFormDataChange,
+      userName: material.writer,
+    };
+
     switch (material.type) {
       case "PAPER":
-        return (
-          <PaperTypeForm
-            mode={mode}
-            initialData={material}
-            onDataChange={handleFormDataChange}
-            userName={material.writer}
-          />
-        );
+        return <PaperTypeForm {...commonProps} />;
       case "VIDEO":
-        return (
-          <VideoTypeForm
-            mode={mode}
-            initialData={material}
-            onDataChange={handleFormDataChange}
-            userName={material.writer}
-          />
-        );
+        return <VideoTypeForm {...commonProps} />;
       case "REQUEST":
-        return (
-          <RequestTypeForm
-            mode={mode}
-            initialData={material}
-            onDataChange={handleFormDataChange}
-            userName={material.writer}
-          />
-        );
+        return <RequestTypeForm {...commonProps} />;
       case "OTHER":
-        return (
-          <OtherTypeForm
-            mode={mode}
-            initialData={material}
-            onDataChange={handleFormDataChange}
-            userName={material.writer}
-          />
-        );
+        return <OtherTypeForm {...commonProps} />;
       default:
         return null;
     }
@@ -165,14 +191,6 @@ export default function MaterialsDetailPage() {
         <div className="flex gap-2">
           {mode === "view" ? (
             <>
-              <Button
-                variant="default"
-                onClick={handleExportToNotice}
-                className="cursor-pointer bg-green-600 hover:bg-green-700"
-              >
-                <Send className="h-4 w-4 mr-2" />
-                공지로 내보내기
-              </Button>
               {material.type !== "VIDEO" && (
                 <Button
                   variant="outline"
@@ -211,10 +229,10 @@ export default function MaterialsDetailPage() {
               </Button>
               <Button
                 onClick={handleSave}
-                disabled={!isFormValid}
+                disabled={!isFormValid || updateMutation.isPending}
                 className={`cursor-pointer ${!isFormValid ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                저장
+                {updateMutation.isPending ? "저장 중..." : "저장"}
               </Button>
             </>
           )}
