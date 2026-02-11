@@ -79,6 +79,10 @@ export const paperFormSchema = z.object({
           fileName.endsWith(ext)
         );
 
+        // 확장자 체크(보안 강화)
+        if (file.type === "application/octet-stream") {
+          return hasValidExtension;
+        }
         return validTypes.includes(file.type) || hasValidExtension;
       },
       {
@@ -143,8 +147,9 @@ export const otherFormSchema = z.object({
     .any()
     .refine(
       (file) => {
-        // edit 모드: 기존 파일 객체 허용 또는 null (파일 변경 안 함)
-        if (file === null) return true;
+        // 파일이 없으면 실패 (필수)
+        if (file === null) return false;
+        // edit 모드: 기존 파일 객체 허용
         if (file !== null && typeof file === "object" && "url" in file)
           return true;
         return file instanceof File;
@@ -155,7 +160,7 @@ export const otherFormSchema = z.object({
     )
     .refine(
       (file) => {
-        if (!file) return true; // null 허용
+        if (!file) return false; // null 불허
         if (file !== null && typeof file === "object" && "url" in file)
           return true;
         return file.size > 0;
@@ -166,7 +171,7 @@ export const otherFormSchema = z.object({
     )
     .refine(
       (file) => {
-        if (!file) return true;
+        if (!file) return false;
         if (file !== null && typeof file === "object" && "url" in file)
           return true;
 
@@ -176,7 +181,17 @@ export const otherFormSchema = z.object({
           "image/gif",
           "image/webp",
         ];
-        return validTypes.includes(file.type);
+        const validExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+        const hasValidExtension = validExtensions.some((ext) =>
+          file.name?.toLowerCase().endsWith(ext)
+        );
+
+        // 이미지도 octet-stream으로 올 경우 확장자 체크
+        if (file.type === "application/octet-stream") {
+          return hasValidExtension;
+        }
+
+        return validTypes.includes(file.type) || hasValidExtension;
       },
       { message: "이미지 파일만 업로드 가능합니다. (JPG, PNG, GIF, WEBP)" }
     )

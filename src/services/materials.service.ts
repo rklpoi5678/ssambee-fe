@@ -29,9 +29,7 @@ export const materialsService = {
 
   // 자료 등록
   createMaterial: async (payload: FormData) => {
-    const { data } = await axiosClient.post("/materials", payload, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const { data } = await axiosClient.post("/materials", payload, {});
     return data;
   },
 
@@ -39,10 +37,7 @@ export const materialsService = {
   updateMaterial: async (materialId: string, payload: FormData) => {
     const { data } = await axiosClient.patch(
       `/materials/${materialId}`,
-      payload,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-      }
+      payload
     );
     return data;
   },

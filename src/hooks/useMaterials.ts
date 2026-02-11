@@ -48,6 +48,11 @@ export const useMaterials = (params: {
         queryKey: ["material", variables.materialId],
         refetchType: "active",
       });
+      // 목록 쿼리도 무효화
+      await queryClient.invalidateQueries({
+        queryKey: ["materials"],
+        refetchType: "active",
+      });
       alert("자료가 수정되었습니다.");
     },
     onError: (error) => {

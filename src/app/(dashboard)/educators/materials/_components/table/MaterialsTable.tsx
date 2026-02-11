@@ -25,6 +25,20 @@ export default function MaterialsTable({
   const [page, setPage] = useState(1);
   const limit = 10;
 
+  const [prevFilters, setPrevFilters] = useState({
+    selectedType,
+    selectedSort,
+  });
+
+  // 필터 바뀌면 페이지 리셋
+  if (
+    prevFilters.selectedType !== selectedType ||
+    prevFilters.selectedSort !== selectedSort
+  ) {
+    setPrevFilters({ selectedType, selectedSort });
+    setPage(1);
+  }
+
   // 실제 데이터 Fetching
   const { materialsQuery } = useMaterials({
     page,
@@ -35,6 +49,7 @@ export default function MaterialsTable({
 
   const { data, isLoading } = materialsQuery;
 
+  // TODO: 서버에 검색 기능 요청
   // 검색 필터링
   const materials = data?.materials || [];
   const filteredMaterials = searchKeyword.trim()

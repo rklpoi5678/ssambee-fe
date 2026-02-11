@@ -30,6 +30,7 @@ export default function OtherTypeForm({
   const isDisabled = mode === "view";
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [displayImageUrl, setDisplayImageUrl] = useState<string | null>(null);
+  const [imageRemoved, setImageRemoved] = useState(false);
 
   const {
     register,
@@ -56,7 +57,12 @@ export default function OtherTypeForm({
     setValue("image", file, { shouldValidate: true });
     // 파일이 제거되면 미리보기 URL도 초기화
     if (file === null) {
+      // 이미지를 제거한 경우
+      setImageRemoved(true);
       setDisplayImageUrl(null);
+    } else {
+      // 이미지를 추가한 경우
+      setImageRemoved(false);
     }
   };
 
@@ -83,13 +89,16 @@ export default function OtherTypeForm({
     let objectUrl: string | null = null;
 
     const updateImageUrl = async () => {
+      // 새로 선택한 이미지 파일이 있는 경우
       if (imageFile) {
         objectUrl = URL.createObjectURL(imageFile);
         if (isMounted) {
           setDisplayImageUrl(objectUrl);
+          return;
         }
-      } else if (initialData?.id) {
-        // 기존 이미지: 다운로드 URL 가져오기
+      }
+      if (initialData?.id && !imageRemoved) {
+        // 삭제하지 않았다면 기존 이미지
         try {
           const response = await materialsService.getDownloadUrl(
             initialData.id
@@ -118,7 +127,7 @@ export default function OtherTypeForm({
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [imageFile, initialData?.id]);
+  }, [imageFile, initialData?.id, imageRemoved]);
 
   return (
     <Card>
