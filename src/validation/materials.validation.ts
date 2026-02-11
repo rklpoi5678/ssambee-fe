@@ -9,15 +9,32 @@ const commonFields = {
   description: z.string().optional(),
 };
 
-// 파일 검증 헬퍼
+// 파일 검증 (edit 모드에서는 기존 파일 객체 허용)
 const fileSchema = z
   .any()
-  .refine((file) => file !== null && file instanceof File, {
-    message: "파일을 업로드해주세요.",
-  })
-  .refine((file) => file && file.size > 0, {
-    message: "파일을 업로드해주세요.",
-  });
+  .refine(
+    (file) => {
+      // edit 모드: 기존 파일 객체 { name, url } 허용
+      if (file !== null && typeof file === "object" && "url" in file)
+        return true;
+      // create 모드: File 인스턴스만 허용
+      return file !== null && file instanceof File;
+    },
+    {
+      message: "파일을 업로드해주세요.",
+    }
+  )
+  .refine(
+    (file) => {
+      // edit 모드의 기존 파일은 크기 체크 생략
+      if (file !== null && typeof file === "object" && "url" in file)
+        return true;
+      return file && file.size > 0;
+    },
+    {
+      message: "파일을 업로드해주세요.",
+    }
+  );
 
 // 시험지 폼 스키마
 export const paperFormSchema = z.object({
@@ -26,24 +43,66 @@ export const paperFormSchema = z.object({
     .refine(
       (file) => {
         if (!file) return false;
+        // edit 모드의 기존 파일은 타입 체크 생략
+        if (file !== null && typeof file === "object" && "url" in file)
+          return true;
+
         const validTypes = [
           "application/pdf",
           "application/msword",
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/vnd.ms-powerpoint", // PPT
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation", // PPTX
+          "application/vnd.ms-excel", // XLS
+          "application/vnd.ms-excel.sheet.macroEnabled.12", // XLSM
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // XLSX
+          "application/x-hwp", // HWP
+          "application/haansofthwp", // HWP
+          "application/vnd.hancom.hwp", // HWP
+          "application/octet-stream", // HWP, PPT 등 (일부 브라우저)
         ];
-        return validTypes.includes(file.type);
+        // 확장자로도 체크
+        const fileName = file.name?.toLowerCase() || "";
+        const validExtensions = [
+          ".pdf",
+          ".doc",
+          ".docx",
+          ".ppt",
+          ".pptx",
+          ".xls",
+          ".xlsm",
+          ".xlsx",
+          ".hwp",
+          ".hwpx",
+        ];
+        const hasValidExtension = validExtensions.some((ext) =>
+          fileName.endsWith(ext)
+        );
+
+        return validTypes.includes(file.type) || hasValidExtension;
       },
-      { message: "PDF 또는 Word 문서만 업로드 가능합니다." }
+      {
+        message:
+          "PDF, Word, PowerPoint, Excel, 한글(HWP) 파일만 업로드 가능합니다.",
+      }
     )
-    .refine((file) => file && file.size <= 10 * 1024 * 1024, {
-      message: "파일 크기는 10MB 이하여야 합니다.",
-    }),
+    .refine(
+      (file) => {
+        // edit 모드의 기존 파일은 크기 체크 생략
+        if (file !== null && typeof file === "object" && "url" in file)
+          return true;
+        return file && file.size <= 10 * 1024 * 1024;
+      },
+      {
+        message: "파일 크기는 10MB 이하여야 합니다.",
+      }
+    ),
 });
 
 // 동영상 폼 스키마
 export const videoFormSchema = z.object({
   ...commonFields,
-  youtubeLink: z
+  link: z
     .string()
     .min(1, "YouTube 링크를 입력해주세요.")
     .refine((url) => YOUTUBE_REGEX.test(url), {
@@ -54,9 +113,17 @@ export const videoFormSchema = z.object({
 // 요청 자료 폼 스키마
 export const requestFormSchema = z.object({
   ...commonFields,
-  file: fileSchema.refine((file) => file && file.size <= 50 * 1024 * 1024, {
-    message: "파일 크기는 50MB 이하여야 합니다.",
-  }),
+  file: fileSchema.refine(
+    (file) => {
+      // edit 모드의 기존 파일은 크기 체크 생략
+      if (file !== null && typeof file === "object" && "url" in file)
+        return true;
+      return file && file.size <= 50 * 1024 * 1024;
+    },
+    {
+      message: "파일 크기는 50MB 이하여야 합니다.",
+    }
+  ),
   driveLink: z
     .string()
     .optional()
@@ -74,15 +141,35 @@ export const otherFormSchema = z.object({
   ...commonFields,
   image: z
     .any()
-    .refine((file) => file !== null && file instanceof File, {
-      message: "이미지를 업로드해주세요.",
-    })
-    .refine((file) => file && file.size > 0, {
-      message: "이미지를 업로드해주세요.",
-    })
     .refine(
       (file) => {
-        if (!file) return false;
+        // edit 모드: 기존 파일 객체 허용 또는 null (파일 변경 안 함)
+        if (file === null) return true;
+        if (file !== null && typeof file === "object" && "url" in file)
+          return true;
+        return file instanceof File;
+      },
+      {
+        message: "이미지를 업로드해주세요.",
+      }
+    )
+    .refine(
+      (file) => {
+        if (!file) return true; // null 허용
+        if (file !== null && typeof file === "object" && "url" in file)
+          return true;
+        return file.size > 0;
+      },
+      {
+        message: "이미지를 업로드해주세요.",
+      }
+    )
+    .refine(
+      (file) => {
+        if (!file) return true;
+        if (file !== null && typeof file === "object" && "url" in file)
+          return true;
+
         const validTypes = [
           "image/jpeg",
           "image/png",
@@ -93,7 +180,15 @@ export const otherFormSchema = z.object({
       },
       { message: "이미지 파일만 업로드 가능합니다. (JPG, PNG, GIF, WEBP)" }
     )
-    .refine((file) => file && file.size <= 5 * 1024 * 1024, {
-      message: "이미지 크기는 5MB 이하여야 합니다.",
-    }),
+    .refine(
+      (file) => {
+        if (!file) return true;
+        if (file !== null && typeof file === "object" && "url" in file)
+          return true;
+        return file.size <= 5 * 1024 * 1024;
+      },
+      {
+        message: "이미지 크기는 5MB 이하여야 합니다.",
+      }
+    ),
 });
