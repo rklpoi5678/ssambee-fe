@@ -1,26 +1,26 @@
 import { Briefcase, CalendarCheck, ClipboardList, Users } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { DEFAULT_ACTIVE_STATUS_FILTER } from "@/app/(dashboard)/educators/assistants/_constants/assistants.constants";
 import { useAssistantsLoader } from "@/app/(dashboard)/educators/assistants/_hooks/useAssistantsLoader";
-import { TIME_HHMM_REGEX } from "@/constants/regex";
-import { htmlToPlainText } from "@/app/(dashboard)/educators/assistants/_utils/content";
 import {
-  type AssistantDetailDraft,
   contractRecords,
   contractStatusClassMap,
   contractTemplateOptions,
   createAssistantDetailDraft,
+  DEFAULT_ACTIVE_STATUS_FILTER,
   editableStatusOptions,
   PAGE_LIMIT,
   resourceCategoryOptions,
   resourceLibraryItems,
-} from "@/app/(dashboard)/educators/assistants/_types/assistants";
-import type {
+} from "@/constants/assistants.constants";
+import { TIME_HHMM_REGEX } from "@/constants/regex";
+import {
+  type AssistantDetailDraft,
   ActiveStatusFilter,
   AssistantsModalType,
   AssistantsStatItem,
-} from "@/app/(dashboard)/educators/assistants/_types/assistants.page.types";
+} from "@/types/assistants.view";
+import { htmlToPlainText } from "@/utils/assistants";
 import { createAssistantOrderAPI } from "@/services/assistants/assistantOrders.service";
 import type { AssistantOrderPriority } from "@/types/assistantOrders";
 import {

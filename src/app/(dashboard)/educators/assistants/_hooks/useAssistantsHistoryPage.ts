@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { htmlToPlainText } from "@/app/(dashboard)/educators/assistants/_utils/content";
 import { fetchAssistantOrdersAPI } from "@/services/assistants/assistantOrders.service";
 import type { AssistantOrderApi } from "@/types/assistantOrders";
+import { htmlToPlainText } from "@/utils/assistants";
 
 export type TaskStatus = "진행 중" | "완료" | "보류";
 export type TaskPriority = "높음" | "보통" | "낮음";

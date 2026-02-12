@@ -13,7 +13,7 @@ import TaskCreateModal from "@/app/(dashboard)/educators/assistants/_modals/Task
 import {
   createAssistantDetailDraft,
   statusColorMap,
-} from "@/app/(dashboard)/educators/assistants/_types/assistants";
+} from "@/constants/assistants.constants";
 import { useAuthContext } from "@/providers/AuthProvider";
 import { useSetBreadcrumb } from "@/hooks/useBreadcrumb";
 

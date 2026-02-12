@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import {
   type Assistant,
   type ResourceLibraryItem,
-} from "@/app/(dashboard)/educators/assistants/_types/assistants";
+} from "@/types/assistants.view";
 import { DatePickerField } from "@/components/common/input/DatePickerField";
 import TiptapEditor from "@/components/common/editor/TiptapEditor";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
