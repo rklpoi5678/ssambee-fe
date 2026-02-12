@@ -18,6 +18,7 @@ type DatePickerFieldProps<T extends FieldValues> = {
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  onValueChange?: (value: string) => void;
 };
 
 const formatDisplayDate = (date: Date) => {
@@ -35,6 +36,7 @@ export function DatePickerField<T extends FieldValues>({
   placeholder = "날짜 선택",
   disabled,
   className,
+  onValueChange,
 }: DatePickerFieldProps<T>) {
   const { field } = useController({ control, name });
   const [open, setOpen] = useState(false);
@@ -71,7 +73,9 @@ export function DatePickerField<T extends FieldValues>({
           selected={selectedDate}
           onSelect={(date) => {
             if (!date) return;
-            field.onChange(formatValueDate(date));
+            const nextValue = formatValueDate(date);
+            field.onChange(nextValue);
+            onValueChange?.(nextValue);
             setOpen(false);
           }}
           className="eduops-date-picker"

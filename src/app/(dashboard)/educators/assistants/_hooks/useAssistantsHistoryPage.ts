@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { htmlToPlainText } from "@/app/(dashboard)/educators/assistants/_utils/content";
+import { fetchAssistantOrdersAPI } from "@/services/assistants/assistantOrders.service";
 import type { AssistantOrderApi } from "@/types/assistantOrders";
 
 export type TaskStatus = "진행 중" | "완료" | "보류";
@@ -12,6 +14,7 @@ export type InstructionTask = {
   assistantName: string;
   instructorName: string;
   issuedAt: string;
+  issuedAtTimestamp: number;
   dueAt: string;
   priority: TaskPriority;
   status: TaskStatus;
@@ -59,18 +62,56 @@ const priorityDetailClassMap: Record<TaskPriority, string> = {
   낮음: "bg-slate-100 text-slate-600",
 };
 
+const getErrorMessage = (error: unknown) => {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return "업무 지시 내역을 불러오는 중 오류가 발생했습니다.";
+};
+
+const toKoreanDateTime = (value?: string | null) => {
+  if (!value) {
+    return "-";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hour = String(date.getHours()).padStart(2, "0");
+  const minute = String(date.getMinutes()).padStart(2, "0");
+
+  return `${year}. ${month}. ${day} ${hour}:${minute}`;
+};
+
+const toTimestamp = (value?: string | null) => {
+  if (!value) {
+    return 0;
+  }
+
+  const timestamp = new Date(value).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+};
+
 const normalizePriority = (
   priority: AssistantOrderApi["priority"]
 ): TaskPriority => {
-  if (priority === "HIGH") return "높음";
-  if (priority === "LOW") return "낮음";
+  if (priority === "URGENT") return "높음";
+  if (priority === "HIGH") return "보통";
+  if (priority === "NORMAL") return "낮음";
   return "보통";
 };
 
 const normalizeStatus = (status: AssistantOrderApi["status"]): TaskStatus => {
-  if (status === "COMPLETED") return "완료";
-  if (status === "ON_HOLD") return "보류";
-  return "진행 중";
+  if (status === "END") return "완료";
+  if (status === "IN_PROGRESS") return "진행 중";
+  if (status === "PENDING") return "보류";
+  return "보류";
 };
 
 export const mapAssistantOrderApiToTask = (
@@ -78,15 +119,16 @@ export const mapAssistantOrderApiToTask = (
 ): InstructionTask => ({
   id: order.id,
   title: order.title,
-  subtitle: order.subtitle ?? "-",
-  assistantName: order.assistantName ?? "-",
-  instructorName: order.instructorName ?? "-",
-  issuedAt: order.issuedAt ?? "-",
-  dueAt: order.dueAt ?? "-",
+  subtitle: order.lecture?.title ?? "",
+  assistantName: order.assistant?.name ?? "-",
+  instructorName: order.instructor?.name ?? "-",
+  issuedAt: toKoreanDateTime(order.createdAt),
+  issuedAtTimestamp: toTimestamp(order.createdAt),
+  dueAt: toKoreanDateTime(order.deadlineAt),
   priority: normalizePriority(order.priority),
   status: normalizeStatus(order.status),
-  description: order.description ?? "",
-  attachmentCount: order.attachmentCount ?? 0,
+  description: htmlToPlainText(order.memo),
+  attachmentCount: order.attachments?.length ?? 0,
 });
 
 function getDateByPeriod(period: (typeof periodOptions)[number]) {
@@ -105,7 +147,9 @@ function getDateByPeriod(period: (typeof periodOptions)[number]) {
 }
 
 export const useAssistantsHistoryPage = () => {
-  const taskRecords = useMemo(() => [] as InstructionTask[], []);
+  const [taskRecords, setTaskRecords] = useState<InstructionTask[]>([]);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -116,6 +160,26 @@ export const useAssistantsHistoryPage = () => {
   const [periodFilter, setPeriodFilter] =
     useState<(typeof periodOptions)[number]>("최근 1개월");
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+
+  const loadTaskRecords = useCallback(async () => {
+    setIsHistoryLoading(true);
+
+    try {
+      const response = await fetchAssistantOrdersAPI({ page: 1, limit: 100 });
+      const orders = response.orders ?? response.items ?? [];
+      setTaskRecords(orders.map(mapAssistantOrderApiToTask));
+      setHistoryError(null);
+    } catch (error) {
+      setTaskRecords([]);
+      setHistoryError(getErrorMessage(error));
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadTaskRecords();
+  }, [loadTaskRecords]);
 
   const filteredTasks = useMemo(() => {
     const lowerKeyword = searchKeyword.trim().toLowerCase();
@@ -135,9 +199,7 @@ export const useAssistantsHistoryPage = () => {
         priorityFilter === "전체" || task.priority === priorityFilter;
 
       const issuedDate =
-        task.issuedAt === "-"
-          ? null
-          : new Date(task.issuedAt.replace(" ", "T"));
+        task.issuedAtTimestamp > 0 ? new Date(task.issuedAtTimestamp) : null;
       const periodMatched =
         periodStartDate === null ||
         (issuedDate !== null &&
@@ -195,6 +257,9 @@ export const useAssistantsHistoryPage = () => {
     priorityClassMap,
     priorityDetailLabelMap,
     priorityDetailClassMap,
+    isHistoryLoading,
+    historyError,
+    loadTaskRecords,
     taskRecords,
     totalCount,
     paginatedTasks,
