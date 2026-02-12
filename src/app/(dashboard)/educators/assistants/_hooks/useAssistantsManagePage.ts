@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useAssistantsLoader } from "@/app/(dashboard)/educators/assistants/_hooks/useAssistantsLoader";
 import {
-  contractRecords,
   contractStatusClassMap,
   contractTemplateOptions,
   createAssistantDetailDraft,
@@ -11,15 +10,18 @@ import {
   editableStatusOptions,
   PAGE_LIMIT,
   resourceCategoryOptions,
-  resourceLibraryItems,
 } from "@/constants/assistants.constants";
+import {
+  mockContractRecords,
+  mockResourceLibraryItems,
+} from "@/data/assistants.mock";
 import { TIME_HHMM_REGEX } from "@/constants/regex";
 import {
   type AssistantDetailDraft,
   ActiveStatusFilter,
   AssistantsModalType,
   AssistantsStatItem,
-} from "@/types/assistants.view";
+} from "@/types/assistants";
 import { htmlToPlainText } from "@/utils/assistants";
 import { createAssistantOrderAPI } from "@/services/assistants/assistantOrders.service";
 import type { AssistantOrderPriority } from "@/types/assistantOrders";
@@ -195,7 +197,7 @@ export const useAssistantsManagePage = () => {
 
   const attachedResources = useMemo(
     () =>
-      resourceLibraryItems.filter((item) =>
+      mockResourceLibraryItems.filter((item) =>
         attachedResourceIds.includes(item.id)
       ),
     [attachedResourceIds]
@@ -204,7 +206,7 @@ export const useAssistantsManagePage = () => {
   const filteredResourceLibraryItems = useMemo(() => {
     const normalizedKeyword = resourceSearchKeyword.trim().toLowerCase();
 
-    return resourceLibraryItems.filter((resource) => {
+    return mockResourceLibraryItems.filter((resource) => {
       const categoryMatched =
         resourceCategoryFilter === "전체" ||
         resource.category === resourceCategoryFilter;
@@ -393,15 +395,24 @@ export const useAssistantsManagePage = () => {
       return;
     }
 
+    let deadlineAt: string | undefined;
+    if (taskDeadlineDate) {
+      const parsedDeadline = new Date(
+        `${taskDeadlineDate}T${taskDeadlineTime || "00:00"}`
+      );
+
+      if (Number.isNaN(parsedDeadline.getTime())) {
+        setActionNotice("마감 일시 형식을 다시 확인해주세요.");
+        return;
+      }
+
+      deadlineAt = parsedDeadline.toISOString();
+    }
+
     setIsCreatingTask(true);
 
     try {
       const sanitizedMemo = htmlToPlainText(taskInstructionContent);
-      const deadlineAt = taskDeadlineDate
-        ? new Date(
-            `${taskDeadlineDate}T${taskDeadlineTime || "00:00"}`
-          ).toISOString()
-        : undefined;
 
       await createAssistantOrderAPI({
         assistantId: taskAssigneeId,
@@ -465,7 +476,7 @@ export const useAssistantsManagePage = () => {
     closeAssistantDetailModal,
     saveAssistantDetail,
     retireAssistant,
-    contractRecords,
+    contractRecords: mockContractRecords,
     contractStatusClassMap,
     sendTargetId: resolvedSendTargetId,
     setSendTargetId,

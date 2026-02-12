@@ -354,9 +354,11 @@ export default function AssistantsTaskHistoryPage() {
               <p className="text-lg font-bold leading-tight">
                 {selectedTask.title}
               </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {selectedTask.subtitle}
-              </p>
+              {selectedTask.subtitle ? (
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {selectedTask.subtitle}
+                </p>
+              ) : null}
             </div>
 
             <div className="space-y-5 text-sm">

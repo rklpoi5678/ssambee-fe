@@ -5,7 +5,7 @@ import type { AssistantOrderApi } from "@/types/assistantOrders";
 import { htmlToPlainText } from "@/utils/assistants";
 
 export type TaskStatus = "진행 중" | "완료" | "보류";
-export type TaskPriority = "높음" | "보통" | "낮음";
+export type TaskPriority = "긴급" | "높음" | "보통";
 
 export type InstructionTask = {
   id: string;
@@ -32,9 +32,9 @@ const statusOptions: Array<TaskStatus | "전체"> = [
 ];
 const priorityOptions: Array<TaskPriority | "전체"> = [
   "전체",
+  "긴급",
   "높음",
   "보통",
-  "낮음",
 ];
 const periodOptions = ["최근 1개월", "최근 3개월", "전체"] as const;
 
@@ -45,21 +45,21 @@ const statusColorMap: Record<TaskStatus, "blue" | "green" | "gray"> = {
 };
 
 const priorityClassMap: Record<TaskPriority, string> = {
+  긴급: "bg-red-50 text-red-600",
   높음: "bg-red-50 text-red-600",
   보통: "bg-blue-50 text-blue-600",
-  낮음: "bg-gray-100 text-gray-600",
 };
 
 const priorityDetailLabelMap: Record<TaskPriority, string> = {
-  높음: "긴급",
+  긴급: "긴급",
+  높음: "높음",
   보통: "보통",
-  낮음: "일반",
 };
 
 const priorityDetailClassMap: Record<TaskPriority, string> = {
+  긴급: "bg-red-100 text-red-600",
   높음: "bg-red-100 text-red-600",
   보통: "bg-blue-100 text-blue-700",
-  낮음: "bg-slate-100 text-slate-600",
 };
 
 const getErrorMessage = (error: unknown) => {
@@ -101,9 +101,9 @@ const toTimestamp = (value?: string | null) => {
 const normalizePriority = (
   priority: AssistantOrderApi["priority"]
 ): TaskPriority => {
-  if (priority === "URGENT") return "높음";
-  if (priority === "HIGH") return "보통";
-  if (priority === "NORMAL") return "낮음";
+  if (priority === "URGENT") return "긴급";
+  if (priority === "HIGH") return "높음";
+  if (priority === "NORMAL") return "보통";
   return "보통";
 };
 
@@ -162,13 +162,41 @@ export const useAssistantsHistoryPage = () => {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   const loadTaskRecords = useCallback(async () => {
+    const requestLimit = 100;
+    const maxPageFetch = 20;
+
     setIsHistoryLoading(true);
 
     try {
-      const response = await fetchAssistantOrdersAPI({ page: 1, limit: 100 });
-      const orders = response.orders ?? response.items ?? [];
-      setTaskRecords(orders.map(mapAssistantOrderApiToTask));
-      setHistoryError(null);
+      let page = 1;
+      let hasNextPage = true;
+      const accumulatedOrders: AssistantOrderApi[] = [];
+
+      while (hasNextPage && page <= maxPageFetch) {
+        const response = await fetchAssistantOrdersAPI({
+          page,
+          limit: requestLimit,
+        });
+        const orders = response.orders ?? response.items ?? [];
+        accumulatedOrders.push(...orders);
+
+        if (response.pagination) {
+          hasNextPage =
+            response.pagination.hasNextPage &&
+            page < response.pagination.totalPage;
+        } else {
+          hasNextPage = orders.length === requestLimit;
+        }
+
+        page += 1;
+      }
+
+      setTaskRecords(accumulatedOrders.map(mapAssistantOrderApiToTask));
+      setHistoryError(
+        hasNextPage
+          ? "업무 내역이 많아 일부만 불러왔습니다. 필터를 적용해 다시 시도해주세요."
+          : null
+      );
     } catch (error) {
       setTaskRecords([]);
       setHistoryError(getErrorMessage(error));

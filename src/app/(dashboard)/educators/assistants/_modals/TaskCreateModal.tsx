@@ -2,10 +2,7 @@ import { CheckSquare, ClipboardCheck, FileText } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
-import {
-  type Assistant,
-  type ResourceLibraryItem,
-} from "@/types/assistants.view";
+import { type Assistant, type ResourceLibraryItem } from "@/types/assistants";
 import { DatePickerField } from "@/components/common/input/DatePickerField";
 import TiptapEditor from "@/components/common/editor/TiptapEditor";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -125,7 +122,9 @@ export default function TaskCreateModal({
                 새 업무 지시 등록
               </DialogTitle>
               <DialogDescription className="mt-1">
-                김민수 조교에게 업무를 전달합니다.
+                {selectedAssistant
+                  ? `${selectedAssistant.name} 조교에게 업무를 전달합니다.`
+                  : "조교를 선택하여 업무를 전달합니다."}
               </DialogDescription>
             </div>
           </div>

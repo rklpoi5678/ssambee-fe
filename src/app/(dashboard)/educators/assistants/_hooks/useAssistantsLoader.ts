@@ -11,7 +11,7 @@ import type {
   Assistant,
   AssistantsDashboardSummary,
   AssistantsSummary,
-} from "@/types/assistants.view";
+} from "@/types/assistants";
 import { mapAssistantsApiToView } from "@/services/assistants/assistants.mapper";
 import { fetchAssistantOrdersStatsAPI } from "@/services/assistants/assistantOrders.service";
 import { fetchAssistantsAPI } from "@/services/assistants/assistants.service";

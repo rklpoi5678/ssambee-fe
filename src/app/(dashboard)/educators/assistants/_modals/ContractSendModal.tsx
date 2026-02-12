@@ -1,6 +1,6 @@
 import { FileUp, Mail, SendHorizontal } from "lucide-react";
 
-import type { Assistant } from "@/types/assistants.view";
+import type { Assistant } from "@/types/assistants";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

@@ -4,7 +4,7 @@ import {
   type Assistant,
   type ContractRecord,
   type ContractStatus,
-} from "@/types/assistants.view";
+} from "@/types/assistants";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 import {
   type ResourceLibraryItem,
   type ResourceLibraryCategory,
-} from "@/types/assistants.view";
+} from "@/types/assistants";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
