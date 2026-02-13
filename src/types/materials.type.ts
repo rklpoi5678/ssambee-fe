@@ -20,6 +20,14 @@ export type VideoFormData = z.infer<typeof videoFormSchema>;
 export type RequestFormData = z.infer<typeof requestFormSchema>;
 export type OtherFormData = z.infer<typeof otherFormSchema>;
 
+export type MaterialQueryParams = {
+  page?: number;
+  limit?: number;
+  type?: MaterialsType | "ALL";
+  lectureId?: string;
+  sort?: "latest" | "oldest";
+};
+
 export type MaterialsPagination = {
   totalCount: number;
   totalPage: number;
@@ -39,12 +47,22 @@ export type Materials = {
   id: string;
   title: string; // 제목
   description: string; // 소개 또는 세부 내용
-  file?: File | null; // 첨부파일(시험지, 요청 자료)
-  image?: File | string | null; // 이미지 파일 또는 URL
-  link?: string; // 동영상 링크
-  writer: string; // 작성자
-  date: string; // 작성일
   type: MaterialsType; // 자료 유형
-  classId?: string; // 반 아이디
-  className?: string; // 반 이름
+  writer: string; // 작성자
+  date: string; // 등록일
+  classId?: string | null; // 강의 ID
+  className?: string | null; // 강의명
+  file?: { name: string; url: string }; // 파일 정보 (PAPER, REQUEST, OTHER)
+  link?: string; // 동영상 링크
+};
+
+export type MaterialsDetailResponse = {
+  status: string;
+  data: Materials;
+  message: string;
+};
+
+export type DownloadResponse = {
+  url: string;
+  type: "file" | "youtube";
 };

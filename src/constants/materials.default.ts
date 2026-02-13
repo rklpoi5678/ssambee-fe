@@ -22,9 +22,8 @@ export const MATERIALS_TYPE_LABEL = {
 } as const;
 
 export const SORT_OPTIONS = [
-  { label: "전체", value: "ALL" },
-  { label: "최신순", value: "LATEST" },
-  { label: "오래된순", value: "OLDEST" },
+  { label: "최신순", value: "latest" },
+  { label: "오래된순", value: "oldest" },
 ];
 
 export function getPaperFormDefaults(): PaperFormData {
@@ -43,7 +42,7 @@ export function getVideoFormDefaults(): VideoFormData {
     writer: "",
     className: "",
     description: "",
-    youtubeLink: "",
+    link: "",
   };
 }
 

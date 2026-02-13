@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -33,6 +33,7 @@ export default function RequestTypeForm({
     control,
     getValues,
     formState: { errors, isValid },
+    reset,
   } = useForm<RequestFormData>({
     resolver: mode === "view" ? undefined : zodResolver(requestFormSchema),
     mode: "onChange",
@@ -48,15 +49,40 @@ export default function RequestTypeForm({
       : { ...getRequestFormDefaults(), writer: userName },
   });
 
-  const formValues = useWatch({ control });
-  const file = useWatch({ control, name: "file" });
+  // 모든 폼 필드 실시간 추적
+  const watchedValues = useWatch({ control });
+
+  const file = watchedValues.file;
+  const driveLink = watchedValues.driveLink ?? initialData?.link;
+
+  // onDataChange를 ref로 관리하여 의존성 배열에서 제외
+  const onDataChangeRef = useRef(onDataChange);
+  useEffect(() => {
+    onDataChangeRef.current = onDataChange;
+  }, [onDataChange]);
 
   useEffect(() => {
-    if (mode !== "view") {
-      const formData = getValues();
-      onDataChange?.(formData, isValid);
+    if (mode !== "view" && onDataChangeRef.current) {
+      // 다음 렌더링 사이클로 연기
+      queueMicrotask(() => {
+        onDataChangeRef.current?.(getValues(), isValid);
+      });
     }
-  }, [formValues, isValid, getValues, onDataChange, mode]);
+  }, [watchedValues, isValid, mode, getValues]);
+
+  // mode가 view로 변경될 때 (취소 시) 폼 초기화
+  useEffect(() => {
+    if (mode === "view" && initialData) {
+      reset({
+        title: initialData.title,
+        writer: initialData?.writer ? initialData.writer : userName,
+        className: initialData.className || "",
+        description: initialData.description,
+        file: initialData.file || null,
+        driveLink: initialData.link || "",
+      });
+    }
+  }, [mode, initialData, userName, reset]);
 
   return (
     <Card>
@@ -116,20 +142,18 @@ export default function RequestTypeForm({
               onFileChange={(file) =>
                 setValue("file", file, { shouldValidate: true })
               }
-              accept="*"
+              accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsm,.xlsx,.hwp,.hwpx,image/*"
               error={errors.file?.message as string}
             />
           )}
 
-          {isDisabled && file && (
+          {isDisabled && initialData?.file && (
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 첨부 파일
               </label>
               <div className="border rounded-lg p-4 bg-gray-50">
-                <p className="text-sm text-gray-900">
-                  {file instanceof File ? file.name : file}
-                </p>
+                <p className="text-sm text-gray-900">{initialData.file.name}</p>
               </div>
             </div>
           )}
@@ -143,9 +167,9 @@ export default function RequestTypeForm({
               {...register("driveLink")}
             />
 
-            {isDisabled && initialData?.link && (
+            {isDisabled && driveLink && driveLink.length > 0 && (
               <a
-                href={initialData.link}
+                href={driveLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="구글 드라이브 링크 열기"

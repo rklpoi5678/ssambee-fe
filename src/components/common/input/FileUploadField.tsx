@@ -38,7 +38,7 @@ export default function FileUploadField({
     <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-700">{label}</label>
 
-      {!file ? (
+      {!file && !externalPreviewUrl ? (
         <div
           onClick={() => fileInputRef.current?.click()}
           className={cn(
@@ -61,11 +61,13 @@ export default function FileUploadField({
           <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
-                {file.name}
+                {file ? file.name : "기존 이미지"}
               </p>
-              <p className="text-xs text-gray-500">
-                {(file.size / 1024).toFixed(2)} KB
-              </p>
+              {file && (
+                <p className="text-xs text-gray-500">
+                  {(file.size / 1024).toFixed(2)} KB
+                </p>
+              )}
             </div>
             <button
               type="button"
@@ -76,7 +78,7 @@ export default function FileUploadField({
             </button>
           </div>
 
-          {/* 부모가 전달해준 URL이 있을 때만 이미지를 보여줌 */}
+          {/* 이미지 미리보기 */}
           {showPreview && externalPreviewUrl && (
             <div className="mt-4">
               <Image

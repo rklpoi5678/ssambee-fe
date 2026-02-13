@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
@@ -12,6 +12,7 @@ import FileUploadField from "@/components/common/input/FileUploadField";
 import { OtherFormData, FormMode, Materials } from "@/types/materials.type";
 import { otherFormSchema } from "@/validation/materials.validation";
 import { getOtherFormDefaults } from "@/constants/materials.default";
+import { materialsService } from "@/services/materials.service";
 
 type OtherTypeFormProps = {
   mode?: FormMode;
@@ -27,9 +28,9 @@ export default function OtherTypeForm({
   userName,
 }: OtherTypeFormProps) {
   const isDisabled = mode === "view";
-  const [imageFile, setImageFile] = useState<File | null>(
-    initialData?.image instanceof File ? initialData.image : null
-  );
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [displayImageUrl, setDisplayImageUrl] = useState<string | null>(null);
+  const [imageRemoved, setImageRemoved] = useState(false);
 
   const {
     register,
@@ -46,49 +47,87 @@ export default function OtherTypeForm({
           writer: initialData?.writer ? initialData.writer : userName,
           className: initialData.className || "",
           description: initialData.description,
-          image: initialData.image instanceof File ? initialData.image : null,
+          image: null,
         }
       : { ...getOtherFormDefaults(), writer: userName },
   });
 
   const handleImageChange = (file: File | null) => {
-    setImageFile(file); // 미리보기용 로컬 상태 업데이트
-    setValue("image", file, { shouldValidate: true }); // react-hook-form 상태 업데이트 (실제 전송용)
+    setImageFile(file);
+    setValue("image", file, { shouldValidate: true });
+    // 파일이 제거되면 미리보기 URL도 초기화
+    if (file === null) {
+      // 이미지를 제거한 경우
+      setImageRemoved(true);
+      setDisplayImageUrl(null);
+    } else {
+      // 이미지를 추가한 경우
+      setImageRemoved(false);
+    }
   };
 
   const watchedValues = useWatch({ control });
 
+  // onDataChange를 ref로 관리하여 의존성 배열에서 제외
+  const onDataChangeRef = useRef(onDataChange);
   useEffect(() => {
-    if (mode !== "view") {
-      const formData = getValues();
-      onDataChange?.(formData, isValid);
-    }
-  }, [watchedValues, isValid, getValues, onDataChange, mode]);
+    onDataChangeRef.current = onDataChange;
+  }, [onDataChange]);
 
-  /**
-   * [실제 서비스용 로직]
-   * 1. 사용자가 파일을 새로 올렸으면 Blob URL 생성
-   * 2. 없으면 기존 DB에 있던 이미지 URL 사용
-   * 3. 컴포넌트가 사라지거나 파일이 바뀌면 메모리에서 삭제
-   */
-  const displayImageUrl = useMemo(() => {
-    if (imageFile) {
-      return URL.createObjectURL(imageFile);
-    }
-    if (typeof initialData?.image === "string") {
-      return initialData.image;
-    }
-    return null;
-  }, [imageFile, initialData?.image]);
-
-  // 메모리 정리
   useEffect(() => {
-    return () => {
-      if (displayImageUrl && displayImageUrl.startsWith("blob:")) {
-        URL.revokeObjectURL(displayImageUrl);
+    if (mode !== "view" && onDataChangeRef.current) {
+      // 다음 렌더링 사이클로 연기
+      queueMicrotask(() => {
+        onDataChangeRef.current?.(getValues(), isValid);
+      });
+    }
+  }, [watchedValues, isValid, mode, getValues]);
+
+  // 이미지 URL 생성 및 업데이트
+  useEffect(() => {
+    let isMounted = true;
+    let objectUrl: string | null = null;
+
+    const updateImageUrl = async () => {
+      // 새로 선택한 이미지 파일이 있는 경우
+      if (imageFile) {
+        objectUrl = URL.createObjectURL(imageFile);
+        if (isMounted) {
+          setDisplayImageUrl(objectUrl);
+          return;
+        }
+      }
+      if (initialData?.id && !imageRemoved) {
+        // 삭제하지 않았다면 기존 이미지
+        try {
+          const response = await materialsService.getDownloadUrl(
+            initialData.id
+          );
+          if (isMounted) {
+            setDisplayImageUrl(response.url);
+          }
+        } catch (err) {
+          console.error("이미지 URL 가져오기 실패:", err);
+          if (isMounted) {
+            setDisplayImageUrl(null);
+          }
+        }
+      } else {
+        if (isMounted) {
+          setDisplayImageUrl(null);
+        }
       }
     };
-  }, [displayImageUrl]);
+
+    updateImageUrl();
+
+    return () => {
+      isMounted = false;
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [imageFile, initialData?.id, imageRemoved]);
 
   return (
     <Card>
@@ -160,12 +199,11 @@ export default function OtherTypeForm({
               </label>
               <div className="border rounded-lg p-4 bg-gray-50">
                 <Image
-                  src={displayImageUrl!}
+                  src={displayImageUrl}
                   alt={initialData?.title || "이미지"}
                   width={400}
                   height={300}
-                  // blob URL일 때는 Next.js 서버 최적화 건너뜀
-                  unoptimized={displayImageUrl.startsWith("blob:")}
+                  unoptimized={true}
                   className="max-w-full h-auto max-h-[300px] rounded-lg object-contain"
                 />
               </div>

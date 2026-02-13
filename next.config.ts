@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "placehold.jp",
+        hostname: "ssambee-dev-lms-documents.s3.ap-northeast-2.amazonaws.com",
       },
     ],
   },

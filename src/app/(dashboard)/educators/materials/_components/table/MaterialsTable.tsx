@@ -1,83 +1,102 @@
 "use client";
 
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 import DataTable from "@/components/common/table/DataTable";
-import { MOCK_MATERIALS } from "@/data/materials.mock";
-import { Materials } from "@/types/materials.type";
+import { Materials, MaterialsType } from "@/types/materials.type";
 import { Pagination } from "@/components/common/pagination/Pagination";
+import { useMaterials } from "@/hooks/useMaterials";
+import { materialsService } from "@/services/materials.service";
 
 import { MATERIALS_TABLE_COLUMNS } from "./MaterialsTableColumns";
 
-export default function MaterialsTable() {
-  const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
+type MaterialsTableProps = {
+  searchKeyword: string;
+  selectedType: MaterialsType | "ALL";
+  selectedSort: "latest" | "oldest";
+};
 
-  // 현재 화면에 있는 데이터 ID 추출
-  const currentDataIds = MOCK_MATERIALS.map((m) => m.id);
+export default function MaterialsTable({
+  searchKeyword,
+  selectedType,
+  selectedSort,
+}: MaterialsTableProps) {
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  // 현재 화면의 데이터가 모두 선택되었는지 확인
-  const isAllSelected =
-    currentDataIds.length > 0 &&
-    currentDataIds.every((id) => selectedMaterials.includes(id));
+  const [prevFilters, setPrevFilters] = useState({
+    selectedType,
+    selectedSort,
+  });
 
-  const handleToggleAll = () => {
-    if (isAllSelected) {
-      // 현재 화면에 있는 ID들만 기존 선택 목록에서 제외
-      setSelectedMaterials((prev) =>
-        prev.filter((id) => !currentDataIds.includes(id))
-      );
-    } else {
-      // 기존 선택에 현재 화면 ID들만 추가 (중복 제거)
-      setSelectedMaterials((prev) =>
-        Array.from(new Set([...prev, ...currentDataIds]))
-      );
+  // 필터 바뀌면 페이지 리셋
+  if (
+    prevFilters.selectedType !== selectedType ||
+    prevFilters.selectedSort !== selectedSort
+  ) {
+    setPrevFilters({ selectedType, selectedSort });
+    setPage(1);
+  }
+
+  // 실제 데이터 Fetching
+  const { materialsQuery } = useMaterials({
+    page,
+    limit,
+    type: selectedType,
+    sort: selectedSort,
+  });
+
+  const { data, isLoading } = materialsQuery;
+
+  // TODO: 서버에 검색 기능 요청
+  // 검색 필터링
+  const materials = data?.materials || [];
+  const filteredMaterials = searchKeyword.trim()
+    ? materials.filter((material) =>
+        material.title.toLowerCase().includes(searchKeyword.toLowerCase())
+      )
+    : materials;
+
+  const handleDownload = async (material: Materials) => {
+    try {
+      const response = await materialsService.getDownloadUrl(material.id);
+
+      // 파일이든 YouTube든 새 탭에서 열기
+      window.open(response.url, "_blank");
+    } catch (error) {
+      console.error("다운로드 링크를 가져오는데 실패했습니다.", error);
+      alert("다운로드 링크를 가져오는데 실패했습니다.");
     }
   };
 
-  const handleToggleMaterial = (material: Materials) => {
-    setSelectedMaterials(
-      (prev) =>
-        prev.includes(material.id)
-          ? prev.filter((id) => id !== material.id) // 이미 있으면 제거
-          : [...prev, material.id] // 없으면 추가
+  if (isLoading) {
+    return (
+      <div className="min-h-[500px] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
     );
-  };
-
-  // 파일 다운로드 핸들러
-  const handleDownload = (material: Materials) => {
-    if (!material.file) {
-      alert("다운로드할 파일이 없습니다.");
-      return;
-    }
-
-    // TODO: 실제 API에서는 파일 URL을 받아서 다운로드
-    const fileName = material.file.name || material.title;
-    alert(`다운로드: ${fileName}`);
-  };
+  }
 
   return (
     <div className="min-h-[550px]">
       <DataTable
-        data={MOCK_MATERIALS}
+        data={filteredMaterials}
         columns={MATERIALS_TABLE_COLUMNS({
-          selectedMaterials,
-          onToggleMaterial: handleToggleMaterial,
-          onToggleAllMaterials: handleToggleAll,
-          isCurrentPageAllSelected: isAllSelected,
           onDownload: handleDownload,
         })}
       />
 
       <Pagination
         pagination={{
-          totalCount: MOCK_MATERIALS.length,
-          totalPage: 1,
-          currentPage: 1,
-          limit: 10,
-          hasNextPage: false,
-          hasPrevPage: false,
+          totalCount: data?.pagination.totalCount || 0,
+          totalPage: data?.pagination.totalPage || 0,
+          currentPage: data?.pagination.currentPage || 1,
+          limit: data?.pagination.limit || limit,
+          hasNextPage: data?.pagination.hasNextPage || false,
+          hasPrevPage: data?.pagination.hasPrevPage || false,
         }}
-        onPageChange={() => {}}
+        onPageChange={(page) => setPage(page)}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -29,9 +29,10 @@ export default function VideoTypeForm({
 
   const {
     register,
-    control,
     getValues,
+    control,
     formState: { errors, isValid },
+    reset,
   } = useForm<VideoFormData>({
     resolver: mode === "view" ? undefined : zodResolver(videoFormSchema),
     mode: "onChange",
@@ -41,21 +42,44 @@ export default function VideoTypeForm({
           writer: initialData?.writer ? initialData.writer : userName,
           className: initialData.className || "",
           description: initialData.description,
-          youtubeLink: initialData.link || "",
+          link: initialData.link || "",
         }
       : { ...getVideoFormDefaults(), writer: userName },
   });
 
-  const watchedFields = useWatch({ control });
-  const youtubeLink = watchedFields.youtubeLink;
-  const videoId = getYoutubeVideoId(youtubeLink || "");
+  // 모든 폼 필드 실시간 추적
+  const watchedValues = useWatch({ control });
+
+  const link = watchedValues.link ?? initialData?.link;
+  const videoId = getYoutubeVideoId(link || "");
+
+  // onDataChange를 ref로 관리하여 의존성 배열에서 제외
+  const onDataChangeRef = useRef(onDataChange);
+  useEffect(() => {
+    onDataChangeRef.current = onDataChange;
+  }, [onDataChange]);
 
   useEffect(() => {
-    if (mode !== "view") {
-      const formData = getValues();
-      onDataChange?.(formData, isValid);
+    if (mode !== "view" && onDataChangeRef.current) {
+      // 다음 렌더링 사이클로 연기
+      queueMicrotask(() => {
+        onDataChangeRef.current?.(getValues(), isValid);
+      });
     }
-  }, [watchedFields, isValid, getValues, onDataChange, mode]);
+  }, [watchedValues, isValid, mode, getValues]);
+
+  // mode가 view로 변경될 때 (취소 시) 폼 초기화
+  useEffect(() => {
+    if (mode === "view" && initialData) {
+      reset({
+        title: initialData.title,
+        writer: initialData?.writer ? initialData.writer : userName,
+        className: initialData.className || "",
+        description: initialData.description,
+        link: initialData.link || "",
+      });
+    }
+  }, [mode, initialData, userName, reset]);
 
   return (
     <Card>
@@ -110,13 +134,13 @@ export default function VideoTypeForm({
 
           <InputForm
             label="YouTube 링크"
-            id="youtubeLink"
-            error={errors.youtubeLink?.message}
+            id="link"
+            error={errors.link?.message}
             disabled={isDisabled}
-            {...register("youtubeLink")}
+            {...register("link")}
           />
 
-          {youtubeLink && videoId && (
+          {link && videoId && videoId.length > 0 && (
             <div className="mt-4">
               <p className="text-sm font-medium text-gray-700 mb-2">미리보기</p>
               <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black">

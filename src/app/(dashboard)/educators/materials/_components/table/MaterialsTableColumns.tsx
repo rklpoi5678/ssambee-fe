@@ -3,42 +3,14 @@ import { Download } from "lucide-react";
 
 import { Materials } from "@/types/materials.type";
 import { MATERIALS_TYPE_LABEL } from "@/constants/materials.default";
-import { Checkbox } from "@/components/ui/checkbox";
 import StatusLabel from "@/components/common/label/StatusLabel";
 import { Button } from "@/components/ui/button";
 
 export const MATERIALS_TABLE_COLUMNS = ({
-  selectedMaterials,
-  onToggleMaterial,
-  onToggleAllMaterials,
-  isCurrentPageAllSelected,
   onDownload,
 }: {
-  selectedMaterials: string[];
-  onToggleMaterial: (material: Materials) => void;
-  onToggleAllMaterials: (checked: boolean) => void;
-  isCurrentPageAllSelected: boolean;
   onDownload: (material: Materials) => void;
 }) => [
-  {
-    key: "select",
-    label: (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={isCurrentPageAllSelected}
-          onCheckedChange={onToggleAllMaterials}
-        />
-      </div>
-    ),
-    render: (row: Materials) => (
-      <label className="flex items-center justify-center w-full h-full cursor-pointer">
-        <Checkbox
-          checked={selectedMaterials.includes(row.id)}
-          onCheckedChange={() => onToggleMaterial(row)}
-        />
-      </label>
-    ),
-  },
   {
     key: "title",
     label: "자료명",

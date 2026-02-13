@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -33,6 +33,7 @@ export default function PaperTypeForm({
     control,
     getValues,
     formState: { errors, isValid },
+    reset,
   } = useForm<PaperFormData>({
     resolver: mode === "view" ? undefined : zodResolver(paperFormSchema),
     mode: "onChange",
@@ -49,12 +50,33 @@ export default function PaperTypeForm({
 
   const watchedValues = useWatch({ control });
 
+  // onDataChange를 ref로 관리하여 의존성 배열에서 제외
+  const onDataChangeRef = useRef(onDataChange);
   useEffect(() => {
-    if (mode !== "view") {
-      const formData = getValues();
-      onDataChange?.(formData, isValid);
+    onDataChangeRef.current = onDataChange;
+  }, [onDataChange]);
+
+  useEffect(() => {
+    if (mode !== "view" && onDataChangeRef.current) {
+      // 다음 렌더링 사이클로 연기
+      queueMicrotask(() => {
+        onDataChangeRef.current?.(getValues(), isValid);
+      });
     }
-  }, [watchedValues, isValid, getValues, onDataChange, mode]);
+  }, [watchedValues, isValid, mode, getValues]);
+
+  // mode가 view로 변경될 때 (취소 시) 폼 초기화
+  useEffect(() => {
+    if (mode === "view" && initialData) {
+      reset({
+        title: initialData.title,
+        writer: initialData?.writer ? initialData.writer : userName,
+        className: initialData.className || "",
+        description: initialData.description,
+        file: initialData.file || null,
+      });
+    }
+  }, [mode, initialData, userName, reset]);
 
   return (
     <Card>
@@ -114,20 +136,18 @@ export default function PaperTypeForm({
               onFileChange={(file) =>
                 setValue("file", file, { shouldValidate: true })
               }
-              accept=".pdf,.doc,.docx"
+              accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsm,.xlsx,.hwp,.hwpx"
               error={errors.file?.message as string}
             />
           )}
 
-          {isDisabled && watchedValues.file && (
+          {isDisabled && initialData?.file && (
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">
                 첨부 파일
               </label>
               <div className="border rounded-lg p-4 bg-gray-50">
-                <p className="text-sm text-gray-900">
-                  {watchedValues.file.name}
-                </p>
+                <p className="text-sm text-gray-900">{initialData.file.name}</p>
               </div>
             </div>
           )}

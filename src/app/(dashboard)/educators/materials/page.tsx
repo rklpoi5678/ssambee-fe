@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import Title from "@/components/common/header/Title";
 import { useModal } from "@/providers/ModalProvider";
+import { MaterialsType } from "@/types/materials.type";
 
 import MaterialsFilter from "./_components/filter/MaterialsFilter";
 import MaterialsTable from "./_components/table/MaterialsTable";
@@ -10,6 +13,13 @@ import { CreateMaterialsModal } from "./_components/modal/CreateMaterialsModal";
 
 export default function MaterialsPage() {
   const { openModal } = useModal();
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [selectedType, setSelectedType] = useState<MaterialsType | "ALL">(
+    "ALL"
+  );
+  const [selectedSort, setSelectedSort] = useState<"latest" | "oldest">(
+    "latest"
+  );
 
   const handleOpenCreateModal = () => {
     openModal(<CreateMaterialsModal />);
@@ -32,9 +42,20 @@ export default function MaterialsPage() {
         </Button>
       </div>
 
-      <MaterialsFilter />
+      <MaterialsFilter
+        searchKeyword={searchKeyword}
+        selectedType={selectedType}
+        selectedSort={selectedSort}
+        onSearchChange={setSearchKeyword}
+        onTypeChange={setSelectedType}
+        onSortChange={setSelectedSort}
+      />
 
-      <MaterialsTable />
+      <MaterialsTable
+        searchKeyword={searchKeyword}
+        selectedType={selectedType}
+        selectedSort={selectedSort}
+      />
     </div>
   );
 }
