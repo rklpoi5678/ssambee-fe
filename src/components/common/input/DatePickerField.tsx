@@ -19,6 +19,7 @@ type DatePickerBaseProps = {
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  onValueChange?: (value: string) => void;
 };
 
 type DatePickerFieldProps<T extends FieldValues> = {
@@ -28,6 +29,7 @@ type DatePickerFieldProps<T extends FieldValues> = {
   placeholder?: string;
   disabled?: boolean;
   className?: string;
+  onValueChange?: (value: string) => void;
 };
 
 type DatePickerInputProps = {
@@ -57,8 +59,7 @@ function DatePickerBase({
   disabled,
   className,
   onValueChange,
-}: DatePickerFieldProps<T>) {
-  const { field } = useController({ control, name });
+}: DatePickerBaseProps) {
   const [open, setOpen] = useState(false);
 
   const selectedDate = useMemo(() => {
@@ -94,7 +95,7 @@ function DatePickerBase({
           onSelect={(date) => {
             if (!date) return;
             const nextValue = formatValueDate(date);
-            field.onChange(nextValue);
+            onChangeAction(nextValue);
             onValueChange?.(nextValue);
             setOpen(false);
           }}
@@ -126,6 +127,7 @@ export function DatePickerField<T extends FieldValues>({
   placeholder = "날짜 선택",
   disabled,
   className,
+  onValueChange,
 }: DatePickerFieldProps<T>) {
   const { field } = useController({ control, name });
 
@@ -137,6 +139,7 @@ export function DatePickerField<T extends FieldValues>({
       placeholder={placeholder}
       disabled={disabled}
       className={className}
+      onValueChange={onValueChange}
     />
   );
 }
@@ -148,6 +151,7 @@ export function DatePickerInput({
   placeholder = "날짜 선택",
   disabled,
   className,
+  onValueChange,
 }: DatePickerInputProps) {
   return (
     <DatePickerBase
@@ -157,6 +161,7 @@ export function DatePickerInput({
       placeholder={placeholder}
       disabled={disabled}
       className={className}
+      onValueChange={onValueChange}
     />
   );
 }
