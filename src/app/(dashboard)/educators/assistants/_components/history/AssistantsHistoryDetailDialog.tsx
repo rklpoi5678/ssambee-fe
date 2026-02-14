@@ -87,7 +87,7 @@ export default function AssistantsHistoryDetailDialog({
 
             <div className="space-y-2">
               <p className="text-sm font-semibold">업무 내용</p>
-              <div className="rounded-lg border bg-background px-4 py-3 text-sm leading-relaxed">
+              <div className="whitespace-pre-wrap rounded-lg border bg-background px-4 py-3 text-sm leading-relaxed">
                 {vm.selectedTask.description}
               </div>
             </div>

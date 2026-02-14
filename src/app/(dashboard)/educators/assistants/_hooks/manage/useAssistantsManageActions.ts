@@ -66,6 +66,7 @@ export const useAssistantsManageActions = ({
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [isRetiringAssistant, setIsRetiringAssistant] = useState(false);
   const retireInFlightRef = useRef(false);
+  const createTaskInFlightRef = useRef(false);
 
   const saveAssistantDetail = async () => {
     if (!selectedAssistant) {
@@ -150,6 +151,10 @@ export const useAssistantsManageActions = ({
   };
 
   const submitTask = async () => {
+    if (createTaskInFlightRef.current) {
+      return;
+    }
+
     const trimmedTitle = taskTitle.trim();
 
     if (!taskAssigneeId) {
@@ -185,6 +190,7 @@ export const useAssistantsManageActions = ({
       deadlineAt = parsedDeadline.toISOString();
     }
 
+    createTaskInFlightRef.current = true;
     setIsCreatingTask(true);
 
     try {
@@ -210,6 +216,7 @@ export const useAssistantsManageActions = ({
     } catch (error) {
       setActionNotice(getErrorMessage(error));
     } finally {
+      createTaskInFlightRef.current = false;
       setIsCreatingTask(false);
     }
   };

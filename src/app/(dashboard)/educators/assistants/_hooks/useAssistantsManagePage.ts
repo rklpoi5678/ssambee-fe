@@ -112,7 +112,7 @@ export const useAssistantsManagePage = () => {
     isRetiringAssistant: actions.isRetiringAssistant,
     isCreatingTask: actions.isCreatingTask,
   };
-  //MARK: - Actis
+  //MARK: - Actions
   // 사용자 상호작용/상태 변경 핸들러
   const actionHandlers = {
     changeActiveStatusFilter: manageState.changeActiveStatusFilter,

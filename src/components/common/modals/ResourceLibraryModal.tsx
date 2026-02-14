@@ -133,7 +133,9 @@ export default function ResourceLibraryModal({
         )}
 
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>검색 결과 {items.length}건</span>
+          <span>
+            {isLoading ? "검색 결과 로딩 중..." : `검색 결과 ${items.length}건`}
+          </span>
           <span>선택 {selectedIds.length}건</span>
         </div>
 

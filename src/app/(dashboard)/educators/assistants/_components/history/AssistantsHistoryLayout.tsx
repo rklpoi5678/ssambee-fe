@@ -60,7 +60,7 @@ export default function AssistantsHistoryLayout({
                 <p className="text-sm text-muted-foreground">전체 업무</p>
                 <p className="mt-2 text-3xl font-bold">{vm.totalCount}</p>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  {vm.isHistoryLoading ? "불러오는 중" : "실데이터"}
+                  {vm.isHistoryLoading ? "불러오는 중" : "전체 기간"}
                 </p>
               </div>
               <div className="rounded-xl bg-muted p-3 text-muted-foreground">
@@ -77,7 +77,7 @@ export default function AssistantsHistoryLayout({
                 <p className="text-sm text-muted-foreground">진행 중</p>
                 <p className="mt-2 text-3xl font-bold">{vm.progressCount}</p>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  {vm.isHistoryLoading ? "불러오는 중" : "실데이터"}
+                  {vm.isHistoryLoading ? "불러오는 중" : "전체 기간"}
                 </p>
               </div>
               <div className="rounded-xl bg-muted p-3 text-muted-foreground">
@@ -94,7 +94,7 @@ export default function AssistantsHistoryLayout({
                 <p className="text-sm text-muted-foreground">완료</p>
                 <p className="mt-2 text-3xl font-bold">{vm.completedCount}</p>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  {vm.isHistoryLoading ? "불러오는 중" : "실데이터"}
+                  {vm.isHistoryLoading ? "불러오는 중" : "전체 기간"}
                 </p>
               </div>
               <div className="rounded-xl bg-muted p-3 text-muted-foreground">
@@ -183,7 +183,7 @@ export default function AssistantsHistoryLayout({
             <div className="text-xs text-muted-foreground">
               {vm.historyError
                 ? vm.historyError
-                : (vm.historyNotice ?? "실데이터 기반으로 조회합니다.")}
+                : (vm.historyNotice ?? "서버 데이터 기준으로 조회합니다.")}
             </div>
           </div>
         </CardContent>

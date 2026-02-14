@@ -106,6 +106,7 @@ export const useAssistantsHistoryPage = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [debouncedSearchKeyword, setDebouncedSearchKeyword] = useState("");
   const [statusFilter, setStatusFilter] =
     useState<(typeof statusOptions)[number]>("전체");
   const [priorityFilter, setPriorityFilter] =
@@ -130,12 +131,22 @@ export const useAssistantsHistoryPage = () => {
   });
   const requestIdRef = useRef(0);
 
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearchKeyword(searchKeyword);
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [searchKeyword]);
+
   const loadTaskRecords = useCallback(async () => {
     const requestId = requestIdRef.current + 1;
     requestIdRef.current = requestId;
     const query = buildHistoryQuery({
       currentPage,
-      searchKeyword,
+      searchKeyword: debouncedSearchKeyword,
       statusFilter,
       priorityFilter,
       periodFilter,
@@ -232,7 +243,13 @@ export const useAssistantsHistoryPage = () => {
         setIsHistoryLoading(false);
       }
     }
-  }, [currentPage, periodFilter, priorityFilter, searchKeyword, statusFilter]);
+  }, [
+    currentPage,
+    debouncedSearchKeyword,
+    periodFilter,
+    priorityFilter,
+    statusFilter,
+  ]);
 
   useEffect(() => {
     void loadTaskRecords();

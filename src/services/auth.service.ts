@@ -1,3 +1,7 @@
+import type { AxiosError } from "axios";
+
+import { SUBSCRIBED_PHONE_NUMBERS } from "@/data/auth-form.mock";
+import type { ApiResponse } from "@/types/api";
 import {
   LoginUser,
   SignupAssistantUser,
@@ -5,28 +9,38 @@ import {
   SignupParentUser,
   SignupStudentUser,
 } from "@/types/auth.type";
-import { SUBSCRIBED_PHONE_NUMBERS } from "@/data/auth-form.mock";
-import type { ApiResponse } from "@/types/api";
 
 import { axiosClient, axiosClientSVC } from "./axiosClient";
 
 // 인증코드 검증 API
 export const verifyAuthCodeAPI = async (signupCode: string) => {
-  const { data } = await axiosClient.get<ApiResponse<{ isValid: boolean }>>(
-    "/assistant-codes/validate",
-    {
-      params: { code: signupCode },
+  try {
+    const { data } = await axiosClient.get<ApiResponse<{ isValid: boolean }>>(
+      "/assistant-codes/validate",
+      {
+        params: { code: signupCode },
+      }
+    );
+
+    if (data?.data?.isValid) {
+      return { success: true, message: "인증번호 매칭 완료!" };
     }
-  );
 
-  if (data?.data?.isValid) {
-    return { success: true, message: "인증번호 매칭 완료!" };
+    return {
+      success: false,
+      message: data?.message ?? "인증번호가 일치하지 않습니다.",
+    };
+  } catch (error) {
+    const axiosError = error as AxiosError<{ message?: string }>;
+
+    return {
+      success: false,
+      message:
+        axiosError.response?.data?.message ??
+        axiosError.message ??
+        "인증번호 확인 중 오류가 발생했습니다.",
+    };
   }
-
-  return {
-    success: false,
-    message: data?.message ?? "인증번호가 일치하지 않습니다.",
-  };
 };
 
 // 전화번호 인증 API
