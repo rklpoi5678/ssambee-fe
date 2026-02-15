@@ -6,10 +6,6 @@ export type InquiryWriterType = "STUDENT" | "PARENT"; // 문의 작성자
 export type AnswerStatus = "BEFORE" | "REGISTERED" | "COMPLETED"; // 답변 상태
 export type AuthorRole = "STUDENT" | "PARENT"; // 작성자 역할
 
-/**
- * 학생 문의 API 타입 정의 --------------------------------------------------------
- */
-
 // 학생 문의 상태 변경
 export type UpdateStudentPostStatusRequest = {
   status: "COMPLETED";
