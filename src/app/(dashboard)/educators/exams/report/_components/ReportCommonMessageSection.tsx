@@ -28,6 +28,11 @@ export function ReportCommonMessageSection() {
     handleSaveCommon,
   } = useReportCommonMessageSection();
 
+  const handleDialogOpenChange = (open: boolean) => {
+    if (!open && isCommonSaving) return;
+    setIsModalOpen(open);
+  };
+
   return (
     <div>
       <Button
@@ -39,7 +44,7 @@ export function ReportCommonMessageSection() {
         {isCommonSaved ? "시험 공통 전달사항 수정" : "시험 공통 전달사항 작성"}
       </Button>
 
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog open={isModalOpen} onOpenChange={handleDialogOpenChange}>
         <DialogContent className="max-w-xl">
           <DialogHeader>
             <DialogTitle>시험 공통 전달사항</DialogTitle>

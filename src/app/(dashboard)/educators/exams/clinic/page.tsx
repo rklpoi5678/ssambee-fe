@@ -7,6 +7,7 @@ import { ClinicStats } from "./_components/ClinicStats";
 import { ClinicFilters } from "./_components/ClinicFilters";
 import { ClinicTable } from "./_components/ClinicTable";
 import { useClinicPage } from "./_hooks/useClinicPage";
+import { CLINIC_ALL_VALUE } from "./_hooks/useClinicPageState";
 
 export default function ClinicPage() {
   const {
@@ -72,7 +73,7 @@ export default function ClinicPage() {
         isExamLoading={isExamOptionsLoading}
         examSearch={examSearch}
         onExamSearchChange={handleExamSearchChange}
-        isLectureSelected={true}
+        isLectureSelected={selectedLectureId !== CLINIC_ALL_VALUE}
         statusFilter={statusFilter}
         onStatusFilterChange={handleStatusFilterChange}
         sortSummary={sortSummary}

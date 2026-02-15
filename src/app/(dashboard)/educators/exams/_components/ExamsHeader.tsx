@@ -410,7 +410,8 @@ export function ExamsHeader({ exams }: ExamsHeaderProps) {
 
           <DialogFooter>
             <p className="mr-auto text-xs text-muted-foreground">
-              포함 설정 변경 후 `포함 설정 저장`을 눌러 반영하세요.
+              포함 설정 변경 후 <strong>포함 설정 저장</strong>을 눌러
+              반영하세요.
             </p>
             <Button
               variant="outline"

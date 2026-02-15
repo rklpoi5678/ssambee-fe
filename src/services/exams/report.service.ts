@@ -153,7 +153,8 @@ export const saveExamCommonReport = async (
 ): Promise<ExamCommonSaveResult> => {
   console.info("[report][common-save] request", {
     examId,
-    payload,
+    template: payload.template ?? null,
+    messageLength: payload.message.length,
   });
 
   await axiosClient.patch<ApiResponse<unknown>>(`/exams/${examId}`, {
@@ -177,15 +178,16 @@ export const saveStudentReport = async (
 
   console.info("[report][student-save] request", {
     gradeId,
-    payload,
-    mappedPayload: descriptionPayload,
-    skippedFields: {
-      reviewTest: payload.reviewTest,
-      homeworkWord: payload.homeworkWord,
-      homeworkTask: payload.homeworkTask,
-      homeworkExtra: payload.homeworkExtra,
-      attendanceRate: payload.attendanceRate,
+    template: payload.template ?? null,
+    personalMessageLength: payload.weaknessType.length,
+    skippedFieldLengths: {
+      reviewTest: payload.reviewTest.length,
+      homeworkWord: payload.homeworkWord.length,
+      homeworkTask: payload.homeworkTask.length,
+      homeworkExtra: payload.homeworkExtra.length,
+      attendanceRate: payload.attendanceRate.length,
     },
+    mappedPayloadKeys: Object.keys(descriptionPayload),
   });
 
   const { data } = await axiosClient.post<ApiResponse<unknown>>(
@@ -218,8 +220,15 @@ export const saveStudentStructuredReport = async (
 
   console.info("[report][student-structured-save] request", {
     gradeId,
-    payload,
-    mappedPayload: structuredPayload,
+    template: payload.template ?? null,
+    fieldLengths: {
+      personalMessage: structuredPayload.personalMessage.length,
+      reviewTest: structuredPayload.reviewTest.length,
+      homeworkWord: structuredPayload.homeworkWord.length,
+      homeworkTask: structuredPayload.homeworkTask.length,
+      homeworkExtra: structuredPayload.homeworkExtra.length,
+      attendanceRate: structuredPayload.attendanceRate.length,
+    },
   });
 
   const { data } = await axiosClient.post<ApiResponse<unknown>>(
@@ -239,12 +248,7 @@ export const uploadGradeReportFile = async (
 
   const { data } = await axiosClient.post<ApiResponse<{ reportUrl: string }>>(
     `/grades/${gradeId}/report/file-upload`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
+    formData
   );
 
   return data.data;

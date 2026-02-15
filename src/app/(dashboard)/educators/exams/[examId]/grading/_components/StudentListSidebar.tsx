@@ -162,9 +162,9 @@ export function StudentListSidebar({
               <Card
                 key={student.id}
                 style={{ height: ROW_HEIGHT_PX }}
-                className={`cursor-pointer transition-colors flex flex-col justify-center ${
-                  isSelected ? "bg-primary/10 border-primary" : ""
-                }`}
+                className={`transition-colors flex flex-col justify-center ${
+                  disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+                } ${isSelected ? "bg-primary/10 border-primary" : ""}`}
                 onClick={() => {
                   if (disabled) return;
                   onSelectStudentAction?.(student.id);

@@ -47,7 +47,7 @@ export function SimpleReportTemplate({ examData }: SimpleReportTemplateProps) {
         title: "발송 전 확인",
         description: "시험 전체 적용을 먼저 완료해주세요.",
       });
-      throw new Error("Validation failed");
+      return;
     }
 
     try {
@@ -75,7 +75,13 @@ export function SimpleReportTemplate({ examData }: SimpleReportTemplateProps) {
 
       await uploadGradeReportFile(examData.gradeId, file);
 
-      await getGradeReportFileDownloadUrl(examData.gradeId);
+      const { downloadUrl } = await getGradeReportFileDownloadUrl(
+        examData.gradeId
+      );
+
+      if (!downloadUrl) {
+        throw new Error("성적표 다운로드 URL을 가져오지 못했습니다.");
+      }
 
       await showAlert({
         title: "발송 준비 완료",
@@ -88,7 +94,7 @@ export function SimpleReportTemplate({ examData }: SimpleReportTemplateProps) {
         title: "발송 실패",
         description: "성적표 업로드 및 발송 중 오류가 발생했습니다.",
       });
-      throw error;
+      return;
     }
   };
 
@@ -128,7 +134,7 @@ export function SimpleReportTemplate({ examData }: SimpleReportTemplateProps) {
       if (error instanceof Error) {
         await showAlert({
           title: "PDF 생성 실패",
-          description: `PDF 생성에 실패했습니다: ${error.message}`,
+          description: "PDF 생성에 실패했습니다. 잠시 후 다시 시도해주세요.",
         });
       } else {
         await showAlert({

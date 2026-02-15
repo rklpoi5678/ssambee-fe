@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 import { CheckModal } from "@/components/common/modals/CheckModal";
 import { useModal } from "@/providers/ModalProvider";
@@ -20,22 +20,56 @@ type ConfirmOptions = {
 
 export const useDialogAlert = () => {
   const { openModal } = useModal();
+  const pendingResolveRef = useRef<
+    | { type: "alert"; resolve: () => void }
+    | { type: "confirm"; resolve: (value: boolean) => void }
+    | null
+  >(null);
+
+  const clearPendingPromise = useCallback(() => {
+    const pending = pendingResolveRef.current;
+    if (!pending) return;
+
+    if (pending.type === "alert") {
+      pending.resolve();
+    } else {
+      pending.resolve(false);
+    }
+
+    pendingResolveRef.current = null;
+  }, []);
 
   const showAlert = useCallback(
-    ({ title = "알림", description, confirmText = "확인" }: AlertOptions) =>
-      new Promise<void>((resolve) => {
+    ({ title = "알림", description, confirmText = "확인" }: AlertOptions) => {
+      clearPendingPromise();
+
+      return new Promise<void>((resolve) => {
+        pendingResolveRef.current = { type: "alert", resolve };
+
+        const handleResolve = () => {
+          resolve();
+
+          if (
+            pendingResolveRef.current?.type === "alert" &&
+            pendingResolveRef.current.resolve === resolve
+          ) {
+            pendingResolveRef.current = null;
+          }
+        };
+
         openModal(
           <CheckModal
             title={title}
             description={description}
             confirmText={confirmText}
             hideCancel
-            onConfirm={resolve}
-            onCancel={resolve}
+            onConfirm={handleResolve}
+            onCancel={handleResolve}
           />
         );
-      }),
-    [openModal]
+      });
+    },
+    [clearPendingPromise, openModal]
   );
 
   const showConfirm = useCallback(
@@ -44,20 +78,36 @@ export const useDialogAlert = () => {
       description,
       confirmText = "확인",
       cancelText = "취소",
-    }: ConfirmOptions) =>
-      new Promise<boolean>((resolve) => {
+    }: ConfirmOptions) => {
+      clearPendingPromise();
+
+      return new Promise<boolean>((resolve) => {
+        pendingResolveRef.current = { type: "confirm", resolve };
+
+        const handleResolve = (value: boolean) => {
+          resolve(value);
+
+          if (
+            pendingResolveRef.current?.type === "confirm" &&
+            pendingResolveRef.current.resolve === resolve
+          ) {
+            pendingResolveRef.current = null;
+          }
+        };
+
         openModal(
           <CheckModal
             title={title}
             description={description}
             confirmText={confirmText}
             cancelText={cancelText}
-            onConfirm={() => resolve(true)}
-            onCancel={() => resolve(false)}
+            onConfirm={() => handleResolve(true)}
+            onCancel={() => handleResolve(false)}
           />
         );
-      }),
-    [openModal]
+      });
+    },
+    [clearPendingPromise, openModal]
   );
 
   return {

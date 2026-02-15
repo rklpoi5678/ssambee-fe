@@ -96,26 +96,33 @@ export const usePremiumReportTemplateResources = ({
       setIsStudentSaved(false);
       setIsEditing(false);
 
-      const studentReport = await getStudentReport(examData.gradeId);
-      if (cancelled) return;
+      try {
+        const studentReport = await getStudentReport(examData.gradeId);
+        if (cancelled) return;
 
-      setReviewTest(studentReport.reviewTest ?? "");
-      setHomeworkWord(studentReport.homeworkWord ?? "");
-      setHomeworkTask(studentReport.homeworkTask ?? "");
-      setHomeworkExtra(studentReport.homeworkExtra ?? "");
-      setPersonalMessage(studentReport.weaknessType ?? "");
+        setReviewTest(studentReport.reviewTest ?? "");
+        setHomeworkWord(studentReport.homeworkWord ?? "");
+        setHomeworkTask(studentReport.homeworkTask ?? "");
+        setHomeworkExtra(studentReport.homeworkExtra ?? "");
+        setPersonalMessage(studentReport.weaknessType ?? "");
 
-      const hasSavedStudentData = Boolean(
-        (studentReport.reviewTest ?? "").trim() ||
-        (studentReport.homeworkWord ?? "").trim() ||
-        (studentReport.homeworkTask ?? "").trim() ||
-        (studentReport.homeworkExtra ?? "").trim() ||
-        (studentReport.weaknessType ?? "").trim() ||
-        (studentReport.attendanceRate ?? "").trim()
-      );
+        const hasSavedStudentData = Boolean(
+          (studentReport.reviewTest ?? "").trim() ||
+          (studentReport.homeworkWord ?? "").trim() ||
+          (studentReport.homeworkTask ?? "").trim() ||
+          (studentReport.homeworkExtra ?? "").trim() ||
+          (studentReport.weaknessType ?? "").trim() ||
+          (studentReport.attendanceRate ?? "").trim()
+        );
 
-      setIsStudentSaved(hasSavedStudentData);
-      setIsEditing(!hasSavedStudentData);
+        setIsStudentSaved(hasSavedStudentData);
+        setIsEditing(!hasSavedStudentData);
+      } catch (error) {
+        console.error("학생 리포트 로드 실패:", error);
+        if (cancelled) return;
+        setIsStudentSaved(false);
+        setIsEditing(false);
+      }
     };
 
     void loadStudentReport();

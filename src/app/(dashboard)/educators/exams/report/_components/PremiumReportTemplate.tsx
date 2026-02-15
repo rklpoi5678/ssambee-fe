@@ -68,6 +68,10 @@ export function PremiumReportTemplate({
     handleDownloadPdf,
   } = usePremiumReportTemplate(examData);
 
+  const reportYear =
+    examData.examDate.match(/^(\d{4})/)?.[1] ??
+    String(new Date().getFullYear());
+
   return (
     <div className="space-y-8 font-sans text-zinc-800">
       {/* 카카오톡 발송 모달 */}
@@ -203,7 +207,7 @@ export function PremiumReportTemplate({
 
                   <div className="relative z-10 space-y-1">
                     <p className="text-5xl font-black tracking-tighter sm:text-6xl text-zinc-100">
-                      2026
+                      {reportYear}
                     </p>
                     <p className="text-2xl font-medium text-zinc-400">
                       주간 리포트

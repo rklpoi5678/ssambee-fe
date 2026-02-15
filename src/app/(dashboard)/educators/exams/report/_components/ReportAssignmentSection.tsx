@@ -101,8 +101,8 @@ export function ReportAssignmentSection() {
                     </p>
                     <p className="mt-1">미입력 항목: {draftMissingCount}개</p>
                     <p className="mt-1">
-                      저장 방법: 모달 하단 `임시저장` 후 상단 `현재 학생
-                      최종저장` 클릭
+                      저장 방법: 모달 하단 <strong>임시저장</strong> 후 상단{" "}
+                      <strong>현재 학생 최종저장</strong> 클릭
                     </p>
                   </div>
 

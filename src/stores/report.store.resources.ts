@@ -23,13 +23,31 @@ import {
 } from "@/stores/report.store.mapper";
 
 export const loadReportClassesResource = async (): Promise<ReportClass[]> => {
-  const response = await fetchLecturesAPI({ page: 1, limit: 100 });
+  const classesById = new Map<string, ReportClass>();
+  const limit = 100;
+  let page = 1;
+  let hasNextPage = true;
 
-  return response.lectures.map((lecture) => ({
-    id: lecture.id,
-    name: lecture.title,
-    instructorName: lecture.instructorName ?? null,
-  }));
+  while (hasNextPage) {
+    const response = await fetchLecturesAPI({ page, limit });
+
+    response.lectures.forEach((lecture) => {
+      classesById.set(lecture.id, {
+        id: lecture.id,
+        name: lecture.title,
+        instructorName: lecture.instructorName ?? null,
+      });
+    });
+
+    if (response.lectures.length === 0) {
+      break;
+    }
+
+    hasNextPage = response.pagination.hasNextPage;
+    page += 1;
+  }
+
+  return Array.from(classesById.values());
 };
 
 export const loadReportClassSelectionResource = async ({

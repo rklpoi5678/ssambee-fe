@@ -111,8 +111,13 @@ export function KakaoNotificationModal({
     setTargetType("all");
   };
 
+  const handleDialogOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen && isSending) return;
+    onOpenChange(nextOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader className="space-y-1 text-left">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">

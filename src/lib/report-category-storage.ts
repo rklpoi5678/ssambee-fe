@@ -102,7 +102,14 @@ export const writeReportCategoryStorage = (next: ReportCategoryStorage) => {
   if (typeof window === "undefined") return;
 
   const serialized = JSON.stringify(next);
-  window.localStorage.setItem(STORAGE_KEY, serialized);
+
+  try {
+    window.localStorage.setItem(STORAGE_KEY, serialized);
+  } catch (error) {
+    console.warn("[report-category-storage] write failed", error);
+    return;
+  }
+
   cachedRawStorage = serialized;
   cachedSnapshot = next;
   window.dispatchEvent(new CustomEvent(STORAGE_EVENT));

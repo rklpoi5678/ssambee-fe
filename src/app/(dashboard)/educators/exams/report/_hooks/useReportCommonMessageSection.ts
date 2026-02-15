@@ -26,6 +26,7 @@ export const useReportCommonMessageSection = () => {
   const { showAlert } = useDialogAlert();
 
   useEffect(() => {
+    if (!selectedExamId) return;
     void loadExamCommonMessage();
   }, [selectedExamId, loadExamCommonMessage]);
 
