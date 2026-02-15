@@ -156,31 +156,8 @@ export type InstructorPostDetailComment = {
   } | null;
 };
 
-// 강사 게시글 댓글 생성
+// 강사 게시글 댓글 생성 & 수정
 export type CreateInstructorPostCommentRequest = {
   content: string;
   materialIds?: string[];
 };
-
-// 강사 게시글 댓글 수정?
-
-// 강사 게시글 댓글 삭제?
-
-/**
- * 학생 문의 API 타입 정의 --------------------------------------------------------
- */
-
-// 학생 문의 쿼리
-// studentPostsQuery
-
-// 학생 문의 전체 조회
-// studentPostsResponse
-
-// 학생 문의 상세 조회
-// studentPostDetailResponse
-
-// 학생 문의 댓글 생성
-
-// 학생 문의 댓글 수정
-
-// 학생 문의 댓글 삭제

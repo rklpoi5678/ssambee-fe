@@ -13,7 +13,6 @@ import {
   GetStudentPostDetailResponse,
   GetStudentPostsResponse,
   StudentPostDetailComment,
-  UpdateStudentPostCommentRequest,
   CreateStudentPostCommentRequest,
 } from "@/types/communication/studentPost";
 import { CommonPostQuery } from "@/types/communication/commonPost";
@@ -44,21 +43,6 @@ export const instructorPostService = {
     >("/instructor-posts/submit", payload);
     return data.data;
   },
-
-  // 강사 게시글 댓글 작성
-  createInstructorPostComment: async (
-    postId: string,
-    payload: CreateInstructorPostCommentRequest
-  ) => {
-    const { data } = await axiosClient.post<
-      ApiResponse<InstructorPostDetailComment>
-    >(`/instructor-posts/${postId}/comments`, payload);
-    return data.data;
-  },
-
-  // 강사 게시글 댓글 수정
-
-  // 강사 게시글 댓글 삭제
 
   // 강사 게시글 목록 전체 조회
   getInstructorPosts: async (params: CommonPostQuery) => {
@@ -96,20 +80,40 @@ export const instructorPostService = {
     >(`/instructor-posts/${postId}`);
     return data.data;
   },
-};
 
-export const studentPostService = {
-  // 학생 문의 답변 생성
-  createStudentPostComment: async (
+  // 강사 게시글 댓글 작성
+  createInstructorPostComment: async (
     postId: string,
-    payload: CreateStudentPostCommentRequest
+    payload: CreateInstructorPostCommentRequest
   ) => {
     const { data } = await axiosClient.post<
-      ApiResponse<StudentPostDetailComment>
-    >(`/student-posts/${postId}/comments`, payload);
+      ApiResponse<InstructorPostDetailComment>
+    >(`/instructor-posts/${postId}/comments`, payload);
     return data.data;
   },
 
+  // 강사 게시글 댓글 수정
+  updateInstructorPostComment: async (
+    postId: string,
+    commentId: string,
+    payload: CreateInstructorPostCommentRequest
+  ) => {
+    const { data } = await axiosClient.patch<
+      ApiResponse<InstructorPostDetailComment>
+    >(`/instructor-posts/${postId}/comments/${commentId}`, payload);
+    return data.data;
+  },
+
+  // 강사 게시글 댓글 삭제
+  deleteInstructorPostComment: async (postId: string, commentId: string) => {
+    const { data } = await axiosClient.delete<
+      ApiResponse<InstructorPostDetailComment>
+    >(`/instructor-posts/${postId}/comments/${commentId}`);
+    return data.data;
+  },
+};
+
+export const studentPostService = {
   // 학생 문의 목록 전체 조회
   getStudentPosts: async (params: CommonPostQuery) => {
     const { data } = await axiosClient.get<
@@ -128,11 +132,22 @@ export const studentPostService = {
     return data.data;
   },
 
+  // 학생 문의 답변 생성
+  createStudentPostComment: async (
+    postId: string,
+    payload: CreateStudentPostCommentRequest
+  ) => {
+    const { data } = await axiosClient.post<
+      ApiResponse<StudentPostDetailComment>
+    >(`/student-posts/${postId}/comments`, payload);
+    return data.data;
+  },
+
   // 학생 문의 답변 수정
   updateStudentPostComment: async (
     postId: string,
     commentId: string,
-    payload: UpdateStudentPostCommentRequest
+    payload: CreateStudentPostCommentRequest
   ) => {
     const { data } = await axiosClient.patch<
       ApiResponse<StudentPostDetailComment>

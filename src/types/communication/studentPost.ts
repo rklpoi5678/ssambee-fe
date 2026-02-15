@@ -1,3 +1,5 @@
+import { MaterialsType } from "../materials.type";
+
 export type InquiryWriterType = "STUDENT" | "PARENT"; // 문의 작성자
 export type AnswerStatus = "BEFORE" | "REGISTERED" | "COMPLETED"; // 답변 상태
 export type AuthorRole = "STUDENT" | "PARENT"; // 작성자 역할
@@ -65,6 +67,17 @@ export type GetStudentPostDetailResponse = {
     studentName: string;
   };
   comments?: StudentPostDetailComment[];
+  attachments?: {
+    id: string;
+    materialId: string;
+    material: {
+      id: string;
+      title: string;
+      fileUrl: string | null;
+      type: MaterialsType;
+      externalDownloadUrl: string | null;
+    };
+  }[];
 };
 
 // 학생 문의 상세 댓글
@@ -79,17 +92,8 @@ export type StudentPostDetailComment = {
   };
 };
 
-// 학생 문의 댓글 생성
+// 학생 문의 댓글 생성 & 수정
 export type CreateStudentPostCommentRequest = {
   content: string;
   materialIds?: string[];
 };
-
-// 학생 문의 댓글 수정
-export type UpdateStudentPostCommentRequest = {
-  content: string;
-};
-
-// 학생 문의 댓글 수정
-
-// 학생 문의 댓글 삭제

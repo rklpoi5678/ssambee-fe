@@ -6,10 +6,7 @@ import {
   UpdateInstructorPostRequest,
 } from "@/types/communication/instructorPost";
 import { GetInstructorPostTargetsQuery } from "@/types/communication/instructorPost";
-import {
-  CreateStudentPostCommentRequest,
-  UpdateStudentPostCommentRequest,
-} from "@/types/communication/studentPost";
+import { CreateStudentPostCommentRequest } from "@/types/communication/studentPost";
 import {
   instructorPostService,
   studentPostService,
@@ -139,7 +136,8 @@ export const useInstructorPostMutations = () => {
 export const useCreateInstructorPostComment = () => {
   const queryClient = useQueryClient();
 
-  const createInstructorPostComment = useMutation({
+  // 강사 게시글 댓글 작성
+  const createInstructorPostCommentMutation = useMutation({
     mutationFn: ({
       postId,
       payload,
@@ -160,7 +158,62 @@ export const useCreateInstructorPostComment = () => {
     },
   });
 
-  return { createInstructorPostComment };
+  // 강사 게시글 댓글 수정
+  const updateInstructorPostCommentMutation = useMutation({
+    mutationFn: ({
+      postId,
+      commentId,
+      payload,
+    }: {
+      postId: string;
+      commentId: string;
+      payload: CreateInstructorPostCommentRequest;
+    }) =>
+      instructorPostService.updateInstructorPostComment(
+        postId,
+        commentId,
+        payload
+      ),
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({
+        queryKey: ["instructorPost", variables.postId],
+        refetchType: "active",
+      });
+      alert("댓글이 수정되었습니다.");
+    },
+    onError: (error) => {
+      console.error("댓글 수정 실패:", error);
+      alert("댓글 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+    },
+  });
+
+  // 강사 게시글 댓글 삭제
+  const deleteInstructorPostCommentMutation = useMutation({
+    mutationFn: ({
+      postId,
+      commentId,
+    }: {
+      postId: string;
+      commentId: string;
+    }) => instructorPostService.deleteInstructorPostComment(postId, commentId),
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({
+        queryKey: ["instructorPost", variables.postId],
+        refetchType: "active",
+      });
+      alert("댓글이 삭제되었습니다.");
+    },
+    onError: (error) => {
+      console.error("댓글 삭제 실패:", error);
+      alert("댓글 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
+    },
+  });
+
+  return {
+    createInstructorPostCommentMutation,
+    updateInstructorPostCommentMutation,
+    deleteInstructorPostCommentMutation,
+  };
 };
 
 // 학생 문의 목록 조회
@@ -224,7 +277,7 @@ export const useStudentPostMutations = () => {
     }: {
       postId: string;
       commentId: string;
-      payload: UpdateStudentPostCommentRequest;
+      payload: CreateStudentPostCommentRequest;
     }) =>
       studentPostService.updateStudentPostComment(postId, commentId, payload),
     onSuccess: async (_, variables) => {
