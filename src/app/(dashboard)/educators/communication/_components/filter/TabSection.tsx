@@ -90,19 +90,19 @@ export default function TabSection() {
   const handleTabChange = (tab: "INQUIRY" | "NOTICE") => {
     setActiveTab(tab);
     router.replace(`/educators/communication?tab=${tab}`, { scroll: false });
+    setSearchTerm("");
 
     setQuery({
       page: 1,
       limit: PAGE_LIMIT,
-      search: "",
       answerStatus: null,
       writerType: null,
+      postType: null,
     }); // 탭 변경 시 페이지 & 쿼리 초기화
   };
 
   return (
     <div className="space-y-6">
-      {/* 탭 메뉴 */}
       <div className="flex border-b border-gray-200">
         {[
           { id: "INQUIRY", label: "문의글" },
@@ -111,7 +111,7 @@ export default function TabSection() {
           <button
             key={tab.id}
             onClick={() => handleTabChange(tab.id as "INQUIRY" | "NOTICE")}
-            className={`px-6 py-3 text-base font-medium transition-colors relative ${
+            className={`px-6 py-3 text-base font-medium transition-colors relative cursor-pointer ${
               activeTab === tab.id
                 ? "text-blue-600"
                 : "text-gray-500 hover:text-gray-700"

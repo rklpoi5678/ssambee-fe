@@ -8,7 +8,7 @@ export type TargetRole = "ALL" | "STUDENT" | "PARENT"; // 알림 수신 대상
 export type SchoolYear = "중1" | "중2" | "중3" | "고1" | "고2" | "고3";
 
 // 강사 게시글 알림 대상 조회
-export type GetInstructorPostTargetsQuery = {
+export type GetInstructorPostTargetsResponse = {
   lectures: {
     lectureId: string;
     lectureTitle: string;

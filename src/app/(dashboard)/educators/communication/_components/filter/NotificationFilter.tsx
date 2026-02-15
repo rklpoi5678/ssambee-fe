@@ -38,7 +38,10 @@ export default function NotificationFilter({
               placeholder="게시글 분류"
               options={CONTENT_TYPE_OPTIONS}
               onChange={(value) =>
-                setQuery((prev) => ({ ...prev, postType: value as PostType }))
+                setQuery((prev) => ({
+                  ...prev,
+                  postType: value === "ALL" ? null : (value as PostType),
+                }))
               }
             />
           </div>

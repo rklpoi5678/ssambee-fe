@@ -31,7 +31,7 @@ export default function PostSetting({
 }: PostSettingProps) {
   const [studentSearchQuery, setStudentSearchQuery] = useState("");
 
-  const { data, isLoading } = useInstructorPostTargets({ lectures: [] });
+  const { data, isLoading } = useInstructorPostTargets();
 
   // 클래스 선택
   const classOptions = [
@@ -107,11 +107,7 @@ export default function PostSetting({
       PARENT: "학부모",
       ALL: "학생 및 학부모",
     };
-    return (
-      <span className="text-xs text-muted-foreground">
-        {targetRoleLabel[targetRole]}
-      </span>
-    );
+    return targetRoleLabel[targetRole] || "";
   };
 
   if (isLoading)

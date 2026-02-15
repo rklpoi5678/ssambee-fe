@@ -5,7 +5,6 @@ import {
   CreateInstructorPostRequest,
   UpdateInstructorPostRequest,
 } from "@/types/communication/instructorPost";
-import { GetInstructorPostTargetsQuery } from "@/types/communication/instructorPost";
 import { CreateStudentPostCommentRequest } from "@/types/communication/studentPost";
 import {
   instructorPostService,
@@ -14,12 +13,10 @@ import {
 import { CommonPostQuery } from "@/types/communication/commonPost";
 
 // 공지 알림 대상 조회
-export const useInstructorPostTargets = (
-  params: GetInstructorPostTargetsQuery
-) => {
+export const useInstructorPostTargets = () => {
   return useQuery({
-    queryKey: ["instructorPostsTargets", params],
-    queryFn: () => instructorPostService.getInstructorPostTargets(params),
+    queryKey: ["instructorPostsTargets"],
+    queryFn: () => instructorPostService.getInstructorPostTargets(),
   });
 };
 
@@ -28,6 +25,7 @@ export const useInstructorPosts = (params: CommonPostQuery) => {
   return useQuery({
     queryKey: ["instructorPosts", params],
     queryFn: () => instructorPostService.getInstructorPosts(params),
+    staleTime: 1000 * 30,
   });
 };
 
@@ -39,7 +37,7 @@ export const useInstructorPostDetail = (
   return useQuery({
     queryKey: ["instructorPost", postId],
     queryFn: () => instructorPostService.getInstructorPostDetail(postId),
-    enabled: !!postId && !!options?.enabled,
+    enabled: !!postId && (options?.enabled ?? true),
   });
 };
 
@@ -111,7 +109,10 @@ export const useInstructorPostMutations = () => {
   const deleteNoticeMutation = useMutation({
     mutationFn: (postId: string) =>
       instructorPostService.deleteInstructorPost(postId),
-    onSuccess: async () => {
+    onSuccess: async (_, postId) => {
+      queryClient.removeQueries({
+        queryKey: ["instructorPost", postId],
+      });
       await queryClient.invalidateQueries({
         queryKey: ["instructorPosts"],
         refetchType: "active",
@@ -221,6 +222,7 @@ export const useStudentPosts = (params: CommonPostQuery) => {
   return useQuery({
     queryKey: ["studentPosts", params],
     queryFn: () => studentPostService.getStudentPosts(params),
+    staleTime: 1000 * 30,
   });
 };
 
@@ -232,7 +234,7 @@ export const useStudentPostDetail = (
   return useQuery({
     queryKey: ["studentPost", postId],
     queryFn: () => studentPostService.getStudentPostDetail(postId),
-    enabled: !!postId && !!options?.enabled,
+    enabled: !!postId && (options?.enabled ?? true),
   });
 };
 

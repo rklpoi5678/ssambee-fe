@@ -52,21 +52,14 @@ export const NOTICE_POST_COLUMNS: ColumnDefinition<NoticeRow>[] = [
     key: "authorRole",
     label: "열람 권한",
     render: (row) => {
+      const info =
+        NOTICE_TYPE_LABEL[row.targetRole as keyof typeof NOTICE_TYPE_LABEL] ??
+        NOTICE_TYPE_LABEL.ALL;
+
       return (
         <div className="w-[50px] flex items-center">
-          <StatusLabel
-            noBackground
-            color={
-              NOTICE_TYPE_LABEL[
-                row.targetRole as keyof typeof NOTICE_TYPE_LABEL
-              ].color
-            }
-          >
-            {
-              NOTICE_TYPE_LABEL[
-                row.targetRole as keyof typeof NOTICE_TYPE_LABEL
-              ].label
-            }
+          <StatusLabel noBackground color={info.color}>
+            {info.label}
           </StatusLabel>
         </div>
       );

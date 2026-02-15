@@ -157,7 +157,8 @@ function CommentItem({
 
   // 수정 완료
   const handleSave = () => {
-    if (!editContent.trim()) {
+    const textOnly = editContent.replace(/<[^>]*>/g, "").trim();
+    if (!textOnly) {
       alert("내용을 입력해주세요.");
       return;
     }

@@ -3,10 +3,10 @@ import {
   GetInstructorPostsResponse,
   GetInstructorPostDetailResponse,
   CreateInstructorPostRequest,
-  GetInstructorPostTargetsQuery,
   UpdateInstructorPostRequest,
   CreateInstructorPostCommentRequest,
   InstructorPostDetailComment,
+  GetInstructorPostTargetsResponse,
 } from "@/types/communication/instructorPost";
 import { ApiResponse } from "@/types/api";
 import {
@@ -19,12 +19,10 @@ import { CommonPostQuery } from "@/types/communication/commonPost";
 
 export const instructorPostService = {
   // 강사 게시글 알림 대상 조회
-  getInstructorPostTargets: async (params: GetInstructorPostTargetsQuery) => {
+  getInstructorPostTargets: async () => {
     const { data } = await axiosClient.get<
-      ApiResponse<GetInstructorPostTargetsQuery>
-    >("/instructor-posts/targets", {
-      params,
-    });
+      ApiResponse<GetInstructorPostTargetsResponse>
+    >("/instructor-posts/targets");
     return data.data;
   },
 
