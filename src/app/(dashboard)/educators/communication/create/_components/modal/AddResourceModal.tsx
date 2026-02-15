@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { FileText, Search } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,12 @@ export default function AddResourceModal({
   const [tempSelected, setTempSelected] =
     useState<Materials[]>(initialSelected);
 
+  if (!isOpen && tempSelected.length !== initialSelected.length) {
+    setTempSelected(initialSelected);
+    setSearchKeyword("");
+    setCategoryFilter("ALL");
+  }
+
   // 자료실 목록 조회
   const { materialsQuery } = useMaterials({
     page: 1,
@@ -64,6 +70,11 @@ export default function AddResourceModal({
 
   const handleApply = () => {
     onChange(tempSelected);
+    closeModal();
+  };
+
+  const handleCancel = () => {
+    setTempSelected(initialSelected);
     closeModal();
   };
 
@@ -135,28 +146,58 @@ export default function AddResourceModal({
                   role="button"
                   tabIndex={0}
                   aria-pressed={isChecked}
-                  className={`flex w-full items-start gap-3 rounded-md border px-4 py-3 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-                    isChecked
-                      ? "border-primary/60 bg-primary/5"
-                      : "border-transparent hover:border-muted hover:bg-muted/30"
-                  }`}
                   onClick={() => handleToggleSelection(item)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      handleToggleSelection(item);
-                    }
-                  }}
+                  className={`group flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer ${
+                    isChecked
+                      ? "bg-blue-50/50 border-blue-200 shadow-sm"
+                      : "bg-white border-transparent hover:bg-slate-50/80 hover:border-slate-200"
+                  }`}
                 >
-                  <Checkbox
-                    checked={isChecked}
-                    className="pointer-events-none mt-0.5"
-                  />
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{item.title}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {item.type} | {item.writer} | {item.date}
-                    </p>
+                  <div className="flex items-center gap-4 overflow-hidden">
+                    <div
+                      className={`p-2.5 rounded-lg border shadow-sm transition-colors ${
+                        isChecked
+                          ? "bg-white border-blue-100"
+                          : "bg-slate-50 border-slate-100"
+                      }`}
+                    >
+                      <FileText
+                        className={`h-5 w-5 ${isChecked ? "text-blue-500" : "text-slate-400"}`}
+                      />
+                    </div>
+
+                    <div className="flex flex-col overflow-hidden">
+                      <span
+                        className={`text-[15px] font-semibold truncate ${isChecked ? "text-blue-900" : "text-slate-700"}`}
+                      >
+                        {item.title}
+                      </span>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span
+                          className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${
+                            isChecked
+                              ? "bg-blue-100 text-blue-600"
+                              : "bg-slate-100 text-slate-500"
+                          }`}
+                        >
+                          {item.type}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          {item.writer} • {item.date}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center pr-2">
+                    <Checkbox
+                      checked={isChecked}
+                      className={`h-5 w-5 transition-all ${
+                        isChecked
+                          ? "border-blue-600 bg-blue-600"
+                          : "border-slate-300"
+                      }`}
+                    />
                   </div>
                 </div>
               );
@@ -169,7 +210,7 @@ export default function AddResourceModal({
             type="button"
             variant="outline"
             className="rounded-full px-6"
-            onClick={closeModal}
+            onClick={handleCancel}
           >
             취소
           </Button>

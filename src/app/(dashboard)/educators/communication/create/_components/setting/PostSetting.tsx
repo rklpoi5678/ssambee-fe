@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Check, User } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -124,7 +125,6 @@ export default function PostSetting({
           게시글을 작성할 클래스와 알림을 받을 대상을 선택하세요.
         </p>
 
-        {/* 클래스 선택 */}
         <div className="space-y-2">
           <Label className="text-base font-medium">클래스 선택</Label>
           <SelectBtn
@@ -141,7 +141,6 @@ export default function PostSetting({
           </p>
         </div>
 
-        {/* 알림 수신 대상 */}
         <div className="space-y-2">
           <Label className="text-base font-medium">알림 수신 대상</Label>
           <SelectBtn
@@ -158,7 +157,6 @@ export default function PostSetting({
           </p>
         </div>
 
-        {/* 학생 검색 */}
         <div className="space-y-2">
           <Label className="text-base font-medium">학생 검색</Label>
           <Input
@@ -169,7 +167,6 @@ export default function PostSetting({
           />
         </div>
 
-        {/* 학생 선택 */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label className="text-base font-medium">학생 선택</Label>
@@ -177,7 +174,7 @@ export default function PostSetting({
               <Button
                 variant="outline"
                 onClick={toggleAllStudents}
-                className="h-auto py-1 px-2 text-xs"
+                className="h-auto py-1 px-2 text-xs cursor-pointer"
               >
                 {filteredStudents.every((s) =>
                   selectedStudentIds.includes(s.enrollmentId)
@@ -188,31 +185,78 @@ export default function PostSetting({
             )}
           </div>
 
-          <div className="max-h-[350px] overflow-y-auto space-y-1.5 border rounded-md p-2">
+          <div className="max-h-[380px] overflow-y-auto space-y-2 rounded-xl border bg-slate-50/30 p-3 scrollbar-hide">
             {filteredStudents.length > 0 ? (
-              filteredStudents.map((student) => (
-                <div
-                  key={student.enrollmentId}
-                  className={`px-4 py-3 border border-neutral-200 rounded-md text-sm cursor-pointer transition-colors ${
-                    selectedStudentIds.includes(student.enrollmentId)
-                      ? "bg-blue-50 border-blue-600 shadow-sm"
-                      : "hover:bg-muted"
-                  }`}
-                  onClick={() => toggleStudent(student.enrollmentId)}
-                >
-                  <div className="flex flex-col justify-center">
-                    <div className="flex items-center">
-                      <p className="text-sm">{student.studentName}</p>
-                      <p className="text-sm text-muted-foreground ml-2">
-                        ({student.school} / {student.schoolYear})
-                      </p>
+              filteredStudents.map((student) => {
+                const isSelected = selectedStudentIds.includes(
+                  student.enrollmentId
+                );
+                return (
+                  <div
+                    key={student.enrollmentId}
+                    role="button"
+                    onClick={() => toggleStudent(student.enrollmentId)}
+                    className={`cursor-pointer group flex items-center justify-between p-3 rounded-xl border transition-all duration-200 ${
+                      isSelected
+                        ? "bg-blue-50 border-blue-200 shadow-sm"
+                        : "bg-white border-slate-100 hover:border-slate-300 hover:shadow-sm"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div
+                        className={`p-2.5 rounded-lg border shadow-sm transition-colors ${
+                          isSelected
+                            ? "bg-white border-blue-100"
+                            : "bg-slate-50 border-slate-100"
+                        }`}
+                      >
+                        <User
+                          className={`h-4 w-4 ${isSelected ? "text-blue-500" : "text-slate-400"}`}
+                        />
+                      </div>
+
+                      <div className="flex flex-col overflow-hidden">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-[14px] font-semibold ${isSelected ? "text-blue-900" : "text-slate-700"}`}
+                          >
+                            {student.studentName}
+                          </span>
+                          <span className="text-[11px] text-slate-400">
+                            {student.school} • {student.schoolYear}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span
+                            className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
+                              isSelected
+                                ? "bg-blue-100 text-blue-600"
+                                : "bg-slate-100 text-slate-500"
+                            }`}
+                          >
+                            {renderTargetRole(targetRole)}
+                          </span>
+                          <span className="text-[11px] text-slate-400 truncate max-w-[150px]">
+                            {student.lectureTitle}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      {renderTargetRole(targetRole)}
+
+                    <div
+                      className={`mr-1 h-5 w-5 rounded-full border flex items-center justify-center transition-all ${
+                        isSelected
+                          ? "bg-blue-600 border-blue-600"
+                          : "bg-white border-slate-200 group-hover:border-slate-400"
+                      }`}
+                    >
+                      {isSelected && (
+                        <Check className="h-3 w-3 text-white stroke-[3px]" />
+                      )}
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <p className="text-sm text-muted-foreground text-center py-4">
                 검색 결과가 없습니다.
