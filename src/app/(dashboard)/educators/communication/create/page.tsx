@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,12 +16,16 @@ import {
 import { InputForm } from "@/components/common/input/InputForm";
 import TiptapEditor from "@/components/common/editor/TiptapEditor";
 import { useInstructorPostMutations } from "@/hooks/useInstructorPost";
+import { useModal } from "@/providers/ModalProvider";
+import { Materials } from "@/types/materials.type";
 
 import PostTypeSelect from "./_components/setting/PostTypeSelect";
 import PostSetting from "./_components/setting/PostSetting";
+import AddResourceModal from "./_components/modal/AddResourceModal";
 
 export default function CreateInstructorPostPage() {
   const router = useRouter();
+  const { openModal } = useModal();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -32,6 +36,22 @@ export default function CreateInstructorPostPage() {
   // 알림 대상 선택
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
   const [targetRole, setTargetRole] = useState<TargetRole>("ALL");
+
+  // 최종 선택된 자료 리스트
+  const [selectedMaterials, setSelectedMaterials] = useState<Materials[]>([]);
+
+  // 자료 첨부 모달
+  const handleOpenAddResourceModal = () => {
+    openModal(
+      <AddResourceModal
+        // key가 바뀌면 모달 내부의 useState(initialSelected)가 강제로 재실행됨
+        // 데이터의 ID들을 합쳐서 key로 만들면, 구성이 바뀔 때마다 새 모달로 인식
+        key={`modal-${selectedMaterials.map((m) => m.id).join(",")}`}
+        onChange={(updatedList) => setSelectedMaterials(updatedList)}
+        initialSelected={selectedMaterials}
+      />
+    );
+  };
 
   // Mutations
   const { createNoticeMutation, createShareMutation } =
@@ -75,7 +95,7 @@ export default function CreateInstructorPostPage() {
       targetRole,
       lectureId: selectedClassId === "ALL" ? null : selectedClassId,
       targetEnrollmentIds: selectedStudentIds,
-      materialIds: [],
+      materialIds: selectedMaterials.map((m) => m.id),
     };
 
     const mutation =
@@ -164,10 +184,40 @@ export default function CreateInstructorPostPage() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">첨부파일</Label>
                   <div className="border-2 border-dashed rounded-lg p-6 text-center">
-                    <p className="text-sm text-muted-foreground mb-2">
-                      학습 자료실에서 자료를 선택하세요
-                    </p>
-                    <Button variant="outline">자료실에서 선택</Button>
+                    {selectedMaterials.length > 0 ? (
+                      <div className="mb-4 space-y-2 text-left">
+                        {selectedMaterials.map((m) => (
+                          <div
+                            key={m.id}
+                            className="flex items-center justify-between bg-muted p-2 rounded-md text-sm"
+                          >
+                            <span>{m.title}</span>
+                            <Button
+                              variant="outline"
+                              type="button"
+                              onClick={() => {
+                                const filtered = selectedMaterials.filter(
+                                  (item) => item.id !== m.id
+                                );
+                                setSelectedMaterials(filtered);
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground text-center mb-2">
+                        학습 자료실에서 자료를 선택하세요
+                      </p>
+                    )}
+                    <Button
+                      variant="outline"
+                      onClick={handleOpenAddResourceModal}
+                    >
+                      자료실에서 선택
+                    </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     * 자료 공유는 학습 자료실에 미리 업로드한 파일만 첨부할 수

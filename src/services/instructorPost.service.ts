@@ -41,7 +41,7 @@ export const instructorPostService = {
   createInstructorSharePost: async (payload: CreateInstructorPostRequest) => {
     const { data } = await axiosClient.post<
       ApiResponse<GetInstructorPostDetailResponse>
-    >("/instructor-posts", payload);
+    >("/instructor-posts/submit", payload);
     return data.data;
   },
 

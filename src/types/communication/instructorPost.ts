@@ -1,3 +1,5 @@
+import { MaterialsType } from "../materials.type";
+
 export type PostType = "NOTICE" | "SHARE"; // 게시글 분류
 export type PostScope = "GLOBAL" | "LECTURE" | "SELECTED"; // 강사 게시글 스코프
 export type TargetRole = "ALL" | "STUDENT" | "PARENT"; // 알림 수신 대상
@@ -121,8 +123,13 @@ export type GetInstructorPostDetailResponse = {
   attachments?: {
     id: string;
     materialId: string;
-    filename: string;
-    material: unknown;
+    material: {
+      id: string;
+      title: string;
+      fileUrl: string | null;
+      type: MaterialsType;
+      externalDownloadUrl: string | null;
+    };
   }[];
   targets: {
     id: string;

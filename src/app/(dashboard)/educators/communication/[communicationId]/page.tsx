@@ -29,7 +29,11 @@ import {
 import { useInstructorPostMutations } from "@/hooks/useInstructorPost";
 import { useStudentPostDetail } from "@/hooks/useInstructorPost";
 import { InstructorPostDetailComment } from "@/types/communication/instructorPost";
-import { StudentPostDetailComment } from "@/types/communication/studentPost";
+import {
+  GetStudentPostDetailResponse,
+  StudentPostDetailComment,
+} from "@/types/communication/studentPost";
+import { useDownloadMaterial } from "@/hooks/useMaterials";
 
 export default function CommunicationDetailPage() {
   const router = useRouter();
@@ -56,6 +60,8 @@ export default function CommunicationDetailPage() {
   const { createInstructorPostComment } = useCreateInstructorPostComment();
   // 학생 문의 답변 관련 mutations
   const { createStudentPostCommentMutation } = useStudentPostMutations();
+  // 자료 다운로드
+  const { mutate: downloadMaterial } = useDownloadMaterial();
 
   // 상태 관리
   const [isEditing, setIsEditing] = useState(false);
@@ -164,6 +170,23 @@ export default function CommunicationDetailPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) setSelectedFile(file);
+  };
+
+  const handleAttachmentClick = (
+    file: NonNullable<GetStudentPostDetailResponse["attachments"]>[number]
+  ) => {
+    const { material } = file;
+
+    // 유튜브 링크나 외부 링크인 경우 바로 새 창 열기
+    if (material.type === "VIDEO") {
+      if (material.fileUrl) {
+        window.open(material.fileUrl, "_blank");
+      }
+      return;
+    }
+
+    // 그 외의 경우 (IMAGE, PDF 등) 다운로드 실행
+    downloadMaterial(material.id);
   };
 
   return (
@@ -355,6 +378,44 @@ export default function CommunicationDetailPage() {
                       readOnly={true}
                     />
                   </div>
+                  {currentData?.attachments?.length &&
+                    currentData.attachments.length > 0 && (
+                      <div className="mt-8 pt-6 border-t">
+                        <div className="flex items-center gap-2 mb-4">
+                          <Paperclip className="h-4 w-4 text-blue-600" />
+                          <span className="font-semibold text-sm">
+                            첨부된 자료
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            ({currentData.attachments.length})
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {currentData.attachments.map((file) => (
+                            <div
+                              key={file.material.id}
+                              className="group flex items-center justify-between p-3 rounded-xl border bg-slate-50/50 hover:bg-white hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer"
+                              onClick={() => handleAttachmentClick(file)}
+                            >
+                              <div className="flex items-center gap-3 overflow-hidden">
+                                <div className="p-2 bg-white rounded-lg border group-hover:border-blue-100">
+                                  <FileText className="h-5 w-5 text-blue-500" />
+                                </div>
+                                <div className="flex flex-col overflow-hidden">
+                                  <span className="text-sm font-medium truncate">
+                                    {file.material.title}{" "}
+                                    <span className="text-xs text-slate-400">
+                                      | {file.material.type}
+                                    </span>
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                 </div>
               )}
             </CardContent>
