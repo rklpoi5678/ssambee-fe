@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { PostType } from "@/types/communication.type";
+import { PostType } from "@/types/communication/instructorPost";
 
 type PostTypeSelectProps = {
   selectedPostType: PostType;

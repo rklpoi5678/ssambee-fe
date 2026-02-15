@@ -9,31 +9,33 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import Title from "@/components/common/header/Title";
 import {
-  NoticeType,
   PostType,
-  ReadPermissionType,
-} from "@/types/communication.type";
+  PostScope,
+  TargetRole,
+} from "@/types/communication/instructorPost";
 import { InputForm } from "@/components/common/input/InputForm";
 import TiptapEditor from "@/components/common/editor/TiptapEditor";
+import { useInstructorPostMutations } from "@/hooks/useInstructorPost";
 
 import PostTypeSelect from "./_components/setting/PostTypeSelect";
 import PostSetting from "./_components/setting/PostSetting";
 
-export default function CreateInquiryPage() {
+export default function CreateInstructorPostPage() {
   const router = useRouter();
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  // 게시글 분류 선택
+  const [selectedClassId, setSelectedClassId] = useState<string>("ALL");
   const [selectedPostType, setSelectedPostType] = useState<PostType>("NOTICE");
-
-  // 열람 권한
-  const [readPermission, setReadPermission] =
-    useState<ReadPermissionType>("ALL");
 
   // 알림 대상 선택
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
-  const [recipientType, setRecipientType] = useState<NoticeType>("ALL");
+  const [targetRole, setTargetRole] = useState<TargetRole>("ALL");
+
+  // Mutations
+  const { createNoticeMutation, createShareMutation } =
+    useInstructorPostMutations();
 
   // 게시글 분류 토글
   const togglePostType = (postType: PostType) => {
@@ -52,11 +54,45 @@ export default function CreateInquiryPage() {
       return;
     }
 
-    // TODO: API 호출
+    let scope: PostScope = "GLOBAL";
 
-    alert("게시글이 등록되었습니다.");
-    router.push("/educators/communication");
+    if (selectedStudentIds.length > 0) {
+      // 학생이 한 명이라도 직접 선택된 경우
+      scope = "SELECTED";
+    } else if (selectedClassId !== "ALL") {
+      // 학생 선택은 없지만, 특정 클래스가 지정된 경우
+      scope = "LECTURE";
+    } else {
+      // 클래스도 ALL, 학생 선택도 없는 경우
+      scope = "GLOBAL";
+    }
+
+    const payload = {
+      title,
+      content,
+      isImportant: selectedPostType === "NOTICE",
+      scope,
+      targetRole,
+      lectureId: selectedClassId === "ALL" ? null : selectedClassId,
+      targetEnrollmentIds: selectedStudentIds,
+      materialIds: [],
+    };
+
+    const mutation =
+      selectedPostType === "NOTICE"
+        ? createNoticeMutation
+        : createShareMutation;
+
+    mutation.mutate(payload, {
+      onSuccess: () => {
+        const targetTab = selectedPostType === "NOTICE" ? "NOTICE" : "INQUIRY";
+        router.push(`/educators/communication?tab=${targetTab}`);
+      },
+    });
   };
+
+  const isSubmitting =
+    createNoticeMutation.isPending || createShareMutation.isPending;
 
   return (
     <div className="container mx-auto px-8 py-8 space-y-6 max-w-[1400px]">
@@ -82,12 +118,12 @@ export default function CreateInquiryPage() {
           />
 
           <PostSetting
+            selectedClassId={selectedClassId}
+            onClassIdChange={setSelectedClassId}
             selectedStudentIds={selectedStudentIds}
             onStudentIdsChange={setSelectedStudentIds}
-            recipientType={recipientType}
-            onRecipientTypeChange={setRecipientType}
-            readPermission={readPermission}
-            onReadPermissionChange={setReadPermission}
+            targetRole={targetRole}
+            onTargetRoleChange={(role) => setTargetRole(role)}
           />
         </div>
 
@@ -144,7 +180,9 @@ export default function CreateInquiryPage() {
                 <Button variant="outline" onClick={() => router.back()}>
                   취소
                 </Button>
-                <Button onClick={handleSubmit}>게시글 등록</Button>
+                <Button onClick={handleSubmit} disabled={isSubmitting}>
+                  {isSubmitting ? "등록 중..." : "게시글 등록"}
+                </Button>
               </div>
             </CardContent>
           </Card>
