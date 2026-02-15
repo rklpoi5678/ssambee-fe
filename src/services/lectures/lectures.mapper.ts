@@ -114,7 +114,6 @@ export const mapLectureApiToView = (lecture: LectureApi): Lecture => {
     schoolYear: lecture.schoolYear ?? "미지정",
     instructor: lecture.instructorName ?? "미지정",
     currentStudents: lecture.enrollmentsCount ?? 0,
-    maxStudents: 0,
     schedule: buildScheduleFromTimes(lecture.lectureTimes),
     lectureTimes,
     startDate,

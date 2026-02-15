@@ -56,7 +56,6 @@ export const DEFAULT_LECTURE: Lecture = {
   schoolYear: "",
   instructor: "",
   currentStudents: 0,
-  maxStudents: 0,
   schedule: { days: [], time: "일정 없음" },
 };
 
