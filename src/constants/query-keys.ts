@@ -45,3 +45,8 @@ export const clinicKeys = {
   list: (query: Record<string, string | undefined>) =>
     [...clinicKeys.lists(), query] as const,
 };
+
+export const profileKeys = {
+  all: ["profile"] as const,
+  me: () => [...profileKeys.all, "me"] as const,
+};

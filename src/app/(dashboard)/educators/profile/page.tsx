@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-
-import { mockProfile, mockLectures } from "@/data/profile.mock";
+import { mapProfileUpdateFormToApi } from "@/mappers/profile.mapper";
+import { useMyProfile } from "@/hooks/profile/useMyProfile";
 import type { ProfileUpdateFormData } from "@/validation/profile.validation";
 import { useModal } from "@/providers/ModalProvider";
 
@@ -14,10 +13,13 @@ import { SettingsSecurityModal } from "./_components/modal/SettingsSecurityModal
 import { PhoneChangeModal } from "./_components/modal/PhoneChangeModal";
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState(mockProfile);
   const { openModal, closeModal } = useModal();
+  const { profile, lectures, isPending, isError, updateProfile, isUpdating } =
+    useMyProfile();
 
   const handleEditClick = () => {
+    if (!profile) return;
+
     openModal(
       <ProfileEditModal
         profile={profile}
@@ -35,28 +37,43 @@ export default function ProfilePage() {
   };
 
   const handlePhoneChangeClick = () => {
+    if (!profile) return;
+
     openModal(<PhoneChangeModal currentPhone={profile.phone} />);
   };
 
   const handleProfileUpdate = (
     data: ProfileUpdateFormData & { imageFile: File | null }
   ) => {
+    if (!profile || isUpdating) return;
+
     const { imageFile, ...formData } = data;
-    let newImageUrl = profile.image;
     if (imageFile) {
-      if (profile.image?.startsWith("blob:")) {
-        URL.revokeObjectURL(profile.image);
-      }
-      newImageUrl = URL.createObjectURL(imageFile);
+      console.info("이미지 업로드는 아직 API 연동 전입니다.");
     }
-    setProfile({
-      ...profile,
-      ...formData,
-      image: newImageUrl,
-      subjects: formData.subjects || [],
-    });
-    closeModal();
+
+    updateProfile(mapProfileUpdateFormToApi(formData, profile))
+      .then(() => {
+        closeModal();
+      })
+      .catch((error) => {
+        const normalizedError =
+          error instanceof Error ? error : new Error(String(error));
+        console.error("프로필 업데이트 실패:", normalizedError.message);
+      });
   };
+
+  if (isError) {
+    return (
+      <div className="p-8 text-center text-red-500">
+        프로필 정보를 불러오지 못했습니다.
+      </div>
+    );
+  }
+
+  if (isPending || !profile) {
+    return <div className="p-8 text-center">프로필을 불러오는 중...</div>;
+  }
 
   return (
     <div className="space-y-6 p-4 max-w-[1400px] mx-auto w-full">
@@ -73,7 +90,7 @@ export default function ProfilePage() {
 
       <AcademyAndLectures
         academyName={profile.academyName}
-        lectures={mockLectures}
+        lectures={lectures}
       />
     </div>
   );
