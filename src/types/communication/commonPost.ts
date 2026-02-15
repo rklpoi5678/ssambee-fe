@@ -5,9 +5,9 @@ export type CommonPostQuery = {
   page: number;
   limit: number;
   search?: string;
-  // Inquiry 전용
+  // 학생 문의글 전용
   answerStatus?: AnswerStatus | null;
   writerType?: InquiryWriterType | null;
-  // Notice 전용
+  // 강사 게시글 전용
   postType?: PostType | null;
 };
