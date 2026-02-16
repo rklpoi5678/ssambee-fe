@@ -1,6 +1,6 @@
 import { MaterialsType } from "../materials.type";
 
-import { PaginationType } from "./commonPost";
+import { CommonPostComment, PaginationType } from "./commonPost";
 
 export type PostType = "NOTICE" | "SHARE"; // 게시글 분류
 export type PostScope = "GLOBAL" | "LECTURE" | "SELECTED"; // 강사 게시글 스코프
@@ -128,22 +128,11 @@ export type GetInstructorPostDetailResponse = {
       studentName: string;
     };
   }[];
-  comments?: InstructorPostDetailComment[];
+  comments?: CommonPostComment[];
 };
 
 // 강사 게시글 상세 댓글
-export type InstructorPostDetailComment = {
-  id: string;
-  content: string;
-  createdAt: string;
-  isMine: boolean;
-  instructor: {
-    user: { name: string };
-  } | null;
-  assistant: {
-    user: { name: string };
-  } | null;
-};
+// commonPostComment 타입 사용
 
 // 강사 게시글 댓글 생성 & 수정
 export type CreateInstructorPostCommentRequest = {

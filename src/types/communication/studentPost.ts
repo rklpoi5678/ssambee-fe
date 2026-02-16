@@ -1,6 +1,7 @@
 import { MaterialsType } from "../materials.type";
 
 import { PaginationType } from "./commonPost";
+import { CommonPostComment } from "./commonPost";
 
 export type InquiryWriterType = "STUDENT" | "PARENT"; // 문의 작성자
 export type AnswerStatus = "BEFORE" | "REGISTERED" | "COMPLETED"; // 답변 상태
@@ -8,7 +9,7 @@ export type AuthorRole = "STUDENT" | "PARENT"; // 작성자 역할
 
 // 학생 문의 상태 변경
 export type UpdateStudentPostStatusRequest = {
-  status: "COMPLETED";
+  status: AnswerStatus;
 };
 
 // 학생 문의 생성
@@ -16,6 +17,11 @@ export type CreateStudentPostRequest = {
   title: string;
   content: string;
   lectureId: string;
+};
+
+// 학부모 문의 생성
+export type CreateStudentParentPostRequest = CreateStudentPostRequest & {
+  childLinkId: string;
 };
 
 // 학생 문의 수정
@@ -31,11 +37,14 @@ export type GetStudentPostsResponse = {
     createdAt: string;
     authorRole: AuthorRole;
     lectureId: string;
+    isMine: boolean;
     enrollment: {
+      appStudentId: string;
       studentName: string;
+      appParentId: string;
     };
     _count: {
-      comments: number;
+      comments?: number;
     };
   }[];
   pagination: PaginationType;
@@ -52,10 +61,11 @@ export type GetStudentPostDetailResponse = {
   lectureId: string;
   lectureTitle: string | null;
   isMine: boolean;
+  childLinkId?: string | null;
   enrollment: {
     studentName: string;
   };
-  comments?: StudentPostDetailComment[];
+  comments?: CommonPostComment[];
   attachments?: {
     id: string;
     materialId: string;
@@ -70,16 +80,7 @@ export type GetStudentPostDetailResponse = {
 };
 
 // 학생 문의 상세 댓글
-export type StudentPostDetailComment = {
-  id: string;
-  content: string;
-  createdAt: string;
-  authorRole: AuthorRole;
-  isMine: boolean;
-  enrollment: {
-    studentName: string;
-  };
-};
+// commonPostComment 타입 사용
 
 // 학생 문의 댓글 생성 & 수정
 export type CreateStudentPostCommentRequest = {
