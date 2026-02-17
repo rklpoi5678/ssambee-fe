@@ -45,9 +45,8 @@ export function LecturesList({
   };
 
   return (
-    <div className="space-y-6">
-      {/* 카드 그리드 - 2x2 형태 */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <div className="space-y-5">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {isLoading && (
           <div className="col-span-2 text-center text-sm text-muted-foreground">
             로딩 중...
@@ -64,14 +63,13 @@ export function LecturesList({
           ))}
       </div>
 
-      {/* 더보기/접기 버튼 */}
       <div className="flex justify-center gap-3">
         {hasMore && (
           <Button
             onClick={onLoadMore}
             variant="outline"
             size="lg"
-            className="min-w-[200px]"
+            className="h-12 min-w-[200px] rounded-[12px] border border-[#d6d9e0] bg-white px-6 text-[16px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
           >
             더보기 ({remaining})
           </Button>
@@ -81,7 +79,7 @@ export function LecturesList({
             onClick={handleReset}
             variant="outline"
             size="lg"
-            className="min-w-[200px]"
+            className="h-12 min-w-[200px] rounded-[12px] border border-[#d6d9e0] bg-white px-6 text-[16px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
           >
             접기
           </Button>
