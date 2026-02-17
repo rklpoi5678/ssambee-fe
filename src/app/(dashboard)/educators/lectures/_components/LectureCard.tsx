@@ -15,6 +15,35 @@ type LectureCardProps = {
   lecture: Lecture;
 };
 
+type DeleteLectureConfirmModalProps = {
+  lecture: Lecture;
+  onDeleted: () => void;
+};
+
+function DeleteLectureConfirmModal({
+  lecture,
+  onDeleted,
+}: DeleteLectureConfirmModalProps) {
+  const { mutateAsync: deleteLecture, isPending: isDeleting } =
+    useDeleteLecture({
+      onSuccess: onDeleted,
+    });
+
+  return (
+    <CheckModal
+      title="수업을 삭제할까요?"
+      description={`${lecture.name} 수업이 삭제됩니다. 이 작업은 되돌릴 수 없습니다.`}
+      confirmText={isDeleting ? "삭제 중..." : "삭제"}
+      cancelText="취소"
+      confirmDisabled={isDeleting}
+      onConfirm={async () => {
+        if (isDeleting) return;
+        await deleteLecture(lecture.id);
+      }}
+    />
+  );
+}
+
 export function LectureCard({ lecture }: LectureCardProps) {
   const openDetailModal = useLectureDetailModalStore((state) => state.open);
   const closeModal = useLectureDetailModalStore((state) => state.close);
@@ -23,14 +52,6 @@ export function LectureCard({ lecture }: LectureCardProps) {
   );
   const isModalOpen = useLectureDetailModalStore((state) => state.isOpen);
   const { openModal } = useModal();
-
-  const { mutate: deleteLecture, isPending: isDeleting } = useDeleteLecture({
-    onSuccess: () => {
-      if (isModalOpen && selectedLectureId === lecture.id) {
-        closeModal();
-      }
-    },
-  });
   const hasSchedule = lecture.schedule.days.length > 0;
   const scheduleDays = hasSchedule
     ? lecture.schedule.days.join(", ")
@@ -40,12 +61,13 @@ export function LectureCard({ lecture }: LectureCardProps) {
 
   const openDeleteConfirmModal = () => {
     openModal(
-      createElement(CheckModal, {
-        title: "수업을 삭제할까요?",
-        description: `${lecture.name} 수업이 삭제됩니다. 이 작업은 되돌릴 수 없습니다.`,
-        confirmText: "삭제",
-        cancelText: "취소",
-        onConfirm: () => deleteLecture(lecture.id),
+      createElement(DeleteLectureConfirmModal, {
+        lecture,
+        onDeleted: () => {
+          if (isModalOpen && selectedLectureId === lecture.id) {
+            closeModal();
+          }
+        },
       })
     );
   };
@@ -68,7 +90,6 @@ export function LectureCard({ lecture }: LectureCardProps) {
           variant="outline"
           className="h-9 w-9 rounded-full border-0 bg-[#d6d9e0] p-0 text-white hover:bg-[#c8ccd6] hover:text-white"
           aria-label={`${lecture.name} 삭제`}
-          disabled={isDeleting}
           onClick={(e) => {
             e.stopPropagation();
             openDeleteConfirmModal();

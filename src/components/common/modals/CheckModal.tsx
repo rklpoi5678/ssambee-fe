@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   Dialog,
   DialogContent,
@@ -13,11 +15,12 @@ import { useModal } from "@/providers/ModalProvider";
 type CheckModalProps = {
   title: string;
   description: string;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
   onCancel?: () => void;
   confirmText?: string;
   cancelText?: string;
   hideCancel?: boolean;
+  confirmDisabled?: boolean;
 };
 
 export const CheckModal = ({
@@ -28,8 +31,10 @@ export const CheckModal = ({
   confirmText = "확인",
   cancelText = "취소",
   hideCancel = false,
+  confirmDisabled = false,
 }: CheckModalProps) => {
   const { isOpen, closeModal } = useModal();
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const handleCancel = () => {
     onCancel?.();
@@ -38,6 +43,20 @@ export const CheckModal = ({
 
   const handleCloseOnly = () => {
     closeModal();
+  };
+
+  const handleConfirm = async () => {
+    if (isConfirming) return;
+    setIsConfirming(true);
+
+    try {
+      await onConfirm();
+    } catch (error) {
+      console.error("확인 동작 실패:", error);
+    } finally {
+      setIsConfirming(false);
+      handleCloseOnly();
+    }
   };
 
   return (
@@ -71,10 +90,8 @@ export const CheckModal = ({
           <Button
             variant="default"
             className={`h-[46px] rounded-[10px] bg-[#3863f6] px-7 text-[14px] font-semibold leading-[20px] tracking-[-0.14px] text-white shadow-[0_0_14px_rgba(138,138,138,0.08)] hover:bg-[#2f57e8] ${hideCancel ? "max-w-[196px]" : "flex-1"}`}
-            onClick={() => {
-              onConfirm();
-              handleCloseOnly();
-            }}
+            onClick={handleConfirm}
+            disabled={confirmDisabled || isConfirming}
           >
             {confirmText}
           </Button>
