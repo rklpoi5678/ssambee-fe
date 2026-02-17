@@ -51,11 +51,12 @@ export const CheckModal = ({
 
     try {
       await onConfirm();
+      closeModal();
     } catch (error) {
       console.error("확인 동작 실패:", error);
     } finally {
       setIsConfirming(false);
-      handleCloseOnly();
+      
     }
   };
 
