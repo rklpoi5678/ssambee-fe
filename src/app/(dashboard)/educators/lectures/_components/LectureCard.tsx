@@ -1,111 +1,103 @@
 "use client";
 
+import { createElement } from "react";
 import { X } from "lucide-react";
 
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { CheckModal } from "@/components/common/modals/CheckModal";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Lecture } from "@/types/lectures";
 import { useLectureDetailModalStore } from "@/stores/lectures";
 import { useDeleteLecture } from "@/hooks/lectures/useDeleteLecture";
-
-import { LectureStatusBadge } from "./LectureStatusBadge";
+import { CommonLectureCard } from "@/components/common/CommonLectureCard";
+import { useModal } from "@/providers/ModalProvider";
 
 type LectureCardProps = {
   lecture: Lecture;
 };
 
+type DeleteLectureConfirmModalProps = {
+  lecture: Lecture;
+  onDeleted: () => void;
+};
+
+function DeleteLectureConfirmModal({
+  lecture,
+  onDeleted,
+}: DeleteLectureConfirmModalProps) {
+  const { mutateAsync: deleteLecture, isPending: isDeleting } =
+    useDeleteLecture({
+      onSuccess: onDeleted,
+    });
+
+  return (
+    <CheckModal
+      title="수업을 삭제할까요?"
+      description={`${lecture.name} 수업이 삭제됩니다. 이 작업은 되돌릴 수 없습니다.`}
+      confirmText={isDeleting ? "삭제 중..." : "삭제"}
+      cancelText="취소"
+      confirmDisabled={isDeleting}
+      onConfirm={async () => {
+        if (isDeleting) return;
+        await deleteLecture(lecture.id);
+      }}
+    />
+  );
+}
+
 export function LectureCard({ lecture }: LectureCardProps) {
-  const openModal = useLectureDetailModalStore((state) => state.open);
+  const openDetailModal = useLectureDetailModalStore((state) => state.open);
   const closeModal = useLectureDetailModalStore((state) => state.close);
   const selectedLectureId = useLectureDetailModalStore(
     (state) => state.selectedLectureId
   );
   const isModalOpen = useLectureDetailModalStore((state) => state.isOpen);
-  const { mutate: deleteLecture, isPending: isDeleting } = useDeleteLecture({
-    onSuccess: () => {
-      if (isModalOpen && selectedLectureId === lecture.id) {
-        closeModal();
-      }
-    },
-  });
+  const { openModal } = useModal();
   const hasSchedule = lecture.schedule.days.length > 0;
-  const scheduleText = hasSchedule
-    ? `${lecture.schedule.days.join(", ")} · ${lecture.schedule.time}`
+  const scheduleDays = hasSchedule
+    ? lecture.schedule.days.join(", ")
     : "일정 없음";
+  const scheduleTime = hasSchedule ? lecture.schedule.time : "-";
+  const instructorInitial = lecture.instructor?.slice(0, 1) ?? "-";
+
+  const openDeleteConfirmModal = () => {
+    openModal(
+      createElement(DeleteLectureConfirmModal, {
+        lecture,
+        onDeleted: () => {
+          if (isModalOpen && selectedLectureId === lecture.id) {
+            closeModal();
+          }
+        },
+      })
+    );
+  };
 
   return (
-    <>
-      <Card className="relative overflow-hidden">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="absolute right-3 top-3 h-8 w-8 p-0"
-              aria-label={`${lecture.name} 삭제`}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>수업을 삭제할까요?</AlertDialogTitle>
-              <AlertDialogDescription>
-                {lecture.name} 수업이 삭제됩니다. 이 작업은 되돌릴 수 없습니다.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => deleteLecture(lecture.id)}
-                disabled={isDeleting}
-              >
-                {isDeleting ? "삭제 중..." : "삭제"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
-        <CardContent className="pt-6">
-          <div className="mb-3 flex items-center gap-2">
-            {lecture.status && <LectureStatusBadge status={lecture.status} />}
-            <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-              {lecture.schoolYear}
-            </span>
-          </div>
-
-          <h3 className="text-lg font-semibold">{lecture.name}</h3>
-          <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-            <span>🕐</span>
-            {scheduleText}
-          </p>
-          <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-            <span>👥 등록 {lecture.currentStudents}명</span>
-            <span>담당 강사 {lecture.instructor}</span>
-          </div>
-        </CardContent>
-
-        <CardFooter>
-          <Button
-            variant="secondary"
-            className="w-full"
-            onClick={() => openModal(lecture.id)}
-          >
-            상세 보기
-          </Button>
-        </CardFooter>
-      </Card>
-    </>
+    <CommonLectureCard
+      subject={lecture.subject}
+      schoolYear={lecture.schoolYear}
+      title={lecture.name}
+      scheduleDays={scheduleDays}
+      scheduleTime={scheduleTime}
+      hasSchedule={hasSchedule}
+      currentStudents={lecture.currentStudents}
+      instructorName={lecture.instructor}
+      instructorInitial={instructorInitial}
+      onClick={() => openDetailModal(lecture.id)}
+      action={
+        <Button
+          type="button"
+          variant="outline"
+          className="h-9 w-9 rounded-full border-0 bg-[#d6d9e0] p-0 text-white hover:bg-[#c8ccd6] hover:text-white"
+          aria-label={`${lecture.name} 삭제`}
+          onClick={(e) => {
+            e.stopPropagation();
+            openDeleteConfirmModal();
+          }}
+        >
+          <X className="h-[14px] w-[14px]" />
+        </Button>
+      }
+    />
   );
 }

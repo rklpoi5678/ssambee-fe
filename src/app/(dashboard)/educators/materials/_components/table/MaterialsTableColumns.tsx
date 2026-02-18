@@ -6,6 +6,16 @@ import { MATERIALS_TYPE_LABEL } from "@/constants/materials.default";
 import StatusLabel from "@/components/common/label/StatusLabel";
 import { Button } from "@/components/ui/button";
 
+type MaterialTypeLabelKey = keyof typeof MATERIALS_TYPE_LABEL;
+
+const resolveMaterialTypeKey = (typeValue?: string): MaterialTypeLabelKey => {
+  const normalized = (typeValue ?? "").toUpperCase();
+  if (normalized in MATERIALS_TYPE_LABEL) {
+    return normalized as MaterialTypeLabelKey;
+  }
+  return "OTHER";
+};
+
 export const MATERIALS_TABLE_COLUMNS = ({
   onDownload,
 }: {
@@ -26,11 +36,12 @@ export const MATERIALS_TABLE_COLUMNS = ({
   {
     key: "type",
     label: "자료 유형",
-    render: (row: Materials) => (
-      <StatusLabel color={MATERIALS_TYPE_LABEL[row.type].color}>
-        {MATERIALS_TYPE_LABEL[row.type].label}
-      </StatusLabel>
-    ),
+    render: (row: Materials) => {
+      const typeKey = resolveMaterialTypeKey(row.type);
+      const typeMeta = MATERIALS_TYPE_LABEL[typeKey];
+
+      return <StatusLabel color={typeMeta.color}>{typeMeta.label}</StatusLabel>;
+    },
   },
   {
     key: "writer",
@@ -46,8 +57,9 @@ export const MATERIALS_TABLE_COLUMNS = ({
     key: "download",
     label: "다운로드",
     render: (row: Materials) => {
+      const typeKey = resolveMaterialTypeKey(row.type);
       // 파일이 있는 타입만 다운로드 버튼 표시
-      if (row.type === "VIDEO") return <span className="text-gray-400">-</span>;
+      if (typeKey === "VIDEO") return <span className="text-gray-400">-</span>;
 
       return (
         <Button

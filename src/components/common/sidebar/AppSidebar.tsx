@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -112,6 +113,9 @@ export function AppSidebar() {
   const { user } = useAuthContext();
   const { signout, loading } = useAuth();
   const menuItems = getMenuItems(user?.userType);
+  const isEducatorHome =
+    user?.userType === "INSTRUCTOR" || user?.userType === "ASSISTANT";
+  const homeHref = isEducatorHome ? "/educators" : "/learners";
   const pathname = usePathname();
 
   // 로그아웃 핸들러
@@ -130,9 +134,15 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r border-[#e9ebf0] [&_[data-slot=sidebar-inner]]:bg-white">
       <SidebarHeader className="pl-10 pr-8 py-8">
-        <span className="text-[24px] leading-[32px] tracking-[-0.24px] font-bold text-black">
-          Logo
-        </span>
+        <Link href={homeHref} className="inline-flex items-center">
+          <Image
+            src="/brand/ssam-b.svg"
+            alt="ssam B"
+            width={96}
+            height={28}
+            priority
+          />
+        </Link>
       </SidebarHeader>
       <SidebarContent className="pt-[28px]">
         <SidebarGroup className="p-0">

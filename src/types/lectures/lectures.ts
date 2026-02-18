@@ -42,7 +42,7 @@ export type Lecture = {
   schoolYear: string; // 학년 (예: 고2, 고3)
   instructor: string; // 강사명
   currentStudents: number; // 현재 인원
-  maxStudents: number; // 최대 인원
+  maxStudents?: number;
   schedule: LectureSchedule;
   lectureTimes?: LectureTime[];
   startDate?: string; // 개강일 (예: 2026-01-31) - B1 데이터
