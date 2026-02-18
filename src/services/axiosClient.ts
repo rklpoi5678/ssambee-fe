@@ -36,7 +36,19 @@ const attachErrorInterceptor = (client: typeof axiosClient) => {
   client.interceptors.response.use(
     (response) => response,
     (error: AxiosError<ApiResponse<unknown>>) => {
+      const status = error.response?.status;
       const message = getErrorMessage(error);
+
+      if (status === 403) {
+        // 현재 페이지가 pending-approval이 아닐 때만 이동
+        if (
+          typeof window !== "undefined" &&
+          !window.location.pathname.includes("/pending-approval")
+        ) {
+          window.location.href = "/pending-approval";
+          return Promise.reject(error);
+        }
+      }
 
       if (error.response?.data && typeof error.response.data === "object") {
         if (!("message" in error.response.data)) {
