@@ -12,7 +12,7 @@ import {
 import { RegisterFormData, RegisterUser, Role } from "@/types/auth.type";
 import { useAuthStore, useSchoolStore } from "@/stores/registered.store";
 import { REGISTER_FORM_DEFAULTS } from "@/constants/auth.defaults";
-import { verifyPhoneAPI } from "@/services/auth.service";
+// import { verifyPhoneAPI } from "@/services/auth.service";
 import { useAuth } from "@/hooks/useAuth";
 import { phoneNumberFormatter } from "@/utils/phone";
 import { InputForm } from "@/components/common/input/InputForm";
@@ -38,14 +38,14 @@ export default function RegisterForm({
 }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
-  const [phoneLoading, setPhoneLoading] = useState(false);
+  // const [phoneLoading, setPhoneLoading] = useState(false);
   const { signup, loading } = useAuth();
 
   const {
-    isPhoneVerified,
+    // isPhoneVerified,
     isCodeVerified,
     signupCode,
-    setPhoneVerified,
+    // setPhoneVerified,
     resetAuth,
   } = useAuthStore();
 
@@ -55,13 +55,13 @@ export default function RegisterForm({
   const {
     register,
     handleSubmit,
-    setError,
+    // setError,
     clearErrors,
-    trigger,
-    getValues,
+    // trigger,
+    // getValues,
     setValue,
     control,
-    getFieldState,
+    // getFieldState,
     formState,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerFormSchema),
@@ -79,8 +79,8 @@ export default function RegisterForm({
   const passwordValue = useWatch({ control, name: "password" });
   const passwordConfirmValue = useWatch({ control, name: "passwordConfirm" });
 
-  const { error: phoneError } = getFieldState("phoneNumber", formState);
-  const isPhoneInputValid = phoneNumberValue && !phoneError;
+  // const { error: phoneError } = getFieldState("phoneNumber", formState);
+  // const isPhoneInputValid = phoneNumberValue && !phoneError;
 
   const isAgreePrivacy = useWatch({
     control,
@@ -95,46 +95,46 @@ export default function RegisterForm({
   }, [resetAuth, resetSchoolInfo]);
 
   // 전화번호 인증 버튼
-  const handleVerifyPhone = async () => {
-    const isValidPhoneNumber = await trigger("phoneNumber");
-    if (!isValidPhoneNumber) {
-      alert("전화번호를 입력해주세요.");
-      return;
-    }
+  // const handleVerifyPhone = async () => {
+  //   const isValidPhoneNumber = await trigger("phoneNumber");
+  //   if (!isValidPhoneNumber) {
+  //     alert("전화번호를 입력해주세요.");
+  //     return;
+  //   }
 
-    const phoneNumber = getValues("phoneNumber");
+  //   const phoneNumber = getValues("phoneNumber");
 
-    try {
-      setPhoneLoading(true);
-      const res = await verifyPhoneAPI(phoneNumber);
+  //   try {
+  //     setPhoneLoading(true);
+  //     const res = await verifyPhoneAPI(phoneNumber);
 
-      if (res.success) {
-        setPhoneVerified(true);
-        alert("전화번호 인증 완료!");
-      } else {
-        setPhoneVerified(false);
-        setValue("phoneNumber", "");
-        alert("전화번호 인증에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error(error);
-      setPhoneVerified(false);
-      setValue("phoneNumber", "");
-      alert("인증 중 오류가 발생했습니다.");
-    } finally {
-      setPhoneLoading(false);
-    }
-  };
+  //     if (res.success) {
+  //       setPhoneVerified(true);
+  //       alert("전화번호 인증 완료!");
+  //     } else {
+  //       setPhoneVerified(false);
+  //       setValue("phoneNumber", "");
+  //       alert("전화번호 인증에 실패했습니다.");
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     setPhoneVerified(false);
+  //     setValue("phoneNumber", "");
+  //     alert("인증 중 오류가 발생했습니다.");
+  //   } finally {
+  //     setPhoneLoading(false);
+  //   }
+  // };
 
   // 회원가입 제출
   const onSubmit = async (data: RegisterFormData) => {
-    if (!isPhoneVerified) {
-      setError("phoneNumber", {
-        type: "manual",
-        message: "연락처 인증을 완료해주세요",
-      });
-      return;
-    }
+    // if (!isPhoneVerified) {
+    //   setError("phoneNumber", {
+    //     type: "manual",
+    //     message: "연락처 인증을 완료해주세요",
+    //   });
+    //   return;
+    // }
 
     // 인증 코드 검증 - 외부 폼
     if (requireAuthCode && !isCodeVerified) {
@@ -171,7 +171,6 @@ export default function RegisterForm({
   const isSubmitDisabled =
     !isValid ||
     loading ||
-    !isPhoneVerified ||
     (requireAuthCode && !isCodeVerified) ||
     (requireSchoolInfo && !isSchoolInfoValid);
 
@@ -196,7 +195,7 @@ export default function RegisterForm({
             id="phoneNumber"
             label="전화번호"
             type="tel"
-            disabled={isPhoneVerified || phoneLoading}
+            // disabled={isPhoneVerified || phoneLoading}
             error={errors.phoneNumber?.message}
             {...register("phoneNumber", {
               onChange: (e) => {
@@ -204,14 +203,14 @@ export default function RegisterForm({
                 setValue("phoneNumber", formatted);
               },
             })}
-            showReset={!!phoneNumberValue && !isPhoneVerified}
+            showReset={!!phoneNumberValue}
             onReset={() => {
               setValue("phoneNumber", "");
               clearErrors("phoneNumber");
             }}
           />
 
-          <button
+          {/* <button
             type="button"
             onClick={handleVerifyPhone}
             disabled={!isPhoneInputValid || isPhoneVerified || phoneLoading}
@@ -230,7 +229,7 @@ export default function RegisterForm({
               : isPhoneVerified
                 ? "인증 완료"
                 : "인증 요청"}
-          </button>
+          </button> */}
         </div>
 
         <InputForm
