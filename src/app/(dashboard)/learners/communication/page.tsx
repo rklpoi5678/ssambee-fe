@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Title from "@/components/common/header/Title";
 
-import CommunicationStatsSVC from "./_components/stats/CommunicationStatsSVC";
 import TabSectionSVC from "./_components/filter/TabSectionSVC";
 
 export default function LearnersCommunicationPage() {
@@ -12,7 +11,7 @@ export default function LearnersCommunicationPage() {
       <div className="flex items-center justify-between gap-4">
         <Title
           title="소통 관리 대시보드"
-          description="학생/학부모의 문의 내역과 강사/조교가 관리합니다."
+          description="나의 문의 내역을 관리하고 공지를 확인합니다."
         />
 
         <Button
@@ -23,8 +22,6 @@ export default function LearnersCommunicationPage() {
           <Link href="/learners/communication/create">작성하기</Link>
         </Button>
       </div>
-
-      <CommunicationStatsSVC />
 
       <TabSectionSVC />
     </div>

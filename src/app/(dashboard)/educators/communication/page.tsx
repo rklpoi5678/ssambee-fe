@@ -12,7 +12,7 @@ export default function CommunicationListPage() {
       <div className="flex items-center justify-between gap-4">
         <Title
           title="소통 관리 대시보드"
-          description="학생/학부모의 문의 내역과 강사/조교가 관리합니다."
+          description="학생/학부모의 문의 내역을 관리합니다."
         />
 
         <Button
