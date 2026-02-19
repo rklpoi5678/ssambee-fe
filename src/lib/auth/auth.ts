@@ -13,6 +13,9 @@ const SESSION_COOKIE_NAMES = [
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const API_BASE_URL_SVC = process.env.NEXT_PUBLIC_API_BASE_URL_SVC;
 
+// 조교 가입 승인 상태
+type SignStatus = "PENDING" | "REJECTED" | "SIGNED" | "EXPIRED";
+
 type SessionUser = {
   id: string;
   email: string;
@@ -20,10 +23,15 @@ type SessionUser = {
   userType: Role;
 };
 
+type SessionProfile = {
+  signStatus: SignStatus;
+};
+
 type SessionResponse = {
   success: boolean;
   data?: {
     user: SessionUser;
+    profile: SessionProfile;
   };
 };
 
@@ -47,10 +55,11 @@ async function getCookieHeader(): Promise<string> {
 //서버 컴포넌트에서 세션 정보 가져오기 (MGMT: 강사/조교, SVC: 학생/학부모)
 export async function getServerSession(
   role: "MGMT" | "SVC" = "MGMT"
-): Promise<SessionUser | null> {
+): Promise<(SessionUser & { profile: SessionProfile }) | null> {
   try {
     const baseURL = role === "MGMT" ? API_BASE_URL : API_BASE_URL_SVC;
     const cookieHeader = await getCookieHeader();
+
     if (!baseURL) {
       console.error(`Missing API base URL for role: ${role}`);
       return null;
@@ -70,9 +79,16 @@ export async function getServerSession(
       return null;
     }
 
-    const data: SessionResponse = await response.json();
+    const res = await response.json();
 
-    return data.data?.user || null;
+    if (!res.data || !res.data.user) {
+      return null;
+    }
+
+    return {
+      ...res.data.user,
+      profile: res.data.profile,
+    };
   } catch (error) {
     console.error("Failed to fetch server session:", error);
     return null;
@@ -94,7 +110,7 @@ export async function requireAuthWithRole(options: {
   allowedRoles: Role[];
   role: "MGMT" | "SVC";
   fallbackPath: string;
-}): Promise<SessionUser> {
+}): Promise<SessionUser & { profile: SessionProfile }> {
   const { loginPath, allowedRoles, role, fallbackPath } = options;
 
   // 쿠키 체크
@@ -109,6 +125,13 @@ export async function requireAuthWithRole(options: {
   // 세션 정보가 없으면 로그인 페이지로
   if (!user) {
     redirect(loginPath);
+  }
+
+  const signStatus = user.profile?.signStatus;
+
+  if (signStatus !== "SIGNED") {
+    // 서명 대기/거절/만료 상태라면 서명 페이지(또는 승인 대기 페이지)로 이동
+    redirect("/pending-approval");
   }
 
   // Role 체크

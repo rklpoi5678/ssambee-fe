@@ -1,7 +1,15 @@
+"use client";
 import { Lock } from "lucide-react";
-import Link from "next/link";
+
+import { useAuth } from "@/hooks/useAuth";
 
 export default function PendingApprovalPage() {
+  const { signout } = useAuth();
+
+  const handleSignOut = async () => {
+    await signout("MGMT");
+  };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4">
       <div className="text-center">
@@ -12,16 +20,16 @@ export default function PendingApprovalPage() {
           가입 승인 대기 중
         </h1>
         <p className="mb-8 text-gray-600">
-          강사님의 승인이 완료된 후 모든 서비스를 이용하실 수 있습니다.
+          담당 강사님의 승인이 완료된 후 모든 서비스를 이용하실 수 있습니다.
           <br />
-          조금만 기다려 주세요!
+          승인 처리가 완료될 때까지 조금만 기다려 주세요!
         </p>
-        <Link
-          href="/educators"
-          className="rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 transition-colors"
+        <button
+          onClick={handleSignOut}
+          className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[14px] bg-[#4B72F7] py-4 text-[17px] font-bold text-white transition-all hover:bg-[#3859D4] active:scale-[0.98] disabled:bg-[#4B72F7]/50 cursor-pointer"
         >
-          대시보드로 돌아가기
-        </Link>
+          로그아웃
+        </button>
       </div>
     </div>
   );
