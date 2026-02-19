@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function LearnersMyPage() {
-  return <div>LearnersMyPage</div>;
+  redirect("/learners/profile");
 }
