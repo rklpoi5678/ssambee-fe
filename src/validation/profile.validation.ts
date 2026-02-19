@@ -62,7 +62,18 @@ export const passwordChangeSchema = passwordChangeBaseSchema.refine(
   }
 );
 
+export const passwordResetSchema = z
+  .object({
+    newPassword: passwordChangeBaseSchema.shape.newPassword,
+    confirmPassword: passwordChangeBaseSchema.shape.confirmPassword,
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "비밀번호가 일치하지 않습니다",
+    path: ["confirmPassword"],
+  });
+
 export type ProfileUpdateFormData = z.infer<typeof profileUpdateSchema>;
 export type PhoneChangeFormData = z.infer<typeof phoneChangeSchema>;
 export type VerificationCodeFormData = z.infer<typeof verificationCodeSchema>;
 export type PasswordChangeFormData = z.infer<typeof passwordChangeSchema>;
+export type PasswordResetFormData = z.infer<typeof passwordResetSchema>;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Lock, UserX } from "lucide-react";
@@ -16,20 +16,38 @@ import { InputForm } from "@/components/common/input/InputForm";
 import { useModal } from "@/providers/ModalProvider";
 import { CheckModal } from "@/components/common/modals/CheckModal";
 import {
-  passwordChangeSchema,
-  type PasswordChangeFormData,
+  passwordResetSchema,
+  verificationCodeSchema,
+  type PasswordResetFormData,
+  type VerificationCodeFormData,
 } from "@/validation/profile.validation";
 import { EyeClosedIcon, EyeOpenIcon } from "@/components/icons/AuthIcons";
 
 type ViewMode = "menu" | "password";
 
-export function SettingsSecurityModal() {
+type SettingsSecurityModalProps = {
+  email: string;
+};
+
+export function SettingsSecurityModal({ email }: SettingsSecurityModalProps) {
   const { isOpen, closeModal, openModal } = useModal();
   const [viewMode, setViewMode] = useState<ViewMode>("menu");
 
-  const [showCurrentPwd, setShowCurrentPwd] = useState(false);
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const [showNewPwd, setShowNewPwd] = useState(false);
   const [showConfirmPwd, setShowConfirmPwd] = useState(false);
+
+  const {
+    register: registerCode,
+    handleSubmit: handleCodeSubmit,
+    formState: { errors: codeErrors, isValid: isCodeValid },
+    setValue: setCodeValue,
+    reset: resetCode,
+  } = useForm<VerificationCodeFormData>({
+    resolver: zodResolver(verificationCodeSchema),
+    mode: "onChange",
+  });
 
   const {
     register,
@@ -37,28 +55,22 @@ export function SettingsSecurityModal() {
     formState: { errors, isValid },
     setValue,
     reset,
-    trigger,
     control,
     clearErrors,
-  } = useForm<PasswordChangeFormData>({
-    resolver: zodResolver(passwordChangeSchema),
+  } = useForm<PasswordResetFormData>({
+    resolver: zodResolver(passwordResetSchema),
     mode: "onChange",
   });
 
-  const currentPasswordValue = useWatch({ control, name: "currentPassword" });
   const newPasswordValue = useWatch({ control, name: "newPassword" });
   const confirmPasswordValue = useWatch({ control, name: "confirmPassword" });
 
-  useEffect(() => {
-    if (confirmPasswordValue) {
-      trigger("confirmPassword");
-    }
-  }, [newPasswordValue, confirmPasswordValue, trigger]);
-
   const handleClose = () => {
     setViewMode("menu");
+    setIsCodeSent(false);
+    setIsVerified(false);
+    resetCode();
     reset();
-    setShowCurrentPwd(false);
     setShowNewPwd(false);
     setShowConfirmPwd(false);
     closeModal();
@@ -70,14 +82,23 @@ export function SettingsSecurityModal() {
 
   const handleBack = () => {
     setViewMode("menu");
+    setIsCodeSent(false);
+    setIsVerified(false);
+    resetCode();
     reset();
-    setShowCurrentPwd(false);
     setShowNewPwd(false);
     setShowConfirmPwd(false);
   };
 
+  const handleSendCode = () => {
+    setIsCodeSent(true);
+  };
+
+  const handleVerifyCode = handleCodeSubmit(() => {
+    setIsVerified(true);
+  });
+
   const onSubmit = () => {
-    // TODO: API 연동
     handleClose();
   };
 
@@ -126,46 +147,65 @@ export function SettingsSecurityModal() {
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
-            <div className="relative">
-              <InputForm
-                label="현재 비밀번호"
-                type={showCurrentPwd ? "text" : "password"}
-                {...register("currentPassword")}
-                error={errors.currentPassword?.message}
-                showReset={!!currentPasswordValue}
-                onReset={() => {
-                  setValue("currentPassword", "", { shouldValidate: true });
-                  clearErrors("currentPassword");
-                }}
-              />
-              {currentPasswordValue && (
-                <button
-                  type="button"
-                  onClick={() => setShowCurrentPwd(!showCurrentPwd)}
-                  className="absolute right-13 top-[30px] -translate-y-1/2 cursor-pointer"
-                >
-                  {showCurrentPwd ? (
-                    <EyeOpenIcon size={20} />
-                  ) : (
-                    <EyeClosedIcon size={20} />
-                  )}
-                </button>
-              )}
+            <div className="space-y-2">
+              <InputForm id="email" label="이메일" value={email} disabled />
             </div>
+
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="h-[58px] flex-1 cursor-pointer"
+                onClick={handleSendCode}
+                disabled={isCodeSent}
+              >
+                {isCodeSent ? "발송됨" : "인증메일 발송"}
+              </Button>
+            </div>
+
+            {isCodeSent && (
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <InputForm
+                    label="인증코드"
+                    type="text"
+                    {...registerCode("code")}
+                    disabled={isVerified}
+                    error={codeErrors.code?.message}
+                    showReset={!isVerified}
+                    onReset={() => {
+                      setCodeValue("code", "");
+                    }}
+                    maxLength={6}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  className="h-[58px] cursor-pointer"
+                  disabled={!isCodeValid || isVerified}
+                  onClick={() => {
+                    void handleVerifyCode();
+                  }}
+                >
+                  {isVerified ? "인증완료" : "인증하기"}
+                </Button>
+              </div>
+            )}
 
             <div className="relative">
               <InputForm
-                label="변경할 비밀번호"
+                label="새 비밀번호"
                 type={showNewPwd ? "text" : "password"}
                 {...register("newPassword")}
+                disabled={!isVerified}
                 error={errors.newPassword?.message}
-                showReset={!!newPasswordValue}
+                showReset={!!newPasswordValue && isVerified}
                 onReset={() => {
                   setValue("newPassword", "", { shouldValidate: true });
                   clearErrors("newPassword");
                 }}
               />
-              {newPasswordValue && (
+              {newPasswordValue && isVerified && (
                 <button
                   type="button"
                   onClick={() => setShowNewPwd(!showNewPwd)}
@@ -182,17 +222,18 @@ export function SettingsSecurityModal() {
 
             <div className="relative">
               <InputForm
-                label="변경할 비밀번호 확인"
+                label="새 비밀번호 확인"
                 type={showConfirmPwd ? "text" : "password"}
                 {...register("confirmPassword")}
+                disabled={!isVerified}
                 error={errors.confirmPassword?.message}
-                showReset={!!confirmPasswordValue}
+                showReset={!!confirmPasswordValue && isVerified}
                 onReset={() => {
                   setValue("confirmPassword", "", { shouldValidate: true });
                   clearErrors("confirmPassword");
                 }}
               />
-              {confirmPasswordValue && (
+              {confirmPasswordValue && isVerified && (
                 <button
                   type="button"
                   onClick={() => setShowConfirmPwd(!showConfirmPwd)}
@@ -206,6 +247,7 @@ export function SettingsSecurityModal() {
                 </button>
               )}
             </div>
+
             <div className="flex gap-2 pt-4">
               <Button
                 type="button"
@@ -219,7 +261,7 @@ export function SettingsSecurityModal() {
               <Button
                 type="submit"
                 className="flex-1 cursor-pointer"
-                disabled={!isValid}
+                disabled={!isVerified || !isValid}
               >
                 변경하기
               </Button>
