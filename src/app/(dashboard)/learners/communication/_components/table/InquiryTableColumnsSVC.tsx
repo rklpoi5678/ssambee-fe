@@ -31,13 +31,16 @@ export const INQUIRY_TABLE_COLUMNS_SVC: ColumnDefinition<InquiryRow>[] = [
     label: "상태",
     render: (row: InquiryRow) => {
       const statusKey = row.status as keyof typeof INQUIRY_STATUS_LABEL;
-      const statusInfo = INQUIRY_STATUS_LABEL[statusKey];
+      const statusInfo = INQUIRY_STATUS_LABEL[statusKey] ?? {
+        color: "gray",
+        label: row.status,
+      };
 
       return (
         <div className="w-[50px] flex items-center">
           <StatusLabel showDot color={statusInfo.color}>
             {statusInfo.label}
-          </StatusLabel>
+          </StatusLabel>{" "}
         </div>
       );
     },

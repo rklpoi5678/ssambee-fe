@@ -174,7 +174,7 @@ export const myPostServiceSVC = {
   },
 
   // 내 문의 댓글 삭제
-  deleteStudentPostComment: async (postId: string, commentId: string) => {
+  deleteStudentPostCommentSVC: async (postId: string, commentId: string) => {
     const { data } = await axiosClientSVC.delete<
       ApiResponse<CommonPostComment>
     >(`/student-posts/${postId}/comments/${commentId}`);

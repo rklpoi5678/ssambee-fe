@@ -178,6 +178,9 @@ export const useCreateStudentPostSVC = () => {
       await queryClient.invalidateQueries({ queryKey: ["studentPosts"] });
       alert("문의가 등록되었습니다.");
     },
+    onError: () => {
+      alert("문의 등록 중 오류가 발생했습니다. 다시 시도해주세요.");
+    },
   });
 };
 
@@ -190,7 +193,10 @@ export const useCreateParentPostSVC = () => {
       myPostServiceSVC.createStudentParentPostSVC(payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["studentPosts"] });
-      alert("학부모 문의가 등록되었습니다.");
+      alert("문의가 등록되었습니다.");
+    },
+    onError: () => {
+      alert("문의 등록 중 오류가 발생했습니다. 다시 시도해주세요.");
     },
   });
 };
@@ -341,7 +347,7 @@ export const useStudentPostCommentMutationsSVC = () => {
     }: {
       postId: string;
       commentId: string;
-    }) => myPostServiceSVC.deleteStudentPostComment(postId, commentId),
+    }) => myPostServiceSVC.deleteStudentPostCommentSVC(postId, commentId),
     onSuccess: async (_, variables) => {
       await Promise.all([
         queryClient.invalidateQueries({
