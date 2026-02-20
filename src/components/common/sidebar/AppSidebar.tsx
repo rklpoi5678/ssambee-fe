@@ -118,8 +118,8 @@ const otherMenuItems = [
     icon: Home,
   },
   {
-    title: "마이페이지",
-    url: "/learners/mypage",
+    title: "프로필",
+    url: "/learners/profile",
     icon: Users,
   },
   {

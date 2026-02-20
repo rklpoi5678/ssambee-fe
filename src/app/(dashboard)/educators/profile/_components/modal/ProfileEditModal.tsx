@@ -55,6 +55,7 @@ export function ProfileEditModal({ profile, onSubmit }: ProfileEditModalProps) {
   const onInternalSubmit = (data: ProfileUpdateFormData) => {
     onSubmit({
       ...data,
+      email: profile.email,
       imageFile: imageFile,
     });
   };
@@ -128,8 +129,9 @@ export function ProfileEditModal({ profile, onSubmit }: ProfileEditModalProps) {
               type="email"
               label="이메일 *"
               {...register("email")}
+              disabled
               error={errors.email?.message}
-              showReset={(formValues.email?.length ?? 0) > 0}
+              showReset={false}
               onReset={() => setValue("email", "")}
             />
           </div>

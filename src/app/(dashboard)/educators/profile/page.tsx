@@ -2,6 +2,7 @@
 
 import { mapProfileUpdateFormToApi } from "@/mappers/profile.mapper";
 import { useMyProfile } from "@/hooks/profile/useMyProfile";
+import { useSetBreadcrumb } from "@/hooks/useBreadcrumb";
 import type { ProfileUpdateFormData } from "@/validation/profile.validation";
 import { useModal } from "@/providers/ModalProvider";
 
@@ -13,6 +14,8 @@ import { SettingsSecurityModal } from "./_components/modal/SettingsSecurityModal
 import { PhoneChangeModal } from "./_components/modal/PhoneChangeModal";
 
 export default function ProfilePage() {
+  useSetBreadcrumb([{ label: "프로필" }]);
+
   const { openModal, closeModal } = useModal();
   const { profile, lectures, isPending, isError, updateProfile, isUpdating } =
     useMyProfile();
@@ -33,7 +36,9 @@ export default function ProfilePage() {
   };
 
   const handleSettingsClick = () => {
-    openModal(<SettingsSecurityModal />);
+    if (!profile) return;
+
+    openModal(<SettingsSecurityModal email={profile.email} />);
   };
 
   const handlePhoneChangeClick = () => {
