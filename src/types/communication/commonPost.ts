@@ -62,6 +62,5 @@ export type CommonPostAttachment = {
   filename: string;
   fileUrl: string;
   materialId?: string;
-  studentPostId?: string | null;
   createdAt: string;
 };

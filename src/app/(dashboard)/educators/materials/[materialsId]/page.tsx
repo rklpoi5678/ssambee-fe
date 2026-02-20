@@ -42,7 +42,7 @@ export default function MaterialsDetailPage() {
     materialsId as string
   );
 
-  const { mutate: downloadMutation } = useDownloadMaterial();
+  const { mutate: downloadMutation } = useDownloadMaterial("EDUCATORS");
 
   const [mode, setMode] = useState<FormMode>("view");
   const [formData, setFormData] = useState<
@@ -148,7 +148,7 @@ export default function MaterialsDetailPage() {
   };
 
   const handleDownload = async () => {
-    downloadMutation(material.id);
+    downloadMutation({ materialsId: material.id });
   };
 
   const renderForm = () => {

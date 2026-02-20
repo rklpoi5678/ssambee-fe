@@ -195,13 +195,19 @@ export default function CommunicationDetailPage() {
   const handleAttachmentClick = (file: CommonPostAttachment) => {
     const isVideo =
       file.fileUrl?.includes("youtube.com") ||
-      file.fileUrl?.includes("youtu.be");
+      file.fileUrl?.includes("youtube");
 
     if (isVideo) {
       window.open(file.fileUrl, "_blank");
       return;
     }
-    downloadMaterial(file.materialId ?? "");
+    if (isNoticePost) {
+      // 공지사항일 때는 materialId를 우선 사용 (서버에서 Presigned URL 생성)
+      downloadMaterial({ materialsId: file.materialId });
+    } else {
+      // 문의(학부모/학생 직접 업로드)일 때는 fileUrl을 직접 사용
+      downloadMaterial({ fileUrl: file.fileUrl });
+    }
   };
 
   return (

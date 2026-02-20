@@ -95,10 +95,33 @@ type DownloadRole = "EDUCATORS" | "LEARNERS";
 
 export const useDownloadMaterial = (role: DownloadRole) => {
   return useMutation({
-    mutationFn: (materialsId: string) => {
-      return role === "EDUCATORS"
-        ? materialsService.getDownloadUrl(materialsId)
-        : materialsService.getStudentDownloadUrl(materialsId);
+    mutationFn: async ({
+      materialsId,
+      fileUrl,
+    }: {
+      materialsId?: string;
+      fileUrl?: string;
+    }) => {
+      if (!materialsId && fileUrl) {
+        return {
+          status: "success",
+          data: { url: fileUrl, type: "direct" },
+          message: "",
+        };
+      }
+
+      // EDUCATORS 전용 자료실 다운로드
+      if (role === "EDUCATORS") {
+        if (!materialsId) throw new Error("materialsId가 필요합니다.");
+        return materialsService.getDownloadUrl(materialsId);
+      }
+
+      // 학생이 자료실 연동 자료를 받을 때
+      if (materialsId) {
+        return materialsService.getStudentDownloadUrl(materialsId);
+      }
+
+      throw new Error("다운로드 가능한 정보가 없습니다.");
     },
     onSuccess: (response) => {
       // 서버 응답 구조 { status, data: { url, type }, message }
@@ -111,6 +134,7 @@ export const useDownloadMaterial = (role: DownloadRole) => {
 
       if (
         type === "youtube" ||
+        type === "direct" ||
         url.includes("youtube.com") ||
         url.includes("youtu.be")
       ) {

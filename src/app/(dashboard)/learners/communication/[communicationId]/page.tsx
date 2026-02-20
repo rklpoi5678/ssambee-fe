@@ -215,13 +215,16 @@ export default function CommunicationDetailPageSVC() {
   const handleAttachmentClick = (file: CommonPostAttachment) => {
     const isVideo =
       file.fileUrl?.includes("youtube.com") ||
-      file.fileUrl?.includes("youtu.be");
+      file.fileUrl?.includes("youtube");
 
     if (isVideo) {
       window.open(file.fileUrl, "_blank");
       return;
     }
-    downloadMaterial(file.materialId ?? "");
+    downloadMaterial({
+      materialsId: file.materialId,
+      fileUrl: file.fileUrl,
+    });
   };
 
   return (
