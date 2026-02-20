@@ -1,6 +1,5 @@
 import type { AxiosError } from "axios";
 
-import { SUBSCRIBED_PHONE_NUMBERS } from "@/data/auth-form.mock";
 import type { ApiResponse } from "@/types/api";
 import {
   LoginUser,
@@ -43,20 +42,43 @@ export const verifyAuthCodeAPI = async (signupCode: string) => {
   }
 };
 
-// 전화번호 인증 API
-export const verifyPhoneAPI = async (phoneNumber: string) => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+// 이메일 인증 API
+export const verifyEmailAPI = async (email: string) => {
+  try {
+    const { data } = await axiosClient.post<ApiResponse<{ isValid: boolean }>>(
+      "/auth/email-verification",
+      { email }
+    );
 
-  console.log("전화번호 인증 요청:", phoneNumber);
+    return {
+      success: !!data?.data?.isValid,
+      message: data?.message ?? "사용 가능한 이메일입니다.",
+    };
+  } catch (error) {
+    const axiosError = error as AxiosError<{ message?: string }>;
 
-  // 이미 가입된 전화번호면 인증 실패
-  if (SUBSCRIBED_PHONE_NUMBERS.includes(phoneNumber)) {
-    return { success: false, message: "이미 가입된 번호입니다." };
-  } else {
-    // 가입되지 않은 전화번호면 인증 성공
-    return { success: true, message: "전화번호 인증 완료!" };
+    return {
+      success: false,
+      message:
+        axiosError.response?.data?.message ??
+        axiosError.message ??
+        "이메일 인증 중 오류가 발생했습니다.",
+    };
   }
 };
+
+// 전화번호 인증 API
+// export const verifyPhoneAPI = async (phoneNumber: string) => {
+//   await new Promise((resolve) => setTimeout(resolve, 1000));
+
+//   // 이미 가입된 전화번호면 인증 실패
+//   if (SUBSCRIBED_PHONE_NUMBERS.includes(phoneNumber)) {
+//     return { success: false, message: "이미 가입된 번호입니다." };
+//   } else {
+//     // 가입되지 않은 전화번호면 인증 성공
+//     return { success: true, message: "전화번호 인증 완료!" };
+//   }
+// };
 
 // 회원가입 API --------------------
 export const signupInstructorAPI = (data: SignupInstructorUser) => {

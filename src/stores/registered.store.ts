@@ -1,19 +1,20 @@
 import { create } from "zustand";
 
-import { AuthStore, SchoolInfoStore } from "@/types/auth.type";
+import {
+  AuthCodeStore,
+  ParentPhoneStore,
+  SchoolInfoStore,
+} from "@/types/auth.type";
 
-export const useAuthStore = create<AuthStore>((set) => ({
-  isPhoneVerified: false, // 전화번호 인증 완료 여부
+export const useAuthCodeStore = create<AuthCodeStore>((set) => ({
   signupCode: "", // 인증 코드 입력값 -> 회원가입 데이터 객체에 포함시키기 위함
   isCodeVerified: false, // 인증 코드 서버 검증 완료 여부
 
-  setPhoneVerified: (verified) => set({ isPhoneVerified: verified }),
   setAuthCode: (code) => set({ signupCode: code }),
   setCodeVerified: (verified) => set({ isCodeVerified: verified }),
 
-  resetAuth: () =>
+  resetAuthCode: () =>
     set({
-      isPhoneVerified: false,
       signupCode: "",
       isCodeVerified: false,
     }),
@@ -32,4 +33,14 @@ export const useSchoolStore = create<SchoolInfoStore>((set) => ({
       schoolYear: "",
       isSchoolInfoValid: false,
     }),
+}));
+
+export const useParentPhoneStore = create<ParentPhoneStore>((set) => ({
+  parentPhoneNumber: "", // 학부모 전화번호
+  isParentPhoneValid: false, // 학부모 전화번호 검증 완료 여부
+
+  setParentPhone: (data) => set(data),
+  setParentPhoneValid: (valid) => set({ isParentPhoneValid: valid }),
+  resetParentPhone: () =>
+    set({ parentPhoneNumber: "", isParentPhoneValid: false }),
 }));

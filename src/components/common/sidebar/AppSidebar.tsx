@@ -73,6 +73,44 @@ const instructorMenuItems = [
   },
 ];
 
+const assistantMenuItems = [
+  {
+    title: "홈",
+    url: "/educators",
+    icon: Home,
+  },
+  {
+    title: "학생 관리",
+    url: "/educators/students",
+    icon: GraduationCap,
+  },
+  {
+    title: "수업 관리",
+    url: "/educators/lectures",
+    icon: BookOpen,
+  },
+  {
+    title: "스케줄 관리",
+    url: "/educators/schedules",
+    icon: Calendar,
+  },
+  {
+    title: "소통",
+    url: "/educators/communication",
+    icon: MessageSquare,
+  },
+  {
+    title: "시험 관리",
+    url: "/educators/exams",
+    icon: FileText,
+  },
+  {
+    title: "학습 자료실",
+    url: "/educators/materials",
+    icon: FolderOpen,
+  },
+];
+
 const otherMenuItems = [
   {
     title: "대시보드",
@@ -98,6 +136,7 @@ const otherMenuItems = [
 
 const getMenuItems = (userType?: Role) => {
   if (userType === "INSTRUCTOR") return instructorMenuItems;
+  if (userType === "ASSISTANT") return assistantMenuItems;
   return otherMenuItems;
 };
 

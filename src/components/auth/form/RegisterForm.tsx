@@ -10,9 +10,12 @@ import {
   registerRequestSchema,
 } from "@/validation/auth.validation";
 import { RegisterFormData, RegisterUser, Role } from "@/types/auth.type";
-import { useAuthStore, useSchoolStore } from "@/stores/registered.store";
+import {
+  useAuthCodeStore,
+  useParentPhoneStore,
+  useSchoolStore,
+} from "@/stores/registered.store";
 import { REGISTER_FORM_DEFAULTS } from "@/constants/auth.defaults";
-import { verifyPhoneAPI } from "@/services/auth.service";
 import { useAuth } from "@/hooks/useAuth";
 import { phoneNumberFormatter } from "@/utils/phone";
 import { InputForm } from "@/components/common/input/InputForm";
@@ -22,12 +25,14 @@ import {
   EyeOpenIcon,
   UncheckedIcon,
 } from "@/components/icons/AuthIcons";
+import { verifyEmailAPI } from "@/services/auth.service";
 
 type RegisterFormProps = {
   requireAuthCode?: boolean; // 인증 코드 필요 여부 - 조교
   requireSchoolInfo?: boolean; // 학원 정보 필요 여부 - 학생
   roleType: "EDUCATORS" | "LEARNERS"; // 사용자 타입 (라우팅용: educators, learners)
   userType: Role;
+  extraFields?: React.ReactNode; // 추가 필드
 };
 
 export default function RegisterForm({
@@ -35,22 +40,21 @@ export default function RegisterForm({
   requireSchoolInfo = false,
   roleType,
   userType,
+  extraFields,
 }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
-  const [phoneLoading, setPhoneLoading] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const { signup, loading } = useAuth();
 
-  const {
-    isPhoneVerified,
-    isCodeVerified,
-    signupCode,
-    setPhoneVerified,
-    resetAuth,
-  } = useAuthStore();
+  const { isCodeVerified, signupCode, resetAuthCode } = useAuthCodeStore();
 
+  // 학생용
   const { school, schoolYear, isSchoolInfoValid, resetSchoolInfo } =
     useSchoolStore();
+  const { parentPhoneNumber, isParentPhoneValid, resetParentPhone } =
+    useParentPhoneStore();
 
   const {
     register,
@@ -58,7 +62,6 @@ export default function RegisterForm({
     setError,
     clearErrors,
     trigger,
-    getValues,
     setValue,
     control,
     getFieldState,
@@ -79,8 +82,11 @@ export default function RegisterForm({
   const passwordValue = useWatch({ control, name: "password" });
   const passwordConfirmValue = useWatch({ control, name: "passwordConfirm" });
 
-  const { error: phoneError } = getFieldState("phoneNumber", formState);
-  const isPhoneInputValid = phoneNumberValue && !phoneError;
+  // const { error: phoneError } = getFieldState("phoneNumber", formState);
+  // const isPhoneInputValid = phoneNumberValue && !phoneError;
+
+  const { error: emailError } = getFieldState("email", formState);
+  const isEmailInputValid = emailValue && !emailError;
 
   const isAgreePrivacy = useWatch({
     control,
@@ -90,51 +96,87 @@ export default function RegisterForm({
 
   // 뒤로가기 시 상태 초기화
   useEffect(() => {
-    resetAuth();
+    resetAuthCode();
     resetSchoolInfo();
-  }, [resetAuth, resetSchoolInfo]);
+    resetParentPhone();
+  }, [resetAuthCode, resetSchoolInfo, resetParentPhone]);
 
   // 전화번호 인증 버튼
-  const handleVerifyPhone = async () => {
-    const isValidPhoneNumber = await trigger("phoneNumber");
-    if (!isValidPhoneNumber) {
-      alert("전화번호를 입력해주세요.");
-      return;
-    }
+  // const handleVerifyPhone = async () => {
+  //   const isValidPhoneNumber = await trigger("phoneNumber");
+  //   if (!isValidPhoneNumber) {
+  //     alert("전화번호를 입력해주세요.");
+  //     return;
+  //   }
 
-    const phoneNumber = getValues("phoneNumber");
+  //   const phoneNumber = getValues("phoneNumber");
+
+  //   try {
+  //     setPhoneLoading(true);
+  //     const res = await verifyPhoneAPI(phoneNumber);
+
+  //     if (res.success) {
+  //       setPhoneVerified(true);
+  //       alert("전화번호 인증 완료!");
+  //     } else {
+  //       setPhoneVerified(false);
+  //       setValue("phoneNumber", "");
+  //       alert("전화번호 인증에 실패했습니다.");
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     setPhoneVerified(false);
+  //     setValue("phoneNumber", "");
+  //     alert("인증 중 오류가 발생했습니다.");
+  //   } finally {
+  //     setPhoneLoading(false);
+  //   }
+  // };
+
+  // 이메일 인증 버튼
+  const handleVerifyEmail = async () => {
+    // Zod로 이메일 형식 먼저 검사
+    const isFormatValid = await trigger("email");
+    if (!isFormatValid) return;
 
     try {
-      setPhoneLoading(true);
-      const res = await verifyPhoneAPI(phoneNumber);
+      setEmailLoading(true);
+      const res = await verifyEmailAPI(emailValue);
 
       if (res.success) {
-        setPhoneVerified(true);
-        alert("전화번호 인증 완료!");
+        setIsEmailVerified(true);
+        alert(res.message);
       } else {
-        setPhoneVerified(false);
-        setValue("phoneNumber", "");
-        alert("전화번호 인증에 실패했습니다.");
+        setIsEmailVerified(false);
+        // 백엔드 에러 메시지를 InputForm 에러로 바인딩
+        setError("email", { type: "manual", message: res.message });
       }
-    } catch (error) {
-      console.error(error);
-      setPhoneVerified(false);
-      setValue("phoneNumber", "");
-      alert("인증 중 오류가 발생했습니다.");
+    } catch {
+      setIsEmailVerified(false);
+      alert("서버 통신 중 오류가 발생했습니다.");
     } finally {
-      setPhoneLoading(false);
+      setEmailLoading(false);
     }
   };
 
+  // 회원가입 버튼 활성화 조건
+  const isSubmitDisabled =
+    !isValid ||
+    loading ||
+    !emailValue ||
+    (requireAuthCode && !isCodeVerified) ||
+    (requireSchoolInfo && !isSchoolInfoValid) ||
+    (userType === "STUDENT" && !isParentPhoneValid);
+
   // 회원가입 제출
   const onSubmit = async (data: RegisterFormData) => {
-    if (!isPhoneVerified) {
-      setError("phoneNumber", {
-        type: "manual",
-        message: "연락처 인증을 완료해주세요",
-      });
-      return;
-    }
+    // if (!isPhoneVerified) {
+    //   setError("phoneNumber", {
+    //     type: "manual",
+    //     message: "연락처 인증을 완료해주세요",
+    //   });
+    //   return;
+    // }
 
     // 인증 코드 검증 - 외부 폼
     if (requireAuthCode && !isCodeVerified) {
@@ -142,9 +184,15 @@ export default function RegisterForm({
       return;
     }
 
-    // 학교 정보 검증 - 외부 폼
+    // 학생용 외부 폼 - 학교 정보 검증
     if (requireSchoolInfo && !isSchoolInfoValid) {
       alert("학교 정보를 모두 입력해주세요.");
+      return;
+    }
+
+    // 학생용 외부 폼 - 학부모 전화번호 검증
+    if (userType === "STUDENT" && !isParentPhoneValid) {
+      alert("학부모 전화번호를 올바르게 입력해주세요.");
       return;
     }
 
@@ -162,18 +210,12 @@ export default function RegisterForm({
       ...baseData,
       ...(signupCode ? { signupCode } : {}),
       ...(requireSchoolInfo ? { school, schoolYear } : {}),
+      ...(userType === "STUDENT" ? { parentPhoneNumber } : {}),
       userType,
     };
 
     await signup(submitData);
   };
-
-  const isSubmitDisabled =
-    !isValid ||
-    loading ||
-    !isPhoneVerified ||
-    (requireAuthCode && !isCodeVerified) ||
-    (requireSchoolInfo && !isSchoolInfoValid);
 
   return (
     <div className="space-y-6">
@@ -196,7 +238,7 @@ export default function RegisterForm({
             id="phoneNumber"
             label="전화번호"
             type="tel"
-            disabled={isPhoneVerified || phoneLoading}
+            // disabled={isPhoneVerified || phoneLoading}
             error={errors.phoneNumber?.message}
             {...register("phoneNumber", {
               onChange: (e) => {
@@ -204,14 +246,16 @@ export default function RegisterForm({
                 setValue("phoneNumber", formatted);
               },
             })}
-            showReset={!!phoneNumberValue && !isPhoneVerified}
+            showReset={!!phoneNumberValue}
             onReset={() => {
               setValue("phoneNumber", "");
               clearErrors("phoneNumber");
             }}
           />
 
-          <button
+          {extraFields}
+
+          {/* <button
             type="button"
             onClick={handleVerifyPhone}
             disabled={!isPhoneInputValid || isPhoneVerified || phoneLoading}
@@ -230,21 +274,44 @@ export default function RegisterForm({
               : isPhoneVerified
                 ? "인증 완료"
                 : "인증 요청"}
-          </button>
+          </button> */}
         </div>
 
-        <InputForm
-          id="email"
-          label="이메일"
-          type="email"
-          error={errors.email?.message}
-          {...register("email")}
-          showReset={!!emailValue}
-          onReset={() => {
-            setValue("email", "");
-            clearErrors("email");
-          }}
-        />
+        <div className="flex items-start gap-[10px]">
+          <InputForm
+            id="email"
+            label="이메일"
+            type="email"
+            error={errors.email?.message}
+            {...register("email")}
+            showReset={!!emailValue && !isEmailVerified}
+            onReset={() => {
+              setValue("email", "");
+              clearErrors("email");
+            }}
+          />
+
+          <button
+            type="button"
+            onClick={handleVerifyEmail}
+            disabled={!isEmailInputValid || emailLoading}
+            className={`px-10 h-[58px] rounded-lg font-medium whitespace-nowrap transition-colors ${
+              emailLoading
+                ? "bg-gray-200 text-gray-500 cursor-wait"
+                : isEmailVerified
+                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  : isEmailInputValid
+                    ? "bg-blue-600 text-white hover:bg-blue-700 cursor-pointer shadow-md"
+                    : "bg-blue-100 text-blue-300 cursor-not-allowed"
+            }`}
+          >
+            {emailLoading
+              ? "인증 중..."
+              : isEmailVerified
+                ? "인증 완료"
+                : "인증 요청"}
+          </button>
+        </div>
 
         <div className="grid grid-cols-2 gap-[10px]">
           <div>
