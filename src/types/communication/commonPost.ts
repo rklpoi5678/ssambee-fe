@@ -1,4 +1,4 @@
-import { AnswerStatus, InquiryWriterType } from "./studentPost";
+import { AnswerStatus, AuthorRole, InquiryWriterType } from "./studentPost";
 import { PostType } from "./instructorPost";
 
 // UI 필터 확장 타입
@@ -34,4 +34,25 @@ export type PaginationType = {
   limit: number;
   hasNextPage: boolean;
   hasPrevPage: boolean;
+};
+
+export type CommonPostComment = {
+  id: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+  authorRole: AuthorRole | "INSTRUCTOR" | "ASSISTANT";
+  isMine: boolean;
+  instructor: {
+    user: { name: string };
+  } | null;
+  assistant: {
+    user: { name: string };
+  } | null;
+  enrollment: {
+    studentName: string;
+    appStudentId: string;
+    appParentLink: string;
+  };
+  attachments?: [];
 };

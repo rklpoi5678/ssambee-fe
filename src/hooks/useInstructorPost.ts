@@ -21,11 +21,15 @@ export const useInstructorPostTargets = () => {
 };
 
 // 공지 목록 조회
-export const useInstructorPosts = (params: CommonPostQuery) => {
+export const useInstructorPosts = (
+  params: CommonPostQuery,
+  options?: { enabled?: boolean }
+) => {
   return useQuery({
     queryKey: ["instructorPosts", params],
     queryFn: () => instructorPostService.getInstructorPosts(params),
     staleTime: 1000 * 30,
+    ...options,
   });
 };
 
@@ -50,14 +54,15 @@ export const useInstructorPostMutations = () => {
     mutationFn: (payload: CreateInstructorPostRequest) =>
       instructorPostService.createInstructorNoticePost(payload),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["instructorPosts"],
-        refetchType: "active",
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["instructorPosts"],
+          refetchType: "active",
+        }),
+      ]);
       alert("공지사항이 성공적으로 등록되었습니다.");
     },
-    onError: (error) => {
-      console.error("공지 등록 실패:", error);
+    onError: () => {
       alert("공지 등록 중 오류가 발생했습니다. 다시 시도해주세요.");
     },
   });
@@ -67,14 +72,15 @@ export const useInstructorPostMutations = () => {
     mutationFn: (payload: CreateInstructorPostRequest) =>
       instructorPostService.createInstructorSharePost(payload),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["instructorPosts"],
-        refetchType: "active",
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["instructorPosts"],
+          refetchType: "active",
+        }),
+      ]);
       alert("자료 공유가 성공적으로 등록되었습니다.");
     },
-    onError: (error) => {
-      console.error("자료 공유 등록 실패:", error);
+    onError: () => {
       alert("자료 공유 등록 중 오류가 발생했습니다. 다시 시도해주세요.");
     },
   });
@@ -89,18 +95,19 @@ export const useInstructorPostMutations = () => {
       payload: UpdateInstructorPostRequest;
     }) => instructorPostService.updateInstructorPost(postId, payload),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["instructorPost", variables.postId],
-        refetchType: "active",
-      });
-      await queryClient.invalidateQueries({
-        queryKey: ["instructorPosts"],
-        refetchType: "active",
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["instructorPost", variables.postId],
+          refetchType: "active",
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["instructorPosts"],
+          refetchType: "active",
+        }),
+      ]);
       alert("공지사항이 수정되었습니다.");
     },
-    onError: (error) => {
-      console.error("공지 수정 실패:", error);
+    onError: () => {
       alert("공지 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
     },
   });
@@ -110,17 +117,16 @@ export const useInstructorPostMutations = () => {
     mutationFn: (postId: string) =>
       instructorPostService.deleteInstructorPost(postId),
     onSuccess: async (_, postId) => {
-      queryClient.removeQueries({
-        queryKey: ["instructorPost", postId],
-      });
-      await queryClient.invalidateQueries({
-        queryKey: ["instructorPosts"],
-        refetchType: "active",
-      });
+      await Promise.all([
+        queryClient.removeQueries({ queryKey: ["instructorPost", postId] }),
+        queryClient.invalidateQueries({
+          queryKey: ["instructorPosts"],
+          refetchType: "active",
+        }),
+      ]);
       alert("공지사항이 삭제되었습니다.");
     },
-    onError: (error) => {
-      console.error("공지 삭제 실패:", error);
+    onError: () => {
       alert("공지 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
     },
   });
@@ -147,14 +153,15 @@ export const useCreateInstructorPostComment = () => {
       payload: CreateInstructorPostCommentRequest;
     }) => instructorPostService.createInstructorPostComment(postId, payload),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["instructorPost", variables.postId],
-        refetchType: "active",
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["instructorPost", variables.postId],
+          refetchType: "active",
+        }),
+      ]);
       alert("댓글이 등록되었습니다.");
     },
-    onError: (error) => {
-      console.error("댓글 등록 실패:", error);
+    onError: () => {
       alert("댓글 등록 중 오류가 발생했습니다. 다시 시도해주세요.");
     },
   });
@@ -176,14 +183,15 @@ export const useCreateInstructorPostComment = () => {
         payload
       ),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["instructorPost", variables.postId],
-        refetchType: "active",
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["instructorPost", variables.postId],
+          refetchType: "active",
+        }),
+      ]);
       alert("댓글이 수정되었습니다.");
     },
-    onError: (error) => {
-      console.error("댓글 수정 실패:", error);
+    onError: () => {
       alert("댓글 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
     },
   });
@@ -198,14 +206,15 @@ export const useCreateInstructorPostComment = () => {
       commentId: string;
     }) => instructorPostService.deleteInstructorPostComment(postId, commentId),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["instructorPost", variables.postId],
-        refetchType: "active",
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["instructorPost", variables.postId],
+          refetchType: "active",
+        }),
+      ]);
       alert("댓글이 삭제되었습니다.");
     },
-    onError: (error) => {
-      console.error("댓글 삭제 실패:", error);
+    onError: () => {
       alert("댓글 삭제 중 오류가 발생했습니다. 다시 시도해주세요.");
     },
   });
@@ -218,11 +227,15 @@ export const useCreateInstructorPostComment = () => {
 };
 
 // 학생 문의 목록 조회
-export const useStudentPosts = (params: CommonPostQuery) => {
+export const useStudentPosts = (
+  params: CommonPostQuery,
+  options?: { enabled?: boolean }
+) => {
   return useQuery({
     queryKey: ["studentPosts", params],
     queryFn: () => studentPostService.getStudentPosts(params),
     staleTime: 1000 * 30,
+    ...options,
   });
 };
 
@@ -252,20 +265,19 @@ export const useStudentPostMutations = () => {
       payload: CreateStudentPostCommentRequest;
     }) => studentPostService.createStudentPostComment(postId, payload),
     onSuccess: async (_, variables) => {
-      // 상세 페이지 정보 갱신 (댓글 목록 포함)
-      await queryClient.invalidateQueries({
-        queryKey: ["studentPost", variables.postId],
-        refetchType: "active",
-      });
-      // 목록의 답변 완료 상태 업데이트를 위해 목록 쿼리도 갱신
-      await queryClient.invalidateQueries({
-        queryKey: ["studentPosts"],
-        refetchType: "active",
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["studentPost", variables.postId],
+          refetchType: "active",
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["studentPosts"],
+          refetchType: "active",
+        }),
+      ]);
       alert("답변이 등록되었습니다.");
     },
-    onError: (error) => {
-      console.error("답변 등록 실패:", error);
+    onError: () => {
       alert("답변 등록 중 오류가 발생했습니다.");
     },
   });
@@ -283,14 +295,15 @@ export const useStudentPostMutations = () => {
     }) =>
       studentPostService.updateStudentPostComment(postId, commentId, payload),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["studentPost", variables.postId],
-        refetchType: "active",
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["studentPost", variables.postId],
+          refetchType: "active",
+        }),
+      ]);
       alert("답변이 수정되었습니다.");
     },
-    onError: (error) => {
-      console.error("답변 수정 실패:", error);
+    onError: () => {
       alert("답변 수정 중 오류가 발생했습니다.");
     },
   });
@@ -305,19 +318,19 @@ export const useStudentPostMutations = () => {
       commentId: string;
     }) => studentPostService.deleteStudentPostComment(postId, commentId),
     onSuccess: async (_, variables) => {
-      await queryClient.invalidateQueries({
-        queryKey: ["studentPost", variables.postId],
-        refetchType: "active",
-      });
-      // 삭제 후 목록 상태(답변 대기 등) 반영을 위해 목록 갱신
-      await queryClient.invalidateQueries({
-        queryKey: ["studentPosts"],
-        refetchType: "active",
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["studentPost", variables.postId],
+          refetchType: "active",
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["studentPosts"],
+          refetchType: "active",
+        }),
+      ]);
       alert("답변이 삭제되었습니다.");
     },
-    onError: (error) => {
-      console.error("답변 삭제 실패:", error);
+    onError: () => {
       alert("답변 삭제 중 오류가 발생했습니다.");
     },
   });

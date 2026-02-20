@@ -5,17 +5,18 @@ import {
   CreateInstructorPostRequest,
   UpdateInstructorPostRequest,
   CreateInstructorPostCommentRequest,
-  InstructorPostDetailComment,
   GetInstructorPostTargetsResponse,
 } from "@/types/communication/instructorPost";
 import { ApiResponse } from "@/types/api";
 import {
   GetStudentPostDetailResponse,
   GetStudentPostsResponse,
-  StudentPostDetailComment,
   CreateStudentPostCommentRequest,
 } from "@/types/communication/studentPost";
-import { CommonPostQuery } from "@/types/communication/commonPost";
+import {
+  CommonPostComment,
+  CommonPostQuery,
+} from "@/types/communication/commonPost";
 
 export const instructorPostService = {
   // 강사 게시글 알림 대상 조회
@@ -84,9 +85,10 @@ export const instructorPostService = {
     postId: string,
     payload: CreateInstructorPostCommentRequest
   ) => {
-    const { data } = await axiosClient.post<
-      ApiResponse<InstructorPostDetailComment>
-    >(`/instructor-posts/${postId}/comments`, payload);
+    const { data } = await axiosClient.post<ApiResponse<CommonPostComment>>(
+      `/instructor-posts/${postId}/comments`,
+      payload
+    );
     return data.data;
   },
 
@@ -96,17 +98,18 @@ export const instructorPostService = {
     commentId: string,
     payload: CreateInstructorPostCommentRequest
   ) => {
-    const { data } = await axiosClient.patch<
-      ApiResponse<InstructorPostDetailComment>
-    >(`/instructor-posts/${postId}/comments/${commentId}`, payload);
+    const { data } = await axiosClient.patch<ApiResponse<CommonPostComment>>(
+      `/instructor-posts/${postId}/comments/${commentId}`,
+      payload
+    );
     return data.data;
   },
 
   // 강사 게시글 댓글 삭제
   deleteInstructorPostComment: async (postId: string, commentId: string) => {
-    const { data } = await axiosClient.delete<
-      ApiResponse<InstructorPostDetailComment>
-    >(`/instructor-posts/${postId}/comments/${commentId}`);
+    const { data } = await axiosClient.delete<ApiResponse<CommonPostComment>>(
+      `/instructor-posts/${postId}/comments/${commentId}`
+    );
     return data.data;
   },
 };
@@ -135,9 +138,10 @@ export const studentPostService = {
     postId: string,
     payload: CreateStudentPostCommentRequest
   ) => {
-    const { data } = await axiosClient.post<
-      ApiResponse<StudentPostDetailComment>
-    >(`/student-posts/${postId}/comments`, payload);
+    const { data } = await axiosClient.post<ApiResponse<CommonPostComment>>(
+      `/student-posts/${postId}/comments`,
+      payload
+    );
     return data.data;
   },
 
@@ -147,17 +151,18 @@ export const studentPostService = {
     commentId: string,
     payload: CreateStudentPostCommentRequest
   ) => {
-    const { data } = await axiosClient.patch<
-      ApiResponse<StudentPostDetailComment>
-    >(`/student-posts/${postId}/comments/${commentId}`, payload);
+    const { data } = await axiosClient.patch<ApiResponse<CommonPostComment>>(
+      `/student-posts/${postId}/comments/${commentId}`,
+      payload
+    );
     return data.data;
   },
 
   // 학생 문의 답변 삭제
   deleteStudentPostComment: async (postId: string, commentId: string) => {
-    const { data } = await axiosClient.delete<
-      ApiResponse<StudentPostDetailComment>
-    >(`/student-posts/${postId}/comments/${commentId}`);
+    const { data } = await axiosClient.delete<ApiResponse<CommonPostComment>>(
+      `/student-posts/${postId}/comments/${commentId}`
+    );
     return data.data;
   },
 };

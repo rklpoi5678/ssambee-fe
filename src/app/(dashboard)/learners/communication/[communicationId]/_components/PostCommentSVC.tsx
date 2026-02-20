@@ -10,7 +10,7 @@ import { GetInstructorPostDetailResponse } from "@/types/communication/instructo
 import { GetStudentPostDetailResponse } from "@/types/communication/studentPost";
 import { CommonPostComment } from "@/types/communication/commonPost";
 
-type PostCommentProps = {
+type PostCommentSVCProps = {
   isNoticePost: boolean;
   currentData:
     | GetInstructorPostDetailResponse
@@ -27,7 +27,7 @@ type PostCommentProps = {
   onDeleteComment: (commentId: string) => void;
 };
 
-export default function PostComment({
+export default function PostCommentSVC({
   isNoticePost,
   currentData,
   answerContent,
@@ -39,7 +39,7 @@ export default function PostComment({
   handleSubmitAnswer,
   onUpdateComment,
   onDeleteComment,
-}: PostCommentProps) {
+}: PostCommentSVCProps) {
   return (
     <div className="space-y-6">
       {(currentData?.comments?.length ?? 0) > 0 && (
@@ -52,7 +52,7 @@ export default function PostComment({
 
             <div className="space-y-4">
               {currentData?.comments?.map((comment) => (
-                <CommentItem
+                <CommentItemSVC
                   key={comment.id}
                   comment={comment}
                   onUpdate={onUpdateComment}
@@ -140,7 +140,7 @@ export default function PostComment({
 }
 
 // 개별 댓글 아이템 컴포넌트
-function CommentItem({
+function CommentItemSVC({
   comment,
   onUpdate,
   onDelete,
@@ -151,17 +151,6 @@ function CommentItem({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
-
-  // 수정 완료
-  const handleSave = () => {
-    const textOnly = editContent.replace(/<[^>]*>/g, "").trim();
-    if (!textOnly) {
-      alert("내용을 입력해주세요.");
-      return;
-    }
-    onUpdate(comment.id, editContent);
-    setIsEditing(false);
-  };
 
   // 작성자 표기
   const { authorRole, instructor, assistant, enrollment } = comment;
@@ -183,6 +172,17 @@ function CommentItem({
     const studentName = enrollment?.studentName || "학생";
     displayName = `${studentName} 학부모`;
   }
+
+  // 수정 완료 버튼
+  const handleSave = () => {
+    const textOnly = editContent.replace(/<[^>]*>/g, "").trim();
+    if (!textOnly) {
+      alert("내용을 입력해주세요.");
+      return;
+    }
+    onUpdate(comment.id, editContent);
+    setIsEditing(false);
+  };
 
   return (
     <div className="border rounded-4xl p-6 space-y-2 bg-white">
