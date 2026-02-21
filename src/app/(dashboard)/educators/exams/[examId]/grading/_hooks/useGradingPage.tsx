@@ -122,21 +122,24 @@ export const useGradingPage = () => {
   };
 
   const handleSaveAndSelectNext = useCallback(() => {
-    if (!canSave || !activeStudentId) return;
+    if (!canSaveAndNext) return;
 
-    const currentIndex = students.findIndex(
-      (student) => student.id === activeStudentId
-    );
     const nextStudentId =
-      currentIndex >= 0 && currentIndex < students.length - 1
-        ? students[currentIndex + 1].id
+      activeStudentIndex >= 0 && activeStudentIndex < students.length - 1
+        ? students[activeStudentIndex + 1].id
         : null;
 
     triggerSave(() => {
       if (!nextStudentId) return;
       setSelectedStudentId(nextStudentId);
     });
-  }, [activeStudentId, canSave, setSelectedStudentId, students, triggerSave]);
+  }, [
+    activeStudentIndex,
+    canSaveAndNext,
+    setSelectedStudentId,
+    students,
+    triggerSave,
+  ]);
 
   const handleTempSave = () => {
     if (!canTempSave) return;
