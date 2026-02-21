@@ -443,8 +443,26 @@ export const useExamsCategoryModalActions = ({
           assignments: state.includedAssignmentIds,
         });
 
+        const baselineMap = (() => {
+          try {
+            const parsed = JSON.parse(
+              state.baselineExamAssignmentMapSerialized
+            );
+            if (!parsed || typeof parsed !== "object") {
+              return {} as Record<string, string[]>;
+            }
+            return parsed as Record<string, string[]>;
+          } catch {
+            return {} as Record<string, string[]>;
+          }
+        })();
+
         state.setBaselineExamAssignmentMapSerialized(
-          JSON.stringify(state.examAssignmentMap)
+          JSON.stringify({
+            ...baselineMap,
+            [state.effectiveExamId]:
+              state.examAssignmentMap[state.effectiveExamId] ?? [],
+          })
         );
       } catch (error) {
         console.error("Failed to save report assignments", error);

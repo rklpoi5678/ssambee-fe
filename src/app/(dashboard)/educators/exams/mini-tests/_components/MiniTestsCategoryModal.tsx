@@ -112,7 +112,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                     <Button
                       type="button"
                       variant="outline"
-                      className="h-10 px-4 text-sm"
+                      className="h-9 px-4 text-sm"
                       onClick={vm.pushPresetDraft}
                       disabled={vm.isBusy}
                     >
