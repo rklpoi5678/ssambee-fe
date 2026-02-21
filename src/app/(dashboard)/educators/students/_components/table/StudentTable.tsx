@@ -28,7 +28,7 @@ export function StudentTable({
   columns,
 }: StudentTableProps) {
   return (
-    <div className="border rounded-lg overflow-x-auto min-h-[550px]">
+    <div className="border rounded-lg overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
@@ -59,7 +59,7 @@ export function StudentTable({
             <TableRow>
               <TableCell
                 colSpan={STUDENTS_TABLE_COLUMNS.length + 1}
-                className="h-[550px] text-center align-middle"
+                className="text-center align-middle"
               >
                 <div className="flex flex-col items-center justify-center gap-2">
                   <span className="text-gray-400 text-lg font-medium">

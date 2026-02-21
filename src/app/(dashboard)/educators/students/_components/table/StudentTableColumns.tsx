@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import { Checkbox } from "@/components/ui/checkbox";
 import StatusLabel from "@/components/common/label/StatusLabel";
 import SelectBtn from "@/components/common/button/SelectBtn";
@@ -9,10 +7,10 @@ import {
   STATUS_SETTING_OPTIONS,
   STUDENT_STATUS_LABEL,
 } from "@/constants/students.default";
-import noProfileImage from "@/assets/images/no-profile.jpg";
 import { GetEnrollmentList, StudentStatus } from "@/types/students.type";
 import { formatYMDFromISO, getTodayYMD } from "@/utils/date";
 import { phoneNumberFormatter } from "@/utils/phone";
+import { StudentProfileAvatar } from "@/components/common/avatar/StudentProfileAvatar";
 
 export type StudentTableColumn = {
   key: string;
@@ -41,26 +39,22 @@ export const StudentTableData = ({
     ),
   },
   {
-    key: "profile",
-    render: (row: GetEnrollmentList) => (
-      <Image
-        src={noProfileImage}
-        alt={row.studentName}
-        width={32}
-        height={32}
-        className="rounded-full"
-      />
-    ),
-  },
-  {
     key: "name",
     render: (row: GetEnrollmentList) => (
-      <span
-        className="font-medium whitespace-nowrap text-base cursor-pointer hover:text-primary hover:underline"
-        onClick={() => onNavigate(row.id)}
-      >
-        {row.studentName || "-"}
-      </span>
+      <div className="flex items-center gap-2">
+        <StudentProfileAvatar
+          seedKey={row.id}
+          size={32}
+          sizePreset="Medium"
+          label={`${row.studentName}의 프로필`}
+        />
+        <span
+          className="font-medium whitespace-nowrap text-base cursor-pointer hover:text-primary hover:underline"
+          onClick={() => onNavigate(row.id)}
+        >
+          {row.studentName || "-"}
+        </span>
+      </div>
     ),
   },
   {

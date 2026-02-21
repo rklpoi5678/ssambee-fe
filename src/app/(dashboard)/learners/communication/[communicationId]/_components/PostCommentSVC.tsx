@@ -4,12 +4,12 @@ import { JSONContent } from "@tiptap/react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import TiptapEditor from "@/components/common/editor/TiptapEditor";
 import { formatYMDFromISO } from "@/utils/date";
 import { GetInstructorPostDetailResponse } from "@/types/communication/instructorPost";
 import { GetStudentPostDetailResponse } from "@/types/communication/studentPost";
 import { CommonPostComment } from "@/types/communication/commonPost";
+import { StudentProfileAvatar } from "@/components/common/avatar/StudentProfileAvatar";
 
 type PostCommentSVCProps = {
   isNoticePost: boolean;
@@ -164,20 +164,25 @@ function CommentItemSVC({
 
   let roleLabel = "";
   let displayName = "";
+  let avatarSeedKey = comment.id;
 
   if (authorRole === "INSTRUCTOR") {
     roleLabel = "강사";
     displayName = instructor?.user.name || "강사";
+    avatarSeedKey = comment.instructorId || "instructor";
   } else if (authorRole === "ASSISTANT") {
     roleLabel = "조교";
     displayName = assistant?.user.name || "조교";
+    avatarSeedKey = comment.assistantId || "assistant";
   } else if (authorRole === "STUDENT") {
     roleLabel = "학생";
     displayName = enrollment?.studentName || "학생";
+    avatarSeedKey = enrollment?.appStudentId || "student";
   } else if (authorRole === "PARENT") {
     roleLabel = "학부모";
     const studentName = enrollment?.studentName || "학생";
     displayName = `${studentName} 학부모`;
+    avatarSeedKey = enrollment?.appStudentId || "parent";
   }
 
   // 수정 완료 버튼
@@ -198,11 +203,13 @@ function CommentItemSVC({
     <div className="border rounded-4xl p-6 space-y-2 bg-white">
       <div className="flex items-center justify-between font-medium">
         <div className="flex items-center gap-2">
-          <Avatar className="h-9 w-9">
-            <AvatarFallback className="text-xs">
-              {displayName.slice(0, 1)}
-            </AvatarFallback>
-          </Avatar>
+          <StudentProfileAvatar
+            seedKey={avatarSeedKey}
+            size={36}
+            sizePreset="Medium"
+            label={`${displayName}의 프로필`}
+            className="shadow-sm"
+          />
           <span className="text-sm font-semibold text-slate-700">
             {displayName}
           </span>
