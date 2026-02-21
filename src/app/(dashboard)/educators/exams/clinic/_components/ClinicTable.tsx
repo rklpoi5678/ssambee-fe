@@ -2,7 +2,7 @@
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { StudentProfileAvatar } from "@/components/common/avatar/StudentProfileAvatar";
 import StatusLabel from "@/components/common/label/StatusLabel";
 import type { ClinicStudent } from "@/types/clinics";
 
@@ -166,13 +166,11 @@ export function ClinicTable({
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-9 w-9">
-                        <AvatarFallback
-                          className={`${student.color} text-white`}
-                        >
-                          {student.initial}
-                        </AvatarFallback>
-                      </Avatar>
+                      <StudentProfileAvatar
+                        size={36}
+                        seedKey={student.id}
+                        label={`${student.name || "학생"} 프로필 이미지`}
+                      />
                       <div>
                         <p className="font-medium">{student.name}</p>
                       </div>

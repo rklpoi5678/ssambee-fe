@@ -1,6 +1,8 @@
-import type { GradingQuestion } from "@/types/grading";
-
-import type { AnswerState, QuestionMeta } from "./types";
+import type {
+  AnswerState,
+  GradingQuestion,
+  QuestionMeta,
+} from "@/types/grading";
 
 export const resolveAnswers = (
   studentId: string,
@@ -67,4 +69,21 @@ export const clearDraft = (examId: string, studentId: string) => {
   if (typeof window === "undefined") return;
   const key = buildDraftKey(examId, studentId);
   window.localStorage.removeItem(key);
+};
+
+export const loadDraft = (
+  examId: string,
+  studentId: string
+): AnswerState[] | null => {
+  if (typeof window === "undefined") return null;
+  const key = buildDraftKey(examId, studentId);
+  const raw = window.localStorage.getItem(key);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return null;
+    return parsed as AnswerState[];
+  } catch {
+    return null;
+  }
 };

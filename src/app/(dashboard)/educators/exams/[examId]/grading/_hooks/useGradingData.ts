@@ -2,9 +2,14 @@
 
 import { useMemo, useState } from "react";
 
-import type { GradingQuestion, GradingStudent } from "@/types/grading";
+import type {
+  AnswerState,
+  GradingQuestion,
+  GradingStudent,
+  QuestionMeta,
+} from "@/types/grading";
+import { loadDraft } from "@/utils/grading-answers";
 
-import type { AnswerState, QuestionMeta } from "./types";
 import {
   useGradingPrimaryResources,
   useGradingStudentAnswerResource,
@@ -192,21 +197,4 @@ export const useGradingData = (examId: string): UseGradingDataResult => {
     activeStudentId,
     setSelectedStudentId,
   };
-};
-
-const buildDraftKey = (examId: string, studentId: string) =>
-  `grading-draft:${examId}:${studentId}`;
-
-const loadDraft = (examId: string, studentId: string): AnswerState[] | null => {
-  if (typeof window === "undefined") return null;
-  const key = buildDraftKey(examId, studentId);
-  const raw = window.localStorage.getItem(key);
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return null;
-    return parsed as AnswerState[];
-  } catch {
-    return null;
-  }
 };

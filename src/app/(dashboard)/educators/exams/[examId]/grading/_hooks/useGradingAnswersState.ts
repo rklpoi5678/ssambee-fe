@@ -2,15 +2,18 @@
 
 import { useMemo, useState } from "react";
 
-import type { GradingQuestion, GradingStudent } from "@/types/grading";
-
+import type {
+  AnswerState,
+  GradingQuestion,
+  GradingStudent,
+  QuestionMeta,
+} from "@/types/grading";
 import {
   buildAnswerMap,
   buildGradingQuestions,
   computeScoreAndCorrectCount,
   resolveAnswers,
-} from "./gradingAnswers.utils";
-import type { AnswerState, QuestionMeta } from "./types";
+} from "@/utils/grading-answers";
 
 export type UseGradingAnswersStateParams = {
   activeStudentId: string;

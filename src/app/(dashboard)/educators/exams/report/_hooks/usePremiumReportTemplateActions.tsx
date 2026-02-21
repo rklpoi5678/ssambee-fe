@@ -9,10 +9,14 @@ import {
   saveStudentReport,
   uploadGradeReportFile,
 } from "@/services/exams/report.service";
+import type { ReportTemplateExamData } from "@/types/report";
+import {
+  htmlToReadableText,
+  normalizeReportMessageHtml,
+} from "@/utils/report-message-html";
+import { splitPayloadForSave } from "@/utils/splitPayloadForSave";
 
 import { PremiumReportPdf } from "../_components/PremiumReportPdf";
-import type { ReportTemplateExamData } from "../_types/report-template";
-import { splitPayloadForSave } from "../_utils/splitPayloadForSave";
 
 import type { PremiumReportTemplateState } from "./usePremiumReportTemplateState";
 
@@ -49,6 +53,10 @@ export const usePremiumReportTemplateActions = ({
   showAlert: AlertFn;
   showConfirm: ConfirmFn;
 }) => {
+  const commonMessageForShare = htmlToReadableText(
+    normalizeReportMessageHtml(commonMessage)
+  );
+
   const buildPdfData = () => ({
     studentName: examData.studentName,
     className: examData.className,
@@ -67,7 +75,7 @@ export const usePremiumReportTemplateActions = ({
     homeworkTask: state.homeworkTask,
     homeworkExtra: state.homeworkExtra,
     weaknessType: state.personalMessage,
-    message: commonMessage,
+    message: commonMessageForShare,
   });
 
   const handleSaveStudent = async () => {
@@ -209,7 +217,7 @@ export const usePremiumReportTemplateActions = ({
         title: "발송 실패",
         description: "성적표 업로드 및 발송 중 오류가 발생했습니다.",
       });
-      return;
+      throw error;
     }
   };
 

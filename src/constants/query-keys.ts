@@ -49,4 +49,5 @@ export const clinicKeys = {
 export const profileKeys = {
   all: ["profile"] as const,
   me: () => [...profileKeys.all, "me"] as const,
+  learnerMe: () => [...profileKeys.all, "learner", "me"] as const,
 };
