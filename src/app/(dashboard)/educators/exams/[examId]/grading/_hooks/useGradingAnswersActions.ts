@@ -2,11 +2,11 @@
 
 import type { GradingStudent } from "@/types/grading";
 import type { SubmitGradingPayload } from "@/types/grades";
+import { resolveAnswers, saveDraft } from "@/utils/grading-answers";
+import type { AnswerState, QuestionMeta } from "@/types/grading";
 
-import { resolveAnswers, saveDraft } from "./gradingAnswers.utils";
 import type { GradingAnswersResources } from "./useGradingAnswersResources";
 import type { GradingAnswersState } from "./useGradingAnswersState";
-import type { AnswerState, QuestionMeta } from "./types";
 
 export const useGradingAnswersActions = ({
   examId,
@@ -95,7 +95,7 @@ export const useGradingAnswersActions = ({
     );
   };
 
-  const triggerSave = () => {
+  const triggerSave = (onSuccess?: () => void) => {
     if (!activeStudentId || state.selectedAnswers.length === 0) return;
     const answersPayload = state.selectedAnswers.map((answer) => ({
       questionNumber: answer.questionNumber,
@@ -110,7 +110,14 @@ export const useGradingAnswersActions = ({
       correctCount: state.correctCount,
     };
 
-    resources.submitGradingMutation.mutate({ examId, payload });
+    resources.submitGradingMutation.mutate(
+      { examId, payload },
+      {
+        onSuccess: () => {
+          onSuccess?.();
+        },
+      }
+    );
   };
 
   const triggerTempSave = () => {

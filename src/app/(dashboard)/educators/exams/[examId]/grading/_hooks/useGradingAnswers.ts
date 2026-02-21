@@ -1,12 +1,15 @@
 "use client";
 
 import { useDialogAlert } from "@/hooks/useDialogAlert";
-import type { GradingQuestion } from "@/types/grading";
+import type {
+  AnswerState,
+  GradingQuestion,
+  QuestionMeta,
+} from "@/types/grading";
 
 import { useGradingAnswersActions } from "./useGradingAnswersActions";
 import { useGradingAnswersResources } from "./useGradingAnswersResources";
 import { useGradingAnswersState } from "./useGradingAnswersState";
-import type { AnswerState, QuestionMeta } from "./types";
 
 type UseGradingAnswersParams = {
   examId: string;

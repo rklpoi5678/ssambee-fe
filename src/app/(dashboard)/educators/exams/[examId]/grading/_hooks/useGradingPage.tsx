@@ -90,6 +90,9 @@ export const useGradingPage = () => {
   const selectedStudent = students.find(
     (student) => student.id === activeStudentId
   );
+  const activeStudentIndex = students.findIndex(
+    (student) => student.id === activeStudentId
+  );
   const defaultEditing =
     !(selectedStudent?.isFinalSaved ?? false) ||
     Boolean(selectedStudent?.hasDraft);
@@ -109,10 +112,28 @@ export const useGradingPage = () => {
   const canSave =
     Boolean(activeStudentId) && answers.selectedAnswers.length > 0;
   const canTempSave = Boolean(activeStudentId);
+  const canSaveAndNext = Boolean(activeStudentId) && isEditing;
 
   const handleSave = () => {
     if (!canSave) return;
     answers.triggerSave();
+  };
+
+  const handleSaveAndSelectNext = () => {
+    if (!canSave || !activeStudentId) return;
+
+    const currentIndex = students.findIndex(
+      (student) => student.id === activeStudentId
+    );
+    const nextStudentId =
+      currentIndex >= 0 && currentIndex < students.length - 1
+        ? students[currentIndex + 1].id
+        : null;
+
+    answers.triggerSave(() => {
+      if (!nextStudentId) return;
+      setSelectedStudentId(nextStudentId);
+    });
   };
 
   const handleTempSave = () => {
@@ -154,6 +175,17 @@ export const useGradingPage = () => {
     );
   };
 
+  const handleSelectPrevStudent = () => {
+    if (activeStudentIndex <= 0) return;
+    setSelectedStudentId(students[activeStudentIndex - 1].id);
+  };
+
+  const handleSelectNextStudent = () => {
+    if (activeStudentIndex < 0 || activeStudentIndex >= students.length - 1)
+      return;
+    setSelectedStudentId(students[activeStudentIndex + 1].id);
+  };
+
   return {
     examDetail,
     isPending,
@@ -164,16 +196,20 @@ export const useGradingPage = () => {
     students,
     selectedStudentId: activeStudentId,
     onSelectStudent: setSelectedStudentId,
+    onSelectPrevStudent: handleSelectPrevStudent,
+    onSelectNextStudent: handleSelectNextStudent,
     summary,
     gradingQuestions: answers.gradingQuestions,
     handleSelectObjectiveAnswer: answers.handleSelectObjectiveAnswer,
     handleEssayAnswerChange: answers.handleEssayAnswerChange,
     handleEssayCorrectChange: answers.handleEssayCorrectChange,
     handleSave,
+    handleSaveAndSelectNext,
     handleTempSave,
     handleEdit,
     handleComplete,
     canSave,
+    canSaveAndNext,
     canTempSave,
     canComplete,
     canViewResult,

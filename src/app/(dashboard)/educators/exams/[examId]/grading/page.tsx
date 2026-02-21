@@ -1,6 +1,5 @@
 "use client";
 
-import { useGradingPage } from "@/app/(dashboard)/educators/exams/[examId]/grading/_hooks/useGradingPage";
 import { Button } from "@/components/ui/button";
 
 import { GradingPageHeader } from "./_components/GradingPageHeader";
@@ -8,10 +7,12 @@ import { StudentListSidebar } from "./_components/StudentListSidebar";
 import { GradingSummaryCards } from "./_components/GradingSummaryCards";
 import { QuestionAnswerList } from "./_components/QuestionAnswerList";
 import { GradingResultModal } from "./_modals/grading-result/GradingResultModal";
+import { useGradingPage } from "./_hooks/useGradingPage";
 import { useGradingReport } from "./_hooks/useGradingReport";
 
 export default function GradingPage() {
   const containerClassName = "container mx-auto p-6";
+  const vm = useGradingPage();
   const {
     examDetail,
     isPending,
@@ -22,16 +23,20 @@ export default function GradingPage() {
     students,
     selectedStudentId,
     onSelectStudent,
+    onSelectPrevStudent,
+    onSelectNextStudent,
     summary,
     gradingQuestions,
     handleSelectObjectiveAnswer,
     handleEssayAnswerChange,
     handleEssayCorrectChange,
     handleSave,
+    handleSaveAndSelectNext,
     handleTempSave,
     handleEdit,
     handleComplete,
     canSave,
+    canSaveAndNext,
     canTempSave,
     canComplete,
     canViewResult,
@@ -42,7 +47,7 @@ export default function GradingPage() {
     openResultModal,
     closeResultModal,
     isSubmitting,
-  } = useGradingPage();
+  } = vm;
 
   const {
     overview,
@@ -102,11 +107,16 @@ export default function GradingPage() {
               <GradingSummaryCards summary={summary} />
 
               <QuestionAnswerList
+                key={selectedStudentId || "no-student"}
                 examSubtitle={examSubtitle}
                 questions={gradingQuestions}
                 onSelectObjectiveAnswer={handleSelectObjectiveAnswer}
                 onEssayAnswerChange={handleEssayAnswerChange}
                 onEssayCorrectChange={handleEssayCorrectChange}
+                onSaveAndNextAction={handleSaveAndSelectNext}
+                canSaveAndNext={canSaveAndNext}
+                onSelectPrevStudent={onSelectPrevStudent}
+                onSelectNextStudent={onSelectNextStudent}
                 disabled={isInputDisabled}
               />
 

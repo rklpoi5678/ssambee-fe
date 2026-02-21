@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { StudentProfileAvatar } from "@/components/common/avatar/StudentProfileAvatar";
 import { GradingStudent } from "@/types/grading";
 
 const ROW_HEIGHT_PX = 72;
@@ -25,6 +26,12 @@ type StudentListSidebarProps = {
   disableComplete?: boolean;
   disabled?: boolean;
   canViewResult?: boolean;
+};
+
+const getStudentStatus = (student: GradingStudent) => {
+  if (student.isFinalSaved) return "saved";
+  if (student.hasDraft) return "draft";
+  return "pending";
 };
 
 export function StudentListSidebar({
@@ -46,12 +53,6 @@ export function StudentListSidebar({
   const isAllSaved =
     students.length > 0 && students.every((student) => student.isFinalSaved);
   const isCompleteDisabled = disableComplete || !isAllSaved;
-
-  const getStudentStatus = (student: GradingStudent) => {
-    if (student.isFinalSaved) return "saved";
-    if (student.hasDraft) return "draft";
-    return "pending";
-  };
 
   const filteredStudents = useMemo(() => {
     let result = students;
@@ -172,7 +173,16 @@ export function StudentListSidebar({
               >
                 <CardContent className="p-3">
                   <div className="flex justify-between items-start mb-1">
-                    <p className="font-medium text-sm">{student.name}</p>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <StudentProfileAvatar
+                        size={28}
+                        seedKey={student.id}
+                        label={`${student.name || "학생"} 프로필 이미지`}
+                      />
+                      <p className="font-medium text-sm truncate">
+                        {student.name}
+                      </p>
+                    </div>
                     <span
                       className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${statusBadgeClass}`}
                     >
