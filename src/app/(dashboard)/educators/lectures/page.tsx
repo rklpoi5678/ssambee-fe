@@ -43,6 +43,7 @@ export default function LecturesPage() {
             />
           </section>
         </div>
+
         <div className="flex xl:justify-end">
           <TodayScheduleCard
             dateLabel={state.todayLabel}
