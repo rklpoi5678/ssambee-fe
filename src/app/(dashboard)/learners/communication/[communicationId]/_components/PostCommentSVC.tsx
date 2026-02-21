@@ -65,66 +65,68 @@ export default function PostCommentSVC({
         </Card>
       )}
 
-      <Card>
-        <CardContent className="p-6 space-y-4">
-          <h3 className="font-semibold text-lg">
-            {isNoticePost ? "댓글 작성" : "답변 작성"}
-          </h3>
-          <div className="space-y-3">
-            <TiptapEditor
-              content={answerContent}
-              onChange={setAnswerContent}
-              placeholder={
-                isNoticePost
-                  ? "댓글을 입력하세요..."
-                  : "답변 내용을 입력하세요..."
-              }
-              className="h-[200px]"
-            />
-            {!isNoticePost && selectedFile && (
-              <div className="p-3 bg-slate-50 border rounded-xl flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-white rounded-lg border shadow-sm">
-                    <Paperclip className="h-5 w-5 text-blue-500" />
+      {!isNoticePost && (
+        <Card>
+          <CardContent className="p-6 space-y-4">
+            <h3 className="font-semibold text-lg">
+              {isNoticePost ? "댓글 작성" : "답변 작성"}
+            </h3>
+            <div className="space-y-3">
+              <TiptapEditor
+                content={answerContent}
+                onChange={setAnswerContent}
+                placeholder={
+                  isNoticePost
+                    ? "댓글을 입력하세요..."
+                    : "답변 내용을 입력하세요..."
+                }
+                className="h-[200px]"
+              />
+              {!isNoticePost && selectedFile && (
+                <div className="p-3 bg-slate-50 border rounded-xl flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-white rounded-lg border shadow-sm">
+                      <Paperclip className="h-5 w-5 text-blue-500" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-slate-700 truncate max-w-[200px]">
+                        {selectedFile.name}
+                      </span>
+                      <span className="text-xs text-slate-400">
+                        {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-slate-700 truncate max-w-[200px]">
-                      {selectedFile.name}
-                    </span>
-                    <span className="text-xs text-slate-400">
-                      {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                    </span>
-                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelectedFile(null)}
+                    className="h-8 w-8 hover:text-red-500"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between border-t pt-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
                 </div>
                 <Button
-                  variant="outline"
-                  onClick={() => setSelectedFile(null)}
-                  className="h-8 w-8 hover:text-red-500"
+                  onClick={handleSubmitAnswer}
+                  className="h-11 px-8 rounded-xl text-[14px] font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-100 transition-all active:scale-95 flex items-center gap-2"
                 >
-                  <X className="h-4 w-4" />
+                  {isNoticePost ? "댓글 등록" : "답변 등록"}
                 </Button>
               </div>
-            )}
-
-            <div className="flex items-center justify-between border-t pt-4">
-              <div className="flex items-center gap-2">
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-              </div>
-              <Button
-                onClick={handleSubmitAnswer}
-                className="h-11 px-8 rounded-xl text-[14px] font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-100 transition-all active:scale-95 flex items-center gap-2"
-              >
-                {isNoticePost ? "댓글 등록" : "답변 등록"}
-              </Button>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
