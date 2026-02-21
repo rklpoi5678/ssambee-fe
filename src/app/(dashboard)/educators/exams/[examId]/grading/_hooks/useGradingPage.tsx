@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   useParams,
   usePathname,
@@ -68,6 +68,8 @@ export const useGradingPage = () => {
       setRequiresRecomplete(false);
     },
   });
+  const { triggerSave, triggerTempSave, triggerEdit, triggerComplete } =
+    answers;
 
   const students = useMemo<GradingStudent[]>(() => {
     if (baseStudents.length === 0) return [];
@@ -90,6 +92,9 @@ export const useGradingPage = () => {
   const selectedStudent = students.find(
     (student) => student.id === activeStudentId
   );
+  const activeStudentIndex = students.findIndex(
+    (student) => student.id === activeStudentId
+  );
   const defaultEditing =
     !(selectedStudent?.isFinalSaved ?? false) ||
     Boolean(selectedStudent?.hasDraft);
@@ -109,15 +114,36 @@ export const useGradingPage = () => {
   const canSave =
     Boolean(activeStudentId) && answers.selectedAnswers.length > 0;
   const canTempSave = Boolean(activeStudentId);
+  const canSaveAndNext = canSave && isEditing;
 
   const handleSave = () => {
     if (!canSave) return;
-    answers.triggerSave();
+    triggerSave();
   };
+
+  const handleSaveAndSelectNext = useCallback(() => {
+    if (!canSaveAndNext) return;
+
+    const nextStudentId =
+      activeStudentIndex >= 0 && activeStudentIndex < students.length - 1
+        ? students[activeStudentIndex + 1].id
+        : null;
+
+    triggerSave(() => {
+      if (!nextStudentId) return;
+      setSelectedStudentId(nextStudentId);
+    });
+  }, [
+    activeStudentIndex,
+    canSaveAndNext,
+    setSelectedStudentId,
+    students,
+    triggerSave,
+  ]);
 
   const handleTempSave = () => {
     if (!canTempSave) return;
-    answers.triggerTempSave();
+    triggerTempSave();
   };
 
   const handleEdit = () => {
@@ -130,13 +156,13 @@ export const useGradingPage = () => {
           cancelText="취소"
           onConfirm={() => {
             setRequiresRecomplete(true);
-            answers.triggerEdit();
+            triggerEdit();
           }}
         />
       );
       return;
     }
-    answers.triggerEdit();
+    triggerEdit();
   };
 
   const handleComplete = () => {
@@ -148,11 +174,22 @@ export const useGradingPage = () => {
         confirmText="전체 완료"
         cancelText="취소"
         onConfirm={() => {
-          answers.triggerComplete();
+          triggerComplete();
         }}
       />
     );
   };
+
+  const handleSelectPrevStudent = useCallback(() => {
+    if (activeStudentIndex <= 0) return;
+    setSelectedStudentId(students[activeStudentIndex - 1].id);
+  }, [activeStudentIndex, setSelectedStudentId, students]);
+
+  const handleSelectNextStudent = useCallback(() => {
+    if (activeStudentIndex < 0 || activeStudentIndex >= students.length - 1)
+      return;
+    setSelectedStudentId(students[activeStudentIndex + 1].id);
+  }, [activeStudentIndex, setSelectedStudentId, students]);
 
   return {
     examDetail,
@@ -164,16 +201,20 @@ export const useGradingPage = () => {
     students,
     selectedStudentId: activeStudentId,
     onSelectStudent: setSelectedStudentId,
+    onSelectPrevStudent: handleSelectPrevStudent,
+    onSelectNextStudent: handleSelectNextStudent,
     summary,
     gradingQuestions: answers.gradingQuestions,
     handleSelectObjectiveAnswer: answers.handleSelectObjectiveAnswer,
     handleEssayAnswerChange: answers.handleEssayAnswerChange,
     handleEssayCorrectChange: answers.handleEssayCorrectChange,
     handleSave,
+    handleSaveAndSelectNext,
     handleTempSave,
     handleEdit,
     handleComplete,
     canSave,
+    canSaveAndNext,
     canTempSave,
     canComplete,
     canViewResult,

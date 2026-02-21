@@ -3,8 +3,8 @@
 import { useCompleteGrading } from "@/hooks/clinics/useCompleteGrading";
 import { useSubmitGrading } from "@/hooks/grades/useSubmitGrading";
 import { calculateExamStatisticsAPI } from "@/services/exams/statistics.service";
+import { clearDraft } from "@/utils/grading-answers";
 
-import { clearDraft } from "./gradingAnswers.utils";
 import type { GradingAnswersState } from "./useGradingAnswersState";
 
 type AlertFn = (payload: {
