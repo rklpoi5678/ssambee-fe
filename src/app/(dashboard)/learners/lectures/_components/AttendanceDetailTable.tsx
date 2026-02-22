@@ -1,5 +1,7 @@
 "use client";
 
+import { ReactNode } from "react";
+
 import { AttendanceList, AttendanceStatus } from "@/types/students.type";
 import {
   Table,
@@ -27,7 +29,7 @@ const STATUS_COLOR: Record<AttendanceStatus, string> = {
 type AttendanceTableColumn = {
   key: string;
   label: string;
-  render: (row: AttendanceList) => React.ReactNode;
+  render: (row: AttendanceList) => ReactNode;
 };
 
 const ATTENDANCE_TABLE_COLUMNS: AttendanceTableColumn[] = [

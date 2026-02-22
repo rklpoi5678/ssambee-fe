@@ -75,6 +75,7 @@ export default function LearnersExamDetailPage() {
           ).toFixed(1)
         )
       : null;
+  const formattedExamDate = formatYMDFromISO(detail.examDateLabel);
 
   return (
     <div className="container mx-auto max-w-[1400px] space-y-8 px-6 py-10">
@@ -101,7 +102,11 @@ export default function LearnersExamDetailPage() {
         </div>
         <Title
           title={detail.examTitle}
-          description={`${detail.lectureTitle} · ${formatYMDFromISO(detail.examDateLabel)}`}
+          description={
+            formattedExamDate
+              ? `${detail.lectureTitle} · ${formattedExamDate}`
+              : detail.lectureTitle
+          }
         />
       </div>
 
@@ -389,7 +394,7 @@ const MetricCard = ({
             <p className="text-sm font-medium text-muted-foreground">{label}</p>
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-bold tracking-tight">{value}</span>
-              {total && (
+              {total != null && (
                 <span className="text-sm font-medium text-muted-foreground">
                   / {total}
                 </span>

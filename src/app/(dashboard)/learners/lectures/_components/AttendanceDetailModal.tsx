@@ -24,19 +24,13 @@ export default function AttendanceDetailModal({
 }: AttendanceDetailModalProps) {
   const { isOpen, closeModal } = useModal();
 
-  const attendanceRecords: AttendanceList[] = (attendancesList || []).map(
-    (record) => ({
-      ...record,
-      date: formatYMDFromISO(record.date) ?? record.date,
-    })
-  );
-
-  const handleClose = () => {
-    closeModal();
-  };
+  const attendanceRecords: AttendanceList[] = attendancesList.map((record) => ({
+    ...record,
+    date: formatYMDFromISO(record.date) ?? record.date,
+  }));
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={closeModal}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{studentName} 학생 출결 상세</DialogTitle>
