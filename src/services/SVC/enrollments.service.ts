@@ -40,6 +40,48 @@ export type SvcGradeDetail = {
   }[];
 };
 
+type FetchByChildOptions = {
+  childId?: string;
+};
+
+const getLectureDetailPath = (
+  lectureEnrollmentId: string,
+  options?: FetchByChildOptions
+) => {
+  if (options?.childId) {
+    return `/children/${options.childId}/enrollments/lectures/${lectureEnrollmentId}`;
+  }
+
+  return `/lectures/${lectureEnrollmentId}`;
+};
+
+const getGradeDetailPath = (gradeId: string, options?: FetchByChildOptions) => {
+  if (options?.childId) {
+    return `/children/${options.childId}/grades/${gradeId}`;
+  }
+
+  return `/grades/${gradeId}`;
+};
+
+const getEnrollmentsPath = (options?: FetchByChildOptions) => {
+  if (options?.childId) {
+    return `/children/${options.childId}/enrollments`;
+  }
+
+  return "/enrollments";
+};
+
+const getEnrollmentLectureEnrollmentsPath = (
+  enrollmentId: string,
+  options?: FetchByChildOptions
+) => {
+  if (options?.childId) {
+    return `/children/${options.childId}/enrollments/${enrollmentId}`;
+  }
+
+  return `/enrollments/${enrollmentId}`;
+};
+
 const resolveAssignmentResultLabel = (
   itemRecord: Record<string, unknown> | null
 ): string => {
@@ -256,7 +298,27 @@ export const fetchMyEnrollmentsSVC = async (): Promise<
   LearnerEnrollmentApi[]
 > => {
   const { data } =
-    await axiosClientSVC.get<ApiResponse<unknown>>("/enrollments");
+    await axiosClientSVC.get<ApiResponse<unknown>>(getEnrollmentsPath());
+
+  if (Array.isArray(data.data)) {
+    return normalizeEnrollments(data.data as EnrollmentsPayload);
+  }
+
+  const payload = asRecord(data.data);
+
+  if (!payload) {
+    return [];
+  }
+
+  return normalizeEnrollments(payload as EnrollmentsPayload);
+};
+
+export const fetchMyChildEnrollmentsSVC = async (
+  childId: string
+): Promise<LearnerEnrollmentApi[]> => {
+  const { data } = await axiosClientSVC.get<ApiResponse<unknown>>(
+    getEnrollmentsPath({ childId })
+  );
 
   if (Array.isArray(data.data)) {
     return normalizeEnrollments(data.data as EnrollmentsPayload);
@@ -272,20 +334,22 @@ export const fetchMyEnrollmentsSVC = async (): Promise<
 };
 
 export const fetchLectureEnrollmentDetailSVC = async (
-  lectureEnrollmentId: string
+  lectureEnrollmentId: string,
+  options?: FetchByChildOptions
 ): Promise<LectureEnrollmentDetail> => {
   const { data } = await axiosClientSVC.get<ApiResponse<unknown>>(
-    `/lectures/${lectureEnrollmentId}`
+    getLectureDetailPath(lectureEnrollmentId, options)
   );
 
   return normalizeLectureEnrollmentDetail(data.data);
 };
 
 export const fetchGradeDetailSVC = async (
-  gradeId: string
+  gradeId: string,
+  options?: FetchByChildOptions
 ): Promise<SvcGradeDetail> => {
   const { data } = await axiosClientSVC.get<ApiResponse<unknown>>(
-    `/grades/${gradeId}`
+    getGradeDetailPath(gradeId, options)
   );
   const dataRecord = asRecord(data.data);
   const gradeRecord =
@@ -295,12 +359,15 @@ export const fetchGradeDetailSVC = async (
     throw new Error("성적 상세 응답 형식이 올바르지 않습니다.");
   }
 
+  const questionsRecord = Array.isArray(gradeRecord.questions)
+    ? gradeRecord.questions
+    : [];
   const questionStatisticsRecord = Array.isArray(gradeRecord.questionStatistics)
     ? gradeRecord.questionStatistics
-    : [];
+    : questionsRecord;
   const questionDetailsRecord = Array.isArray(gradeRecord.questionDetails)
     ? gradeRecord.questionDetails
-    : [];
+    : questionsRecord;
   const assignmentsRecord = Array.isArray(gradeRecord.assignmentResults)
     ? gradeRecord.assignmentResults
     : Array.isArray(gradeRecord.assignments)
@@ -354,13 +421,14 @@ export const fetchGradeDetailSVC = async (
 };
 
 export const fetchEnrollmentLectureEnrollmentsSVC = async (
-  enrollmentId: string
+  enrollmentId: string,
+  options?: FetchByChildOptions
 ): Promise<LearnerEnrollmentLectureEnrollmentApi[]> => {
   const { data } = await axiosClientSVC.get<
     ApiResponse<{
       lectureEnrollments?: LearnerEnrollmentLectureEnrollmentApi[];
     }>
-  >(`/enrollments/${enrollmentId}`);
+  >(getEnrollmentLectureEnrollmentsPath(enrollmentId, options));
   const payload = asRecord(data.data);
 
   if (!payload) {

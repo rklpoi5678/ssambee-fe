@@ -33,14 +33,22 @@ export const useLearnerLectureDetailPageResources = ({
   lectureKey,
 }: UseLearnerLectureDetailPageResourcesParams) => {
   const { profile, isPending: isProfilePending } = useMyLearnerProfile();
+  const isParentUser = profile?.userType === "PARENT";
+  const activeChildId = isParentUser ? (profile?.children?.[0]?.id ?? "") : "";
+  const shouldFetchEnrollments =
+    !!profile && (!isParentUser || !!activeChildId);
   const {
     data: enrollments = [],
     isPending: isEnrollmentsPending,
     isError: isEnrollmentsError,
-  } = useMyEnrollmentsSVC();
+  } = useMyEnrollmentsSVC({
+    userType: profile?.userType,
+    childId: activeChildId,
+    enabled: shouldFetchEnrollments,
+  });
 
-  const profilePhone = profile?.phone ?? "";
-  const profileName = profile?.name ?? "";
+  const learnerPhone = isParentUser ? undefined : profile?.phone;
+  const learnerName = isParentUser ? undefined : profile?.name;
 
   const {
     data: primaryLectureDetail,
@@ -48,8 +56,11 @@ export const useLearnerLectureDetailPageResources = ({
     isError: isPrimaryError,
   } = useQuery({
     queryKey: learnerLectureKeys.detail(lectureKey),
-    queryFn: () => fetchLectureEnrollmentDetailSVC(lectureKey),
-    enabled: !!lectureKey,
+    queryFn: () =>
+      fetchLectureEnrollmentDetailSVC(lectureKey, {
+        childId: activeChildId || undefined,
+      }),
+    enabled: !!lectureKey && shouldFetchEnrollments,
     staleTime: STALE_TIME_MS,
     retry: shouldRetryWithout404,
   });
@@ -58,6 +69,8 @@ export const useLearnerLectureDetailPageResources = ({
   const resolveEnabled =
     !isPrimaryReady &&
     !isPrimaryPending &&
+    shouldFetchEnrollments &&
+    !isEnrollmentsError &&
     !isEnrollmentsPending &&
     !!lectureKey &&
     !!profile;
@@ -69,17 +82,18 @@ export const useLearnerLectureDetailPageResources = ({
   } = useQuery({
     queryKey: learnerLectureKeys.resolveLectureEnrollmentId({
       lectureKey,
-      learnerPhone: profilePhone,
-      learnerName: profileName,
+      learnerPhone,
+      learnerName,
       enrollmentsCount: enrollments.length,
+      childId: activeChildId,
     }),
     enabled: resolveEnabled,
     queryFn: async () => {
       const resolved = await resolveLectureEnrollmentFromLectureId({
         lectureId: lectureKey,
-        learnerPhone: profilePhone,
-        learnerName: profileName,
-        enrollments: isEnrollmentsError ? undefined : enrollments,
+        learnerPhone,
+        learnerName,
+        enrollments,
       });
 
       return resolved.lectureEnrollmentId;
@@ -95,8 +109,10 @@ export const useLearnerLectureDetailPageResources = ({
   } = useQuery({
     queryKey: learnerLectureKeys.detail(resolvedLectureEnrollmentId ?? ""),
     queryFn: () =>
-      fetchLectureEnrollmentDetailSVC(resolvedLectureEnrollmentId!),
-    enabled: !!resolvedLectureEnrollmentId,
+      fetchLectureEnrollmentDetailSVC(resolvedLectureEnrollmentId!, {
+        childId: activeChildId || undefined,
+      }),
+    enabled: !!resolvedLectureEnrollmentId && shouldFetchEnrollments,
     staleTime: STALE_TIME_MS,
     retry: shouldRetryWithout404,
   });

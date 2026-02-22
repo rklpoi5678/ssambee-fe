@@ -73,6 +73,7 @@ type LearnerLectureAttendanceSummaryQuery = {
   learnerPhone?: string;
   learnerName?: string;
   resolutionKeys: string[];
+  childId?: string;
 };
 
 export const learnerLectureKeys = {
@@ -90,6 +91,7 @@ export const learnerLectureKeys = {
     learnerPhone?: string;
     learnerName?: string;
     enrollmentsCount: number;
+    childId?: string;
   }) =>
     [...learnerLectureKeys.all, "resolveLectureEnrollmentId", params] as const,
   attendanceSummary: (query: LearnerLectureAttendanceSummaryQuery) =>

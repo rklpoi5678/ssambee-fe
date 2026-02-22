@@ -72,13 +72,21 @@ export const useLearnerExamDetail = ({
   examId: string;
 }) => {
   const { profile } = useMyLearnerProfile();
+  const isParentUser = profile?.userType === "PARENT";
+  const activeChildId = isParentUser ? (profile?.children?.[0]?.id ?? "") : "";
+  const shouldFetchEnrollments =
+    !!profile && (!isParentUser || !!activeChildId);
   const {
     data: enrollments = [],
     isPending: isEnrollmentsPending,
     isError: isEnrollmentsError,
-  } = useMyEnrollmentsSVC();
-  const profilePhone = profile?.phone ?? "";
-  const profileName = profile?.name ?? "";
+  } = useMyEnrollmentsSVC({
+    userType: profile?.userType,
+    childId: activeChildId,
+    enabled: shouldFetchEnrollments,
+  });
+  const learnerPhone = isParentUser ? undefined : profile?.phone;
+  const learnerName = isParentUser ? undefined : profile?.name;
 
   const {
     data: lectureEnrollmentData,
@@ -86,8 +94,11 @@ export const useLearnerExamDetail = ({
     isError: isLectureError,
   } = useQuery({
     queryKey: learnerLectureKeys.detail(lectureEnrollmentId),
-    queryFn: () => fetchLectureEnrollmentDetailSVC(lectureEnrollmentId),
-    enabled: !!lectureEnrollmentId,
+    queryFn: () =>
+      fetchLectureEnrollmentDetailSVC(lectureEnrollmentId, {
+        childId: activeChildId || undefined,
+      }),
+    enabled: !!lectureEnrollmentId && shouldFetchEnrollments,
     staleTime: STALE_TIME_MS,
     retry: shouldRetryWithout404,
   });
@@ -96,6 +107,8 @@ export const useLearnerExamDetail = ({
     !lectureEnrollmentData &&
     isLectureError &&
     !isLecturePending &&
+    shouldFetchEnrollments &&
+    !isEnrollmentsError &&
     !isEnrollmentsPending &&
     !!lectureEnrollmentId &&
     !!profile;
@@ -107,9 +120,10 @@ export const useLearnerExamDetail = ({
   } = useQuery({
     queryKey: learnerLectureKeys.resolveLectureEnrollmentId({
       lectureKey: lectureEnrollmentId,
-      learnerPhone: profilePhone,
-      learnerName: profileName,
+      learnerPhone,
+      learnerName,
       enrollmentsCount: enrollments.length,
+      childId: activeChildId,
     }),
     enabled: resolveEnabled,
     staleTime: STALE_TIME_MS,
@@ -117,9 +131,9 @@ export const useLearnerExamDetail = ({
     queryFn: async () => {
       const resolved = await resolveLectureEnrollmentFromLectureId({
         lectureId: lectureEnrollmentId,
-        learnerPhone: profilePhone,
-        learnerName: profileName,
-        enrollments: isEnrollmentsError ? undefined : enrollments,
+        learnerPhone,
+        learnerName,
+        enrollments,
       });
 
       return resolved.lectureEnrollmentId;
@@ -133,10 +147,13 @@ export const useLearnerExamDetail = ({
   } = useQuery({
     queryKey: learnerLectureKeys.detail(resolvedLectureEnrollmentId ?? ""),
     queryFn: () =>
-      fetchLectureEnrollmentDetailSVC(resolvedLectureEnrollmentId!),
+      fetchLectureEnrollmentDetailSVC(resolvedLectureEnrollmentId!, {
+        childId: activeChildId || undefined,
+      }),
     enabled:
       !!resolvedLectureEnrollmentId &&
-      resolvedLectureEnrollmentId !== lectureEnrollmentId,
+      resolvedLectureEnrollmentId !== lectureEnrollmentId &&
+      (!isParentUser || !!activeChildId),
     staleTime: STALE_TIME_MS,
     retry: shouldRetryWithout404,
   });
@@ -169,7 +186,10 @@ export const useLearnerExamDetail = ({
     isError: isGradeError,
   } = useQuery({
     queryKey: ["learners", "examDetail", "grade", selectedGradeId],
-    queryFn: () => fetchGradeDetailSVC(selectedGradeId),
+    queryFn: () =>
+      fetchGradeDetailSVC(selectedGradeId, {
+        childId: activeChildId || undefined,
+      }),
     enabled: !!selectedGradeId,
     staleTime: STALE_TIME_MS,
     retry: shouldRetryWithout404,

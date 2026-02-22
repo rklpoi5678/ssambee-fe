@@ -17,6 +17,7 @@ import {
   type LearnerLectureCardVM,
 } from "@/services/SVC/learners-lectures.mapper";
 import type { AttendanceList } from "@/types/students.type";
+import type { LearnerEnrollmentApi } from "@/types/learners-enrollment.api";
 
 import {
   buildLectureEnrollmentResolutionMap,
@@ -35,6 +36,7 @@ export type LearnerLectureAttendanceSummary = {
 };
 
 const STALE_TIME_MS = 1000 * 60;
+const EMPTY_ENROLLMENTS: LearnerEnrollmentApi[] = [];
 
 export const useLearnerLecturesPageResources = () => {
   const {
@@ -42,21 +44,40 @@ export const useLearnerLecturesPageResources = () => {
     isPending: isProfilePending,
     isError: isProfileError,
   } = useMyLearnerProfile();
-  const {
-    data: enrollments = [],
-    isPending: isEnrollmentsPending,
-    isError: isEnrollmentsError,
-  } = useMyEnrollmentsSVC();
+  const isParentUser = profile?.userType === "PARENT";
+  const activeChildId = isParentUser ? (profile?.children?.[0]?.id ?? "") : "";
+  const learnerPhone = isParentUser ? undefined : profile?.phone;
+  const learnerName = isParentUser ? undefined : profile?.name;
+  const shouldFetchEnrollments =
+    !!profile && (!isParentUser || !!activeChildId);
+
+  const enrollmentsQuery = useMyEnrollmentsSVC({
+    userType: profile?.userType,
+    childId: activeChildId,
+    enabled: shouldFetchEnrollments,
+  });
+  const enrollments = enrollmentsQuery.data ?? EMPTY_ENROLLMENTS;
+  const isEnrollmentsPending = shouldFetchEnrollments
+    ? enrollmentsQuery.isPending
+    : false;
+  const isEnrollmentsError = shouldFetchEnrollments
+    ? enrollmentsQuery.isError
+    : false;
 
   const {
     data: lectures = [],
     isPending: isLecturesPending,
     isError: isLecturesError,
   } = useQuery({
-    queryKey: learnerLectureKeys.enrollmentsSource(
-      enrollments.map((enrollment) => enrollment.id)
-    ),
-    enabled: !isEnrollmentsPending,
+    queryKey: [
+      ...learnerLectureKeys.enrollmentsSource(
+        enrollments.map((enrollment) => enrollment.id)
+      ),
+      profile?.userType ?? "UNKNOWN",
+      activeChildId,
+    ],
+    enabled:
+      shouldFetchEnrollments && !isEnrollmentsPending && !isEnrollmentsError,
     staleTime: STALE_TIME_MS,
     queryFn: async () => {
       const lectureMap = new Map<string, LearnerLectureCard>();
@@ -66,7 +87,9 @@ export const useLearnerLecturesPageResources = () => {
           enrollment.lectureEnrollments &&
           enrollment.lectureEnrollments.length > 0
             ? enrollment.lectureEnrollments
-            : await fetchEnrollmentLectureEnrollmentsSVC(enrollment.id);
+            : await fetchEnrollmentLectureEnrollmentsSVC(enrollment.id, {
+                childId: activeChildId || undefined,
+              });
 
         for (const lectureEnrollment of lectureEnrollments) {
           const lectureCard = toLearnerLectureCard({
@@ -90,10 +113,10 @@ export const useLearnerLecturesPageResources = () => {
     () =>
       buildLectureEnrollmentResolutionMap({
         enrollments,
-        learnerPhone: profile?.phone,
-        learnerName: profile?.name,
+        learnerPhone,
+        learnerName,
       }),
-    [enrollments, profile?.phone, profile?.name]
+    [enrollments, learnerPhone, learnerName]
   );
 
   const {
@@ -103,11 +126,13 @@ export const useLearnerLecturesPageResources = () => {
   } = useQuery({
     queryKey: learnerLectureKeys.attendanceSummary({
       lectureIds: lectures.map((lecture) => lecture.id),
-      learnerPhone: profile?.phone,
-      learnerName: profile?.name,
+      learnerPhone,
+      learnerName,
       resolutionKeys: Object.keys(lectureEnrollmentMap),
+      childId: activeChildId,
     }),
-    enabled: !!profile && lectures.length > 0,
+    enabled:
+      shouldFetchEnrollments && !isEnrollmentsError && lectures.length > 0,
     staleTime: STALE_TIME_MS,
     queryFn: async (): Promise<LearnerLectureAttendanceSummary> => {
       const records: AttendanceList[] = [];
@@ -126,8 +151,8 @@ export const useLearnerLecturesPageResources = () => {
           if (!lectureEnrollmentId) {
             const resolved = await resolveLectureEnrollmentFromLectureId({
               lectureId: lecture.id,
-              learnerPhone: profile?.phone,
-              learnerName: profile?.name,
+              learnerPhone,
+              learnerName,
               enrollments,
             });
 
@@ -141,8 +166,12 @@ export const useLearnerLecturesPageResources = () => {
 
           if (!lectureEnrollmentId) continue;
 
-          const attendanceData =
-            await fetchLectureEnrollmentDetailSVC(lectureEnrollmentId);
+          const attendanceData = await fetchLectureEnrollmentDetailSVC(
+            lectureEnrollmentId,
+            {
+              childId: activeChildId || undefined,
+            }
+          );
           const metrics = summarizeLectureAttendances(
             attendanceData.attendances
           );
