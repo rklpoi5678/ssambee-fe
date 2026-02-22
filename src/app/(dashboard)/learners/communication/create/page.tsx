@@ -51,8 +51,11 @@ export default function CreateInquiryPostPageSVC() {
     }
 
     // JSON 데이터 내용 체크
-    const isContentEmpty =
-      !content || !content.content || content.content.length === 0;
+    const hasText = (node: JSONContent): boolean => {
+      if (node.text && node.text.trim().length > 0) return true;
+      return (node.content ?? []).some(hasText);
+    };
+    const isContentEmpty = !content || !hasText(content);
 
     if (isContentEmpty) {
       alert("내용을 입력해주세요.");

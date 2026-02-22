@@ -75,12 +75,7 @@ export default function StudentsListPage() {
   const { data, isPending, isError } = useEnrollmentList({
     ...query,
     keyword: debouncedSearchTerm,
-    // 검색어가 존재하면 페이지를 1로, 아니면 query.page 사용 (선택적 로직)
-    page: debouncedSearchTerm
-      ? query.keyword !== debouncedSearchTerm
-        ? 1
-        : query.page
-      : query.page,
+    page: debouncedSearchTerm ? 1 : query.page,
   });
 
   const studentList = data?.list || [];
@@ -249,7 +244,7 @@ export default function StudentsListPage() {
         />
 
         <Pagination
-          pagination={pagination as PaginationType}
+          pagination={pagination}
           onPageChange={(page) =>
             setQuery((prev) => ({
               ...prev,

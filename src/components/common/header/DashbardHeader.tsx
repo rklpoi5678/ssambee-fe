@@ -55,7 +55,7 @@ export function DashboardHeader() {
   };
 
   const displayName = user ? `${getRoleLabel(user.userType)} ${user.name}` : "";
-  const userSeedKey = user?.id || "default-user";
+  const userSeedKey = user?.id ?? "default-user";
 
   const isValidRole = (type: string): type is Role =>
     ["INSTRUCTOR", "ASSISTANT", "STUDENT", "PARENT"].includes(type);

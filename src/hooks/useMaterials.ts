@@ -109,12 +109,10 @@ export const useDownloadMaterial = (role: DownloadRole) => {
       isNotice?: boolean;
     }) => {
       // 자료실 관련 자료 다운로드
-      if (isNotice) {
+      if (isNotice && materialsId) {
         if (role === "EDUCATORS") {
-          if (!materialsId) throw new Error("materialsId가 필요합니다.");
           return materialsService.getDownloadUrl(materialsId);
-        }
-        if (materialsId) {
+        } else {
           return materialsService.getStudentDownloadUrl(materialsId);
         }
       }

@@ -79,12 +79,24 @@ export default function CommunicationDetailPage() {
 
   // 게시글 수정 시작
   const handleStartEdit = () => {
+    const safeParse = (content: string): JSONContent => {
+      try {
+        return JSON.parse(content);
+      } catch {
+        return {
+          type: "doc",
+          content: [
+            { type: "paragraph", content: [{ type: "text", text: content }] },
+          ],
+        };
+      }
+    };
     if (isNoticePost && noticePostData) {
       setEditTitle(noticePostData.title);
-      setEditContent(JSON.parse(noticePostData.content));
+      setEditContent(safeParse(noticePostData.content));
     } else if (!isNoticePost && inquiryPostData) {
       setEditTitle(inquiryPostData.title);
-      setEditContent(JSON.parse(inquiryPostData.content));
+      setEditContent(safeParse(inquiryPostData.content));
     }
     setIsEditing(true);
   };

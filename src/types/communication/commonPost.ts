@@ -43,8 +43,8 @@ export type CommonPostComment = {
   updatedAt: string;
   authorRole: AuthorRole | "INSTRUCTOR" | "ASSISTANT";
   isMine: boolean;
-  instructorId: string;
-  assistantId: string;
+  instructorId: string | null;
+  assistantId: string | null;
   instructor: {
     user: { name: string };
   } | null;

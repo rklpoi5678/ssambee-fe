@@ -25,7 +25,6 @@ type StudentTableDataProps = {
 export const STUDENT_TABLE_COLUMNS = ({
   selectedStudents,
   onToggleStudent,
-  onNavigate,
   onStatusChange,
   isAllSelected,
   onSelectAll,
@@ -57,10 +56,7 @@ export const STUDENT_TABLE_COLUMNS = ({
           sizePreset="Medium"
           label={`${row.studentName}의 프로필`}
         />
-        <span
-          className="font-medium whitespace-nowrap text-base cursor-pointer hover:text-primary hover:underline"
-          onClick={() => onNavigate(row.id)}
-        >
+        <span className="font-medium whitespace-nowrap text-base cursor-pointer hover:text-primary hover:underline">
           {row.studentName || "-"}
         </span>
       </div>
