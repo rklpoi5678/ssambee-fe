@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
+import { JSONContent } from "@tiptap/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,26 @@ export function DashboardInquiryTable({
 
   const moveToInquiryDetail = (inquiryId: string) => {
     router.push(`/educators/communication/${inquiryId}?type=inquiry`);
+  };
+
+  const getPlainText = (jsonContent: string): string => {
+    if (!jsonContent) return "";
+    try {
+      const data: JSONContent = JSON.parse(jsonContent);
+
+      const extractText = (node: JSONContent): string => {
+        if (node.text) return node.text;
+        if (node.content) {
+          return node.content.map(extractText).join(" ");
+        }
+        return "";
+      };
+
+      return extractText(data).trim();
+    } catch {
+      // JSON 파싱 실패 시 원본 혹은 빈 문자열 반환
+      return jsonContent;
+    }
   };
 
   return (
@@ -91,7 +112,7 @@ export function DashboardInquiryTable({
                       className="block max-w-[360px] truncate text-lg font-medium text-[#16161b]/88"
                       title={inquiry.message}
                     >
-                      {inquiry.message}
+                      {getPlainText(inquiry.message)}
                     </span>
                     {inquiry.replyCount ? (
                       <span className="text-base font-bold text-[#3863f6]">
