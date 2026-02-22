@@ -77,7 +77,7 @@ export function LectureCard({ lecture }: LectureCardProps) {
   const instructorInitial = lecture.instructor?.slice(0, 1) ?? "-";
 
   const openDeleteConfirmModal = () => {
-    if (user?.userType === "ASSISTANT") {
+    if (!user || user.userType === "ASSISTANT") {
       openModal(createElement(DeleteLectureForbiddenModal));
       return;
     }
