@@ -40,6 +40,31 @@ export type SvcGradeDetail = {
   }[];
 };
 
+const resolveAssignmentResultLabel = (
+  itemRecord: Record<string, unknown> | null
+): string => {
+  if (!itemRecord) {
+    return "-";
+  }
+
+  const directLabel = asString(itemRecord.resultLabel);
+  if (directLabel) {
+    return directLabel;
+  }
+
+  const resultIndex =
+    typeof itemRecord.resultIndex === "number" ? itemRecord.resultIndex : null;
+  const resultPresets = Array.isArray(itemRecord.resultPresets)
+    ? itemRecord.resultPresets
+    : [];
+
+  if (resultIndex !== null && resultPresets[resultIndex]) {
+    return asString(resultPresets[resultIndex], "-");
+  }
+
+  return "-";
+};
+
 const asRecord = (value: unknown): Record<string, unknown> | null => {
   if (value && typeof value === "object") {
     return value as Record<string, unknown>;
@@ -272,10 +297,19 @@ export const fetchGradeDetailSVC = async (
 
   const questionStatisticsRecord = Array.isArray(gradeRecord.questionStatistics)
     ? gradeRecord.questionStatistics
-    : [];
+    : Array.isArray(gradeRecord.questions)
+      ? gradeRecord.questions
+      : [];
   const questionDetailsRecord = Array.isArray(gradeRecord.questionDetails)
     ? gradeRecord.questionDetails
-    : [];
+    : Array.isArray(gradeRecord.questions)
+      ? gradeRecord.questions
+      : [];
+  const assignmentsRecord = Array.isArray(gradeRecord.assignmentResults)
+    ? gradeRecord.assignmentResults
+    : Array.isArray(gradeRecord.assignments)
+      ? gradeRecord.assignments
+      : [];
 
   return {
     studentName: asString(gradeRecord.studentName),
@@ -284,10 +318,7 @@ export const fetchGradeDetailSVC = async (
     average: asNumber(gradeRecord.average),
     examTitle: asString(gradeRecord.examTitle),
     examCategory: asString(gradeRecord.examCategory),
-    assignmentResults: (Array.isArray(gradeRecord.assignmentResults)
-      ? gradeRecord.assignmentResults
-      : []
-    ).map((item, index) => {
+    assignmentResults: assignmentsRecord.map((item, index) => {
       const itemRecord = asRecord(item);
 
       return {
@@ -297,7 +328,7 @@ export const fetchGradeDetailSVC = async (
         ),
         title: asString(itemRecord?.title, "과제"),
         categoryName: asString(itemRecord?.categoryName, "카테고리"),
-        resultLabel: asString(itemRecord?.resultLabel, "-"),
+        resultLabel: resolveAssignmentResultLabel(itemRecord),
       };
     }),
     questionStatistics: questionStatisticsRecord.map((item) => {
