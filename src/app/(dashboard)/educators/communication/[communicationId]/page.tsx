@@ -216,15 +216,14 @@ export default function CommunicationDetailPage() {
       window.open(file.fileUrl, "_blank");
       return;
     }
-    if (isNoticePost) {
-      // 공지사항일 때는 materialId를 우선 사용 (서버에서 Presigned URL 생성)
-      downloadMaterial({ materialsId: file.materialId });
-    } else {
-      // 문의(학부모/학생 직접 업로드)일 때는 fileUrl을 직접 사용
-      downloadMaterial({ fileUrl: file.fileUrl });
-    }
-  };
 
+    downloadMaterial({
+      materialsId: file.materialId, // 공지사항일 때 존재
+      attachmentId: file.id, // 문의글일 때 존재
+      fileUrl: file.fileUrl, // 직접 다운로드
+      isNotice: isNoticePost,
+    });
+  };
   return (
     <div className="container mx-auto space-y-8 p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

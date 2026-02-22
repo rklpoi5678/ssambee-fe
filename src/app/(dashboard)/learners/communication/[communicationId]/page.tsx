@@ -248,7 +248,9 @@ export default function CommunicationDetailPageSVC() {
     }
     downloadMaterial({
       materialsId: file.materialId,
+      attachmentId: file.id,
       fileUrl: file.fileUrl,
+      isNotice: isNoticePost,
     });
   };
 

@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { MaterialsType } from "@/types/materials.type";
 import { materialsService } from "@/services/materials.service";
+import { studentPostService } from "@/services/instructorPost.service";
+import { myPostServiceSVC } from "@/services/SVC/studentPost.service";
 
 export const useMaterials = (params: {
   page: number;
@@ -97,28 +99,44 @@ export const useDownloadMaterial = (role: DownloadRole) => {
   return useMutation({
     mutationFn: async ({
       materialsId,
+      attachmentId,
       fileUrl,
+      isNotice = true,
     }: {
       materialsId?: string;
+      attachmentId?: string;
       fileUrl?: string;
+      isNotice?: boolean;
     }) => {
-      if (!materialsId && fileUrl) {
+      // 자료실 관련 자료 다운로드
+      if (isNotice) {
+        if (role === "EDUCATORS") {
+          if (!materialsId) throw new Error("materialsId가 필요합니다.");
+          return materialsService.getDownloadUrl(materialsId);
+        }
+        if (materialsId) {
+          return materialsService.getStudentDownloadUrl(materialsId);
+        }
+      }
+
+      // 학생 문의글 자료 다운로드
+      else if (attachmentId) {
+        if (role === "EDUCATORS") {
+          // 강사가 학생 문의글
+          return studentPostService.getStudentPostDownload(attachmentId);
+        } else {
+          // 학생이 본인 문의글
+          return myPostServiceSVC.getMyPostDownloadSVC(attachmentId);
+        }
+      }
+
+      // 유튜브나 직접 URL이 있는 경우
+      if (fileUrl) {
         return {
           status: "success",
           data: { url: fileUrl, type: "direct" },
           message: "",
         };
-      }
-
-      // EDUCATORS 전용 자료실 다운로드
-      if (role === "EDUCATORS") {
-        if (!materialsId) throw new Error("materialsId가 필요합니다.");
-        return materialsService.getDownloadUrl(materialsId);
-      }
-
-      // 학생이 자료실 연동 자료를 받을 때
-      if (materialsId) {
-        return materialsService.getStudentDownloadUrl(materialsId);
       }
 
       throw new Error("다운로드 가능한 정보가 없습니다.");
@@ -136,7 +154,7 @@ export const useDownloadMaterial = (role: DownloadRole) => {
         type === "youtube" ||
         type === "direct" ||
         url.includes("youtube.com") ||
-        url.includes("youtu.be")
+        url.includes("youtube")
       ) {
         window.open(url, "_blank");
       } else {
