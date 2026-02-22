@@ -66,7 +66,7 @@ const resolveAssignmentResultLabel = (
 };
 
 const asRecord = (value: unknown): Record<string, unknown> | null => {
-  if (value && typeof value === "object") {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
     return value as Record<string, unknown>;
   }
 
@@ -275,7 +275,7 @@ export const fetchLectureEnrollmentDetailSVC = async (
   lectureEnrollmentId: string
 ): Promise<LectureEnrollmentDetail> => {
   const { data } = await axiosClientSVC.get<ApiResponse<unknown>>(
-    `/lectures/${lectureEnrollmentId}`
+    `/lectureEnrollments/${lectureEnrollmentId}`
   );
 
   return normalizeLectureEnrollmentDetail(data.data);
@@ -297,14 +297,10 @@ export const fetchGradeDetailSVC = async (
 
   const questionStatisticsRecord = Array.isArray(gradeRecord.questionStatistics)
     ? gradeRecord.questionStatistics
-    : Array.isArray(gradeRecord.questions)
-      ? gradeRecord.questions
-      : [];
+    : [];
   const questionDetailsRecord = Array.isArray(gradeRecord.questionDetails)
     ? gradeRecord.questionDetails
-    : Array.isArray(gradeRecord.questions)
-      ? gradeRecord.questions
-      : [];
+    : [];
   const assignmentsRecord = Array.isArray(gradeRecord.assignmentResults)
     ? gradeRecord.assignmentResults
     : Array.isArray(gradeRecord.assignments)
@@ -365,6 +361,13 @@ export const fetchEnrollmentLectureEnrollmentsSVC = async (
       lectureEnrollments?: LearnerEnrollmentLectureEnrollmentApi[];
     }>
   >(`/enrollments/${enrollmentId}`);
+  const payload = asRecord(data.data);
 
-  return data.data.lectureEnrollments ?? [];
+  if (!payload) {
+    return [];
+  }
+
+  return Array.isArray(payload.lectureEnrollments)
+    ? (payload.lectureEnrollments as LearnerEnrollmentLectureEnrollmentApi[])
+    : [];
 };
