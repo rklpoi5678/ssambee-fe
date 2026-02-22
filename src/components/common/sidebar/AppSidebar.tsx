@@ -123,8 +123,8 @@ const otherMenuItems = [
     icon: Users,
   },
   {
-    title: "성적조회",
-    url: "/learners/exams",
+    title: "나의강의",
+    url: "/learners/lectures",
     icon: FileText,
   },
   {
