@@ -167,7 +167,10 @@ export default function TiptapEditor({
       </div>
 
       {/* 실제 에디터 입력창 */}
-      <div className="relative flex-1 overflow-y-auto bg-white custom-scrollbar">
+      <div
+        className="relative flex-1 overflow-y-auto bg-white custom-scrollbar"
+        style={{ height: "300px" }}
+      >
         <EditorContent editor={editor} />
       </div>
 
