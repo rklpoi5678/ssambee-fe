@@ -131,3 +131,47 @@ export type CreateInstructorPostCommentRequest = {
   content: string;
   materialIds?: string[];
 };
+
+export type WorkStatus = "PENDING" | "IN_PROGRESS" | "END";
+export type PriorityStatus = "NORMAL" | "HIGH" | "URGENT";
+
+// 조교 업무 리스트
+export type GetAssistantWorksResponse = {
+  orders: {
+    id: string;
+    title: string;
+    memo: string | null;
+    workStatus: WorkStatus;
+    priority: PriorityStatus;
+    createdAt: string;
+    deadlineAt: string | null;
+    instructorName: string;
+    assistantName: string;
+  }[];
+  pagination: PaginationType;
+};
+
+export type UpdateAssistantWorkStatus = {
+  workStatus: WorkStatus;
+};
+
+// 조교 업무 상세 조회
+export type GetAssistantWorkDetailResponse = {
+  id: string;
+  title: string;
+  memo: string | null;
+  workStatus: WorkStatus;
+  priority: PriorityStatus;
+  createdAt: string;
+  deadlineAt: string | null;
+  instructor: {
+    id: string;
+    name: string;
+  };
+  assistant: {
+    id: string;
+    name: string;
+  };
+  attachments: CommonPostAttachment[];
+  lecture: string | null;
+};

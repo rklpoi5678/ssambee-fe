@@ -6,6 +6,9 @@ import {
   UpdateInstructorPostRequest,
   CreateInstructorPostCommentRequest,
   GetInstructorPostTargetsResponse,
+  UpdateAssistantWorkStatus,
+  GetAssistantWorkDetailResponse,
+  GetAssistantWorksResponse,
 } from "@/types/communication/instructorPost";
 import { ApiResponse } from "@/types/api";
 import {
@@ -111,6 +114,37 @@ export const instructorPostService = {
     const { data } = await axiosClient.delete<ApiResponse<CommonPostComment>>(
       `/instructor-posts/${postId}/comments/${commentId}`
     );
+    return data.data;
+  },
+};
+
+export const assistantPostService = {
+  // 조교 업무 리스트 조회
+  getAssistantWorks: async (params: CommonPostQuery) => {
+    const { data } = await axiosClient.get<
+      ApiResponse<GetAssistantWorksResponse>
+    >("/assistant-order", {
+      params,
+    });
+    return data.data;
+  },
+
+  // 조교 업무 상세 조회
+  getAssistantWorkDetail: async (assistantOrderId: string) => {
+    const { data } = await axiosClient.get<
+      ApiResponse<GetAssistantWorkDetailResponse>
+    >(`/assistant-order/${assistantOrderId}`);
+    return data.data;
+  },
+
+  // 업무 상태 변경
+  updateWorkStatus: async (
+    assistantOrderId: string,
+    payload: UpdateAssistantWorkStatus
+  ) => {
+    const { data } = await axiosClient.patch<
+      ApiResponse<UpdateAssistantWorkStatus>
+    >(`/assistant-order/${assistantOrderId}`, payload);
     return data.data;
   },
 };

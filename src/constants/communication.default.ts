@@ -26,6 +26,20 @@ export const NOTICE_TYPE_OPTIONS = [
   { label: "학부모", value: "PARENT" },
 ];
 
+export const WORK_STATUS_OPTIONS = [
+  { label: "전체", value: "ALL" },
+  { label: "대기", value: "PENDING" },
+  { label: "진행중", value: "IN_PROGRESS" },
+  { label: "완료", value: "END" },
+];
+
+export const PRIORITY_OPTIONS = [
+  { label: "전체", value: "ALL" },
+  { label: "보통", value: "NORMAL" },
+  { label: "높음", value: "HIGH" },
+  { label: "긴급", value: "URGENT" },
+];
+
 export const NOTICE_TYPE_LABEL = {
   ALL: { label: "전체", color: "gray" },
   STUDENT: { label: "학생", color: "blue" },
@@ -47,4 +61,16 @@ export const CONTENT_TYPE_LABEL = {
 export const WRITER_TYPE_LABEL = {
   STUDENT: { label: "학생", color: "blue" },
   PARENT: { label: "학부모", color: "green" },
+} as const;
+
+export const WORK_STATUS_LABEL = {
+  PENDING: { label: "대기", color: "gray" },
+  IN_PROGRESS: { label: "진행중", color: "blue" },
+  END: { label: "완료", color: "green" },
+} as const;
+
+export const PRIORITY_LABEL = {
+  NORMAL: { label: "보통", color: "gray" },
+  HIGH: { label: "높음", color: "yellow" },
+  URGENT: { label: "긴급", color: "red" },
 } as const;
