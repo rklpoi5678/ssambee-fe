@@ -106,7 +106,10 @@ function ScheduleSidebarComponent({
             </p>
             <button
               type="button"
-              className="rounded-full px-2.5 py-1 text-sm font-semibold text-neutral-300"
+              className="cursor-not-allowed rounded-full px-2.5 py-1 text-sm font-semibold text-neutral-300 opacity-60"
+              aria-disabled="true"
+              disabled
+              title="준비 중"
             >
               전체 일정보기
             </button>

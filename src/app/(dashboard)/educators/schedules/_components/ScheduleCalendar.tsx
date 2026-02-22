@@ -41,7 +41,7 @@ const calendarMessages = {
 
 const toRgba = (hexColor: string, alpha: number) => {
   const normalized = hexColor.replace("#", "");
-  if (normalized.length !== 6) {
+  if (!/^[0-9a-fA-F]{6}$/.test(normalized)) {
     return `rgba(56, 99, 246, ${alpha})`;
   }
 

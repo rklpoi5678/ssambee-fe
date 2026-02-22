@@ -294,9 +294,10 @@ function ScheduleTimetableModalComponent({
                       return (
                         <div
                           key={`time-${hour}`}
-                          className={`flex items-start justify-end pr-2 ${
-                            isBoundaryLabel ? "h-0" : "h-12"
-                          }`}
+                          className="flex items-start justify-end pr-2"
+                          style={{
+                            height: isBoundaryLabel ? 0 : timetableRowHeight,
+                          }}
                         >
                           {String(hour).padStart(2, "0")}:00
                         </div>
@@ -319,7 +320,8 @@ function ScheduleTimetableModalComponent({
                             (_, index) => (
                               <div
                                 key={`row-${day}-${timeAxis.startHour + index}`}
-                                className="h-12 border-b border-[#eef0f4] last:border-b-0"
+                                className="border-b border-[#eef0f4] last:border-b-0"
+                                style={{ height: timetableRowHeight }}
                               />
                             )
                           )}
