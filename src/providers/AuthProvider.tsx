@@ -7,6 +7,7 @@ import {
   useState,
   ReactNode,
 } from "react";
+import { usePathname } from "next/navigation";
 
 import { getSessionAPI } from "@/services/auth.service";
 import { Role } from "@/types/auth.type";
@@ -30,12 +31,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const pathname = usePathname();
 
   useEffect(() => {
     // 앱이 처음 로드될 때 세션 정보 가져오기
     const initAuth = async () => {
       try {
-        const response = await getSessionAPI();
+        const role = pathname.startsWith("/learners") ? "SVC" : "MGMT";
+        const response = await getSessionAPI(role);
 
         const userData = response.data?.data?.user;
 
@@ -52,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
     initAuth();
-  }, []);
+  }, [pathname]);
 
   return (
     <AuthContext.Provider value={{ user, setUser, isLoading }}>
