@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
+import { learnerLectureKeys } from "@/constants/query-keys";
 import {
   fetchGradeDetailSVC,
   fetchLectureEnrollmentDetailSVC,
@@ -60,20 +61,13 @@ export const useLearnerExamDetail = ({
     isPending: isLecturePending,
     isError: isLectureError,
   } = useQuery({
-    queryKey: [
-      "learners",
-      "examDetail",
-      "lectureEnrollment",
-      lectureEnrollmentId,
-    ],
-    queryFn: async () => ({
-      data: await fetchLectureEnrollmentDetailSVC(lectureEnrollmentId),
-    }),
+    queryKey: learnerLectureKeys.detail(lectureEnrollmentId),
+    queryFn: () => fetchLectureEnrollmentDetailSVC(lectureEnrollmentId),
     enabled: !!lectureEnrollmentId,
     staleTime: 1000 * 60,
   });
 
-  const lectureDetail = lectureEnrollmentData?.data;
+  const lectureDetail = lectureEnrollmentData;
   const lectureGrades = lectureDetail?.grades;
   const selectedGradeItem = useMemo(() => {
     if (!lectureGrades?.length) {
@@ -94,9 +88,7 @@ export const useLearnerExamDetail = ({
     isError: isGradeError,
   } = useQuery({
     queryKey: ["learners", "examDetail", "grade", selectedGradeId],
-    queryFn: async () => ({
-      data: await fetchGradeDetailSVC(selectedGradeId),
-    }),
+    queryFn: () => fetchGradeDetailSVC(selectedGradeId),
     enabled: !!selectedGradeId,
     staleTime: 1000 * 60,
   });
@@ -132,8 +124,8 @@ export const useLearnerExamDetail = ({
   }
 
   const resolvedLectureTitle = lectureDetail.lecture?.title ?? "강의 상세";
-  const gradeStatistics = gradeDetailData?.data?.questionStatistics ?? [];
-  const questionDetails = gradeDetailData?.data?.questionDetails ?? [];
+  const gradeStatistics = gradeDetailData?.questionStatistics ?? [];
+  const questionDetails = gradeDetailData?.questionDetails ?? [];
   const questionDetailMap = new Map(
     questionDetails.map((item) => [item.questionNumber, item])
   );
@@ -153,7 +145,7 @@ export const useLearnerExamDetail = ({
           )
         : null;
 
-  const miniTests = (gradeDetailData?.data?.assignmentResults ?? []).map(
+  const miniTests = (gradeDetailData?.assignmentResults ?? []).map(
     (assignment) => ({
       id: assignment.assignmentId,
       categoryName: assignment.categoryName || "카테고리",
@@ -188,20 +180,18 @@ export const useLearnerExamDetail = ({
   });
 
   const detail: LearnerExamDetailView = {
-    examTitle: gradeDetailData?.data?.examTitle || selectedGradeItem.exam.title,
+    examTitle: gradeDetailData?.examTitle || selectedGradeItem.exam.title,
     examType:
-      gradeDetailData?.data?.examCategory ||
+      gradeDetailData?.examCategory ||
       selectedGradeItem.exam.examType ||
       selectedGradeItem.exam.title,
     subjectLabel: selectedGradeItem.exam.subject,
     lectureTitle: resolvedLectureTitle,
     examDateLabel: selectedGradeItem.exam.examDate,
-    studentName:
-      gradeDetailData?.data?.studentName || lectureDetail.enrollment.name,
-    score: gradeDetailData?.data?.score ?? selectedGradeItem.grade.score,
-    classAverage:
-      gradeDetailData?.data?.average ?? selectedGradeItem.exam.average,
-    rank: gradeDetailData?.data?.rank ?? selectedGradeItem.grade.rank,
+    studentName: gradeDetailData?.studentName || lectureDetail.enrollment.name,
+    score: gradeDetailData?.score ?? selectedGradeItem.grade.score,
+    classAverage: gradeDetailData?.average ?? selectedGradeItem.exam.average,
+    rank: gradeDetailData?.rank ?? selectedGradeItem.grade.rank,
     totalExaminees: selectedGradeItem.exam.totalExaminees,
     attendanceRate,
     miniTests,

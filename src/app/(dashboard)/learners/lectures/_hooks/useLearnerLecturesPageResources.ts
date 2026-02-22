@@ -132,7 +132,7 @@ export const useLearnerLecturesPageResources = () => {
             });
 
             lectureEnrollmentId =
-              lectureEnrollmentId ?? resolved.lectureEnrollmentId;
+              resolved.lectureEnrollmentId ?? lectureEnrollmentId;
           }
 
           if (lectureEnrollmentId) {
