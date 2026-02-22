@@ -74,7 +74,11 @@ export const mapLearnersProfileUpdateFormToApi = (
   if (currentProfile.userType === "STUDENT") {
     payload.school = toOptionalString(formData.school);
     payload.schoolYear = toOptionalString(formData.schoolYear);
-    payload.parentPhoneNumber = toOptionalString(formData.parentPhoneNumber);
+    const trimmedParentPhoneNumber = formData.parentPhoneNumber?.trim();
+    payload.parentPhoneNumber =
+      trimmedParentPhoneNumber && trimmedParentPhoneNumber.length > 0
+        ? trimmedParentPhoneNumber
+        : null;
   }
 
   return payload;

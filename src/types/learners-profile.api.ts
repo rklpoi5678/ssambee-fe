@@ -45,5 +45,5 @@ export type UpdateLearnerMyProfilePayload = {
   name?: string;
   school?: string;
   schoolYear?: string;
-  parentPhoneNumber?: string;
+  parentPhoneNumber?: string | null;
 };
