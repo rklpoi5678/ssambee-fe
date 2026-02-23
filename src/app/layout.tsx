@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-
-import "react-day-picker/dist/style.css";
+import { Analytics } from "@vercel/analytics/next";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import "react-day-picker/dist/style.css";
 
-import "@/styles/globals.css";
-import { geistMono, pretendard } from "@/styles/fonts";
 import Providers from "@/providers/Providers";
+import { geistMono, pretendard } from "@/styles/fonts";
+import "@/styles/globals.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,6 +27,7 @@ export default function RootLayout({
         className={`${pretendard.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
