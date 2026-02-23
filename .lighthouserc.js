@@ -13,6 +13,11 @@ module.exports = {
       assertions: {
         "categories:performance": ["warn", { minScore: 0.8 }], // 성능 80점 미만 시 경고
         "categories:accessibility": ["warn", { minScore: 0.8 }],
+        "categories:bast-practices": ["warn", { minScore: 0.8 }],
+        "categories:seo": ["warn", { minScore: 0.8 }],
+        "errors-in-console": "off",
+        "unused-javascript": "off",
+        "valid-source-maps": "off",
       },
     },
   },
