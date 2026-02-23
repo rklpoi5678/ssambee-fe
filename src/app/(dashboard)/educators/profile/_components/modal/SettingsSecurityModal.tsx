@@ -92,13 +92,11 @@ export function SettingsSecurityModal({ email }: SettingsSecurityModalProps) {
 
   const handleSendCode = () => {
     // TODO: API 연동 - 인증메일 발송
-    console.log("인증메일 발송:", email);
     setIsCodeSent(true);
   };
 
-  const handleVerifyCode = handleCodeSubmit((data) => {
+  const handleVerifyCode = handleCodeSubmit(() => {
     // TODO: API 연동 - 인증코드 검증
-    console.log("인증코드 검증:", data.code);
     setIsVerified(true);
   });
 
