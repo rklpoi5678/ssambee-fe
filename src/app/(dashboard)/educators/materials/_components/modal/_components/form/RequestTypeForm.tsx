@@ -82,12 +82,18 @@ export default function RequestTypeForm({
   }, [mode, initialData, userName, reset]);
 
   return (
-    <div className="space-y-4 border rounded-[20px] px-[24px] py-[16px] bg-white">
-      <div>
-        <h3 className="text-[18px] font-semibold text-label-neutral py-[11px]">
+    <div
+      className={`space-y-4 border rounded-[20px] bg-white ${mode !== "create" ? "shadow-sm p-10" : "px-[24px] py-[16px]"}`}
+    >
+      <div className="py-4">
+        <h3
+          className={`font-semibold text-label-neutral ${mode !== "create" ? "text-[20px]" : "text-[18px]"}`}
+        >
           {mode === "create" ? "요청 자료 등록" : "요청 자료"}
         </h3>
-        <p className="text-sm text-muted-foreground">
+        <p
+          className={`text-muted-foreground ${mode !== "create" ? "text-[18px]" : "text-sm"}`}
+        >
           {mode === "create"
             ? "강사가 조교에게 전달할 업무 자료입니다."
             : mode === "view"
@@ -144,7 +150,7 @@ export default function RequestTypeForm({
             <label className="block text-sm font-medium text-gray-700">
               첨부 파일
             </label>
-            <div className="border border-neutral-200 rounded-[12px] p-4 bg-white">
+            <div className="border border-neutral-200 rounded-[12px] h-[58px] px-4 bg-white flex items-center">
               <p className="text-sm text-gray-900">
                 {decodeUtf8(initialData.file.name)}
               </p>

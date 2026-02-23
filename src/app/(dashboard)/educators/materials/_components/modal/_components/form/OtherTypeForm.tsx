@@ -128,12 +128,18 @@ export default function OtherTypeForm({
   }, [imageFile, initialData?.id, imageRemoved]);
 
   return (
-    <div className="space-y-4 border rounded-[20px] px-[24px] py-[16px] bg-white">
-      <div>
-        <h3 className="text-[18px] font-semibold text-label-neutral py-[11px]">
+    <div
+      className={`space-y-4 border rounded-[20px] bg-white ${mode !== "create" ? "shadow-sm p-10" : "px-[24px] py-[16px]"}`}
+    >
+      <div className="py-4">
+        <h3
+          className={`font-semibold text-label-neutral ${mode !== "create" ? "text-[20px]" : "text-[18px]"}`}
+        >
           {mode === "create" ? "기타 자료 등록" : "기타 자료"}
         </h3>
-        <p className="text-sm text-muted-foreground">
+        <p
+          className={`text-muted-foreground ${mode !== "create" ? "text-[18px]" : "text-sm"}`}
+        >
           {mode === "create"
             ? "이미지 등의 자료를 업로드합니다."
             : mode === "view"
