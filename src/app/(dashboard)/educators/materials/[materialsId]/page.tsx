@@ -235,7 +235,7 @@ export default function MaterialsDetailPage() {
           )}
         </div>
 
-        <div className="pb-4">{renderForm()}</div>
+        <div>{renderForm()}</div>
 
         {mode === "view" && (
           <div className="flex justify-end">
