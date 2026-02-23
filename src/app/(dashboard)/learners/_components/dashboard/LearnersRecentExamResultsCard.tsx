@@ -44,7 +44,7 @@ export default function LearnersRecentExamResultsCard({
             최근 시험 결과
           </p>
           <Link
-            href="/learners/exams"
+            href="/learners/lectures"
             className="text-xs font-semibold text-muted-foreground underline-offset-2 hover:underline"
           >
             전체 보기

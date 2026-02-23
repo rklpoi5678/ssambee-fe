@@ -7,6 +7,7 @@ import {
   useState,
   ReactNode,
 } from "react";
+import { usePathname } from "next/navigation";
 
 import { getSessionAPI } from "@/services/auth.service";
 import { Role } from "@/types/auth.type";
@@ -30,12 +31,20 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const pathname = usePathname();
+  const role = pathname.startsWith("/learners") ? "SVC" : "MGMT";
 
   useEffect(() => {
+    let cancelled = false;
+
     // 앱이 처음 로드될 때 세션 정보 가져오기
     const initAuth = async () => {
       try {
-        const response = await getSessionAPI();
+        const response = await getSessionAPI(role);
+
+        if (cancelled) {
+          return;
+        }
 
         const userData = response.data?.data?.user;
 
@@ -45,14 +54,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(null);
         }
       } catch (err: unknown) {
+        if (cancelled) {
+          return;
+        }
+
         console.error("Failed to fetch session", err);
         setUser(null);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
     };
+
     initAuth();
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [role]);
 
   return (
     <AuthContext.Provider value={{ user, setUser, isLoading }}>

@@ -10,7 +10,7 @@ export interface CommonLectureCardProps {
   scheduleDays: string;
   scheduleTime: string;
   hasSchedule: boolean;
-  currentStudents: number;
+  currentStudents?: number;
   instructorName: string;
   instructorInitial: string;
   onClick?: () => void;
@@ -72,10 +72,12 @@ export function CommonLectureCard({
               <span>{scheduleDays}</span>
             )}
           </div>
-          <div className="flex items-center gap-2 text-[16px] font-medium leading-6 tracking-[-0.16px]">
-            <Users className="h-5 w-5 shrink-0 text-[#b0b4c2]" />
-            <span className="text-[#6b6f80]">{currentStudents}명</span>
-          </div>
+          {typeof currentStudents === "number" && (
+            <div className="flex items-center gap-2 text-[16px] font-medium leading-6 tracking-[-0.16px]">
+              <Users className="h-5 w-5 shrink-0 text-[#b0b4c2]" />
+              <span className="text-[#6b6f80]">{currentStudents}명</span>
+            </div>
+          )}
         </div>
       </CardContent>
 
