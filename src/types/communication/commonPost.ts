@@ -1,19 +1,23 @@
 import { AnswerStatus, AuthorRole, InquiryWriterType } from "./studentPost";
-import { PostType } from "./instructorPost";
+import { PostType, PriorityStatus, WorkStatus } from "./instructorPost";
 
 // UI 필터 확장 타입
 export type AnswerStatusFilter = AnswerStatus | "ALL";
 export type InquiryWriterTypeFilter = InquiryWriterType | "ALL";
 export type PostTypeFilter = PostType | "ALL";
+export type WorkStatusFilter = WorkStatus | "ALL";
+export type PriorityStatusFilter = PriorityStatus | "ALL";
 
 // TabSection - Query 상태 타입
 export interface PostFilterQuery extends Omit<
   CommonPostQuery,
-  "answerStatus" | "writerType" | "postType"
+  "answerStatus" | "writerType" | "postType" | "workStatus" | "priority"
 > {
   answerStatus: AnswerStatusFilter | null;
   writerType: InquiryWriterTypeFilter | null;
   postType: PostTypeFilter | null;
+  workStatus?: WorkStatusFilter | null;
+  priority?: PriorityStatusFilter | null;
 }
 
 export type CommonPostQuery = {
@@ -25,6 +29,9 @@ export type CommonPostQuery = {
   writerType?: InquiryWriterType | null;
   // 강사 게시글 전용
   postType?: PostType | null;
+  // 조교 업무 전용
+  workStatus?: WorkStatus | null;
+  priority?: PriorityStatus | null;
 };
 
 export type PaginationType = {

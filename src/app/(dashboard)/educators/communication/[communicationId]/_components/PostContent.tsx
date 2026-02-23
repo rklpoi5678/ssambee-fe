@@ -5,13 +5,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import TiptapEditor from "@/components/common/editor/TiptapEditor";
-import { GetInstructorPostDetailResponse } from "@/types/communication/instructorPost";
+import {
+  GetInstructorPostDetailResponse,
+  GetAssistantWorkDetailResponse,
+} from "@/types/communication/instructorPost";
 import { GetStudentPostDetailResponse } from "@/types/communication/studentPost";
 import { CommonPostAttachment } from "@/types/communication/commonPost";
 import { decodeUtf8 } from "@/utils/decodeUtf";
 
 type PostContentProps = {
   isNoticePost: boolean;
+  isWorksPost: boolean;
   isEditing: boolean;
   editTitle: string;
   setEditTitle: (val: string) => void;
@@ -19,15 +23,18 @@ type PostContentProps = {
   setEditContent: (val: JSONContent) => void;
   noticePostData: GetInstructorPostDetailResponse | undefined;
   inquiryPostData: GetStudentPostDetailResponse | undefined;
+  worksPostData: GetAssistantWorkDetailResponse | undefined;
   currentData:
     | GetInstructorPostDetailResponse
     | GetStudentPostDetailResponse
+    | GetAssistantWorkDetailResponse
     | undefined;
   handleAttachmentClick: (file: CommonPostAttachment) => void;
 };
 
 export default function PostContent({
   isNoticePost,
+  isWorksPost,
   isEditing,
   editTitle,
   setEditTitle,
@@ -35,6 +42,7 @@ export default function PostContent({
   setEditContent,
   noticePostData,
   inquiryPostData,
+  worksPostData,
   currentData,
   handleAttachmentClick,
 }: PostContentProps) {
@@ -77,16 +85,27 @@ export default function PostContent({
         ) : (
           <div className="min-h-[200px]">
             <h2 className="text-2xl font-bold mb-4">
-              {noticePostData?.title ?? inquiryPostData?.title ?? ""}
+              {noticePostData?.title ??
+                inquiryPostData?.title ??
+                worksPostData?.title ??
+                ""}
             </h2>
-            <div className="border-t pt-4">
-              <TiptapEditor
-                content={getParsedContent(
-                  noticePostData?.content ?? inquiryPostData?.content ?? ""
-                )}
-                readOnly={true}
-              />
-            </div>
+            {isWorksPost ? (
+              <div className="border-t pt-4">
+                <p className="text-slate-700 whitespace-pre-wrap">
+                  {worksPostData?.memo || ""}
+                </p>
+              </div>
+            ) : (
+              <div className="border-t pt-4">
+                <TiptapEditor
+                  content={getParsedContent(
+                    noticePostData?.content ?? inquiryPostData?.content ?? ""
+                  )}
+                  readOnly={true}
+                />
+              </div>
+            )}
             {!!currentData?.attachments?.length &&
               currentData.attachments.length > 0 && (
                 <div className="mt-24 pt-6 border-t">
@@ -100,7 +119,7 @@ export default function PostContent({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {currentData?.attachments?.map((file) => (
                       <div
-                        key={file.id} // file.material.id -> file.id
+                        key={file.id}
                         className="group flex items-center justify-between p-3 rounded-xl border bg-slate-50/50 hover:bg-white hover:border-blue-200 hover:shadow-sm transition-all cursor-pointer"
                         onClick={() => handleAttachmentClick(file)}
                       >

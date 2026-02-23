@@ -4,9 +4,11 @@ import {
   CreateInstructorPostCommentRequest,
   CreateInstructorPostRequest,
   UpdateInstructorPostRequest,
+  UpdateAssistantWorkStatus,
 } from "@/types/communication/instructorPost";
 import { CreateStudentPostCommentRequest } from "@/types/communication/studentPost";
 import {
+  assistantPostService,
   instructorPostService,
   studentPostService,
 } from "@/services/instructorPost.service";
@@ -340,4 +342,59 @@ export const useStudentPostMutations = () => {
     updateStudentPostCommentMutation,
     deleteStudentPostCommentMutation,
   };
+};
+
+// 조교 업무 리스트 조회
+export const useAssistantWorks = (
+  params: CommonPostQuery,
+  options?: { enabled?: boolean }
+) => {
+  return useQuery({
+    queryKey: ["assistantWorks", params],
+    queryFn: () => assistantPostService.getAssistantWorks(params),
+    staleTime: 1000 * 30,
+    ...options,
+  });
+};
+
+// 조교 업무 상세 조회
+export const useAssistantWorkDetail = (
+  assistantOrderId: string,
+  options?: { enabled?: boolean }
+) => {
+  return useQuery({
+    queryKey: ["assistantWork", assistantOrderId],
+    queryFn: () =>
+      assistantPostService.getAssistantWorkDetail(assistantOrderId),
+    enabled: !!assistantOrderId && (options?.enabled ?? true),
+  });
+};
+
+// 업무 상태 변경
+export const useUpdateAssistantWorkStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      assistantOrderId,
+      payload,
+    }: {
+      assistantOrderId: string;
+      payload: UpdateAssistantWorkStatus;
+    }) => assistantPostService.updateWorkStatus(assistantOrderId, payload),
+    onSuccess: async (_, variables) => {
+      await queryClient.invalidateQueries({
+        queryKey: ["assistantWork", variables.assistantOrderId],
+        refetchType: "active",
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["assistantWorks"],
+        refetchType: "active",
+      });
+      alert("업무 상태가 변경되었습니다.");
+    },
+    onError: () => {
+      alert("상태 변경 중 오류가 발생했습니다. 다시 시도해주세요.");
+    },
+  });
 };
