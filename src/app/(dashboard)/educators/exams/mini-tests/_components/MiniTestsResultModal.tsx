@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { STUDENT_TABLE_MAX_HEIGHT_PX } from "@/constants/exams.constants";
-import { cn } from "@/lib/utils";
 import type {
   IncludedAssignment,
   MiniTestResultRow,
@@ -44,18 +43,16 @@ export function MiniTestsResultModal({
 }: MiniTestsResultModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[88vh] max-w-5xl overflow-y-auto rounded-[24px] border border-[#eaecf2] p-6 sm:p-7">
-        <DialogHeader className="border-b border-[#eaecf2] pb-4">
-          <DialogTitle className="text-[22px] font-bold tracking-[-0.22px] text-[#040405]">
-            미니테스트 결과 보기
-          </DialogTitle>
+      <DialogContent className="max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>미니테스트 결과 보기</DialogTitle>
         </DialogHeader>
 
         {selectedExamId && includedAssignments.length > 0 ? (
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
               <div className="relative min-w-[220px] flex-1">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b0b4c2]" />
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   value={resultSearchTerm}
                   onChange={(event) =>
@@ -63,44 +60,39 @@ export function MiniTestsResultModal({
                   }
                   placeholder="학생 검색"
                   aria-label="학생 검색"
-                  className="h-11 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] pl-10 text-[14px] font-medium tracking-[-0.14px] placeholder:text-[#8b90a3] focus-visible:ring-0"
+                  className="h-9 pl-8 text-sm"
                 />
               </div>
               <Button
                 type="button"
-                variant="outline"
-                className={cn(
-                  "h-11 rounded-[12px] px-4 text-[13px] font-semibold",
-                  showOnlyMissingResults
-                    ? "border-[#3863f6] bg-[#3863f6] text-white hover:bg-[#2f57e8] hover:text-white"
-                    : "border-[#d6d9e0] bg-white text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
-                )}
+                variant={showOnlyMissingResults ? "default" : "outline"}
+                className="h-9 px-3 text-xs"
                 onClick={onToggleMissingFilter}
               >
                 {showOnlyMissingResults ? "전체 보기" : "미입력만"}
               </Button>
-              <span className="text-[13px] font-medium text-[#8b90a3]">
+              <span className="text-xs text-muted-foreground">
                 {filteredResultRows.length}명 표시
               </span>
             </div>
 
             <div
-              className="overflow-auto rounded-[16px] border border-[#eaecf2]"
+              className="overflow-auto rounded-md border"
               style={{ maxHeight: `${STUDENT_TABLE_MAX_HEIGHT_PX}px` }}
             >
-              <table className="w-full border-collapse text-sm">
+              <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="border-b border-[#eaecf2] bg-[#fcfcfd]">
-                    <th className="sticky left-0 z-10 bg-[#fcfcfd] p-3 text-left text-[14px] font-semibold text-[#8b90a3]">
+                  <tr className="bg-muted/40 border-b">
+                    <th className="p-3 text-left font-semibold sticky left-0 bg-muted/40 z-10">
                       학생명
                     </th>
                     {includedAssignments.map((assignment) => (
                       <th
                         key={`result-${assignment.id}`}
-                        className="min-w-[120px] p-3 text-center text-[14px] font-semibold text-[#8b90a3]"
+                        className="p-3 text-center font-semibold min-w-[110px]"
                       >
                         {assignment.categoryName}
-                        <div className="text-[11px] font-medium text-[rgba(22,22,27,0.28)]">
+                        <div className="text-[10px] font-normal text-muted-foreground">
                           {assignment.title}
                         </div>
                       </th>
@@ -112,36 +104,28 @@ export function MiniTestsResultModal({
                     <tr>
                       <td
                         colSpan={includedAssignments.length + 1}
-                        className="p-5 text-center text-[14px] font-medium text-[#8b90a3]"
+                        className="p-4 text-center text-sm text-muted-foreground"
                       >
                         조건에 맞는 학생이 없습니다.
                       </td>
                     </tr>
                   ) : (
-                    filteredResultRows.map((row, rowIndex) => (
-                      <tr
-                        key={`result-row-${row.id}`}
-                        className={cn(
-                          "border-b border-[#eaecf2]",
-                          rowIndex % 2 === 1 && "bg-[#fcfcfd]"
-                        )}
-                      >
-                        <td className="sticky left-0 z-10 border-r border-[#eaecf2] bg-white p-3 font-medium">
+                    filteredResultRows.map((row) => (
+                      <tr key={`result-row-${row.id}`} className="border-b">
+                        <td className="p-3 font-medium sticky left-0 bg-background z-10 border-r">
                           <div className="flex items-center gap-2">
                             <StudentProfileAvatar
                               size={28}
                               seedKey={row.id}
                               label={`${row.name || "학생"} 프로필 이미지`}
                             />
-                            <span className="text-[14px] font-semibold text-[#4a4d5c]">
-                              {row.name}
-                            </span>
+                            <span>{row.name}</span>
                           </div>
                         </td>
                         {row.values.map((value, idx) => (
                           <td
                             key={`result-value-${row.id}-${idx}`}
-                            className="p-3 text-center text-[14px] font-medium text-[#4a4d5c]"
+                            className="p-3 text-center"
                           >
                             {value}
                           </td>
@@ -154,17 +138,13 @@ export function MiniTestsResultModal({
             </div>
           </div>
         ) : (
-          <p className="text-[14px] font-medium text-[#8b90a3]">
+          <p className="text-sm text-muted-foreground">
             표시할 미니테스트 결과가 없습니다.
           </p>
         )}
 
-        <DialogFooter className="border-t border-[#eaecf2] pt-4">
-          <Button
-            variant="outline"
-            className="h-10 rounded-[10px] border-[#d6d9e0] px-4 text-[14px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
-            onClick={() => onOpenChange(false)}
-          >
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
             닫기
           </Button>
         </DialogFooter>

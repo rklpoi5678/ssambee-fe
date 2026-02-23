@@ -62,10 +62,7 @@ export function QuestionItem({
     | undefined;
 
   return (
-    <AccordionItem
-      value={`question-${questionNumber}`}
-      className="overflow-hidden rounded-[14px] border border-[#eaecf2] bg-white"
-    >
+    <AccordionItem value={`question-${questionNumber}`}>
       <QuestionHeader
         control={control}
         index={index}
@@ -77,11 +74,8 @@ export function QuestionItem({
         onScoreManualChange={onScoreManualChange}
       />
 
-      <AccordionTrigger
-        className="px-6 text-[13px] font-semibold text-[#8b90a3] hover:bg-[#fcfcfd]"
-        disabled={disabled}
-      >
-        <span>상세 설정</span>
+      <AccordionTrigger className="px-6" disabled={disabled}>
+        <span className="text-sm text-muted-foreground">상세 설정</span>
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-4">

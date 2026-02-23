@@ -30,11 +30,9 @@ export function ExamInfoSection({
   isLecturesLoading = false,
 }: ExamInfoSectionProps) {
   return (
-    <Card className="rounded-[24px] border border-[#eaecf2] bg-white shadow-none">
-      <div className="border-b border-[#eaecf2] px-6 py-5">
-        <h2 className="text-[20px] font-semibold tracking-[-0.2px] text-[#4a4d5c]">
-          시험 정보
-        </h2>
+    <Card>
+      <div className="p-6 border-b">
+        <h2 className="text-xl font-semibold">📄 시험 정보</h2>
       </div>
       <CardContent className="p-6 space-y-6">
         <ExamInfoGrid
@@ -49,7 +47,7 @@ export function ExamInfoSection({
           <div>
             <label
               htmlFor="exam-pass-score"
-              className="mb-2 block text-[14px] font-semibold text-[#8b90a3]"
+              className="block text-sm font-medium mb-2"
             >
               통과 기준 점수
             </label>
@@ -68,11 +66,11 @@ export function ExamInfoSection({
                       field.onChange(next === "" ? undefined : Number(next));
                     }}
                     disabled={disabled}
-                    className="h-11 flex-1 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
+                    className="flex-1"
                   />
                 )}
               />
-              <span className="flex items-center text-[14px] font-medium text-[#8b90a3]">
+              <span className="flex items-center text-sm text-muted-foreground">
                 점
               </span>
             </div>

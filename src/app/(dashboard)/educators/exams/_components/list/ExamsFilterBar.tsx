@@ -1,7 +1,5 @@
 "use client";
 
-import { Search } from "lucide-react";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import type { Lecture } from "@/types/lectures";
 
 import type {
@@ -62,42 +59,27 @@ export function ExamsFilterBar({
   isSelectionDisabled = false,
 }: ExamsFilterBarProps) {
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-6">
+      <div className="flex gap-2">
         <Button
-          variant="outline"
-          className={cn(
-            "h-10 rounded-full px-4 text-[13px] font-semibold",
-            statusFilter === "all"
-              ? "border-[#3863f6] bg-[#3863f6] text-white hover:bg-[#2f57e8] hover:text-white"
-              : "border-[#d6d9e0] bg-white text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
-          )}
+          variant={statusFilter === "all" ? "default" : "outline"}
+          className="rounded-full"
           onClick={() => onStatusChange("all")}
           disabled={isLoading || !selectedLectureId}
         >
           전체
         </Button>
         <Button
-          variant="outline"
-          className={cn(
-            "h-10 rounded-full px-4 text-[13px] font-semibold",
-            statusFilter === "in_progress"
-              ? "border-[#3863f6] bg-[#3863f6] text-white hover:bg-[#2f57e8] hover:text-white"
-              : "border-[#d6d9e0] bg-white text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
-          )}
+          variant={statusFilter === "in_progress" ? "default" : "outline"}
+          className="rounded-full"
           onClick={() => onStatusChange("in_progress")}
           disabled={isLoading || !selectedLectureId}
         >
           진행 중
         </Button>
         <Button
-          variant="outline"
-          className={cn(
-            "h-10 rounded-full px-4 text-[13px] font-semibold",
-            statusFilter === "completed"
-              ? "border-[#3863f6] bg-[#3863f6] text-white hover:bg-[#2f57e8] hover:text-white"
-              : "border-[#d6d9e0] bg-white text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
-          )}
+          variant={statusFilter === "completed" ? "default" : "outline"}
+          className="rounded-full"
           onClick={() => onStatusChange("completed")}
           disabled={isLoading || !selectedLectureId}
         >
@@ -105,13 +87,13 @@ export function ExamsFilterBar({
         </Button>
       </div>
 
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
+      <div className="flex items-center gap-3">
         <Select
           value={selectedLectureId || undefined}
           onValueChange={onLectureChange}
           disabled={lectures.length === 0 || isLoading}
         >
-          <SelectTrigger className="h-11 w-full rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c] xl:w-[260px]">
+          <SelectTrigger className="w-[220px]">
             <SelectValue placeholder="수업 선택" />
           </SelectTrigger>
           <SelectContent>
@@ -132,22 +114,24 @@ export function ExamsFilterBar({
           </SelectContent>
         </Select>
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#b0b4c2]" />
           <Input
             type="text"
             placeholder="시험 검색"
             value={searchQuery}
             onChange={(event) => onSearchChange(event.target.value)}
             disabled={isLoading || !selectedLectureId}
-            className="h-11 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] pl-10 text-[14px] font-medium tracking-[-0.14px] placeholder:text-[#8b90a3]"
+            className="pl-10"
           />
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+            🔍
+          </span>
         </div>
         <Select
           value={sortOrder}
           onValueChange={onSortChange}
           disabled={isLoading || !selectedLectureId}
         >
-          <SelectTrigger className="h-11 w-full rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c] xl:w-[160px]">
+          <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="필터" />
           </SelectTrigger>
           <SelectContent>
@@ -159,7 +143,7 @@ export function ExamsFilterBar({
           <AlertDialogTrigger asChild>
             <Button
               variant="outline"
-              className="h-11 gap-2 rounded-[12px] border-[#d6d9e0] bg-white px-4 text-[13px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
+              className="gap-2"
               disabled={isSelectionDisabled || selectedCount === 0}
             >
               선택 삭제

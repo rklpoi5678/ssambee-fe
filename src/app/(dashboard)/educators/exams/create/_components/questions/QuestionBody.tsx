@@ -24,7 +24,7 @@ export function QuestionBody({
         <div>
           <label
             htmlFor={`question-${index}-category`}
-            className="mb-2 block text-[13px] font-semibold text-[#8b90a3]"
+            className="block text-sm font-medium mb-2"
           >
             유형
           </label>
@@ -33,13 +33,12 @@ export function QuestionBody({
             placeholder="예: 제목, 빈칸, 요약"
             {...register(`questions.${index}.category`)}
             disabled={disabled}
-            className="h-10 rounded-[10px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
           />
         </div>
         <div>
           <label
             htmlFor={`question-${index}-source`}
-            className="mb-2 block text-[13px] font-semibold text-[#8b90a3]"
+            className="block text-sm font-medium mb-2"
           >
             출처
           </label>
@@ -48,7 +47,6 @@ export function QuestionBody({
             placeholder="예: 2025 3월 모의고사"
             {...register(`questions.${index}.source`)}
             disabled={disabled}
-            className="h-10 rounded-[10px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
           />
         </div>
       </div>
@@ -56,13 +54,13 @@ export function QuestionBody({
       <div>
         <label
           htmlFor={`question-${index}-content`}
-          className="mb-2 block text-[13px] font-semibold text-[#8b90a3]"
+          className="block text-sm font-medium mb-2"
         >
           문제 내용 <span className="text-red-500">*</span>
         </label>
         <textarea
           id={`question-${index}-content`}
-          className="flex min-h-[100px] w-full rounded-[10px] border border-[#e9ebf0] bg-[#fcfcfd] px-3 py-2 text-[14px] font-medium text-[#4a4d5c] shadow-sm placeholder:text-[#8b90a3] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#4b72f7] disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex min-h-[100px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
           placeholder="문항 1"
           {...register(`questions.${index}.content`)}
           disabled={disabled}

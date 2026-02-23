@@ -1,5 +1,4 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { GradingSummary } from "@/types/grading";
 
 type GradingSummaryCardsProps = {
@@ -19,52 +18,49 @@ export function GradingSummaryCards({ summary }: GradingSummaryCardsProps) {
     isPassed,
   } = summary;
   return (
-    <div className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      <Card className="rounded-[20px] border border-[#eaecf2] bg-white shadow-none">
-        <CardContent className="space-y-2 px-5 py-4">
-          <p className="text-[13px] font-semibold text-[#8b90a3]">선택 학생</p>
-          <p className="text-[18px] font-semibold tracking-[-0.18px] text-[#4a4d5c]">
-            {selectedStudentName}
-          </p>
-          <p className="text-[13px] font-medium text-[#8b90a3]">
+    <div className="grid grid-cols-3 gap-4 mb-6">
+      {/* 선택 학생 */}
+      <Card>
+        <CardContent className="p-4">
+          <p className="text-sm text-muted-foreground mb-2">선택 학생</p>
+          <p className="font-medium">{selectedStudentName}</p>
+          <p className="text-sm text-muted-foreground">
             {selectedStudentLecture}
           </p>
         </CardContent>
       </Card>
 
-      <Card className="rounded-[20px] border border-[#eaecf2] bg-[#4b72f7] shadow-none">
-        <CardContent className="space-y-2 px-5 py-4">
-          <p className="text-[13px] font-semibold text-white/70">실시간 점수</p>
-          <p className="text-[32px] font-bold leading-[1.1] tracking-tight text-white">
-            {currentScore}
-            <span className="text-[22px] font-semibold text-white/80">
-              /{totalScore}
-            </span>
+      {/* 실시간 점수 */}
+      <Card>
+        <CardContent className="p-4">
+          <p className="text-sm text-muted-foreground mb-2">실시간 점수</p>
+          <p className="text-3xl font-bold mb-1">
+            {currentScore}/{totalScore}
           </p>
-          <p className="text-[12px] font-semibold text-white/70">
+          <p className="text-xs text-muted-foreground">
             통과 기준 {passingScore}점
           </p>
         </CardContent>
       </Card>
 
-      <Card className="rounded-[20px] border border-[#eaecf2] bg-white shadow-none">
-        <CardContent className="space-y-2 px-5 py-4">
-          <p className="text-[13px] font-semibold text-[#8b90a3]">정답 개수</p>
-          <p className="text-[30px] font-bold leading-[1.2] tracking-tight text-[#4a4d5c]">
+      {/* 정답 개수 */}
+      <Card>
+        <CardContent className="p-4">
+          <p className="text-sm text-muted-foreground mb-2">정답 개수</p>
+          <p className="text-3xl font-bold mb-2">
             {correctCount}/{totalQuestions}
           </p>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex gap-2">
             <span
-              className={cn(
-                "rounded-full px-2.5 py-1 text-[12px] font-semibold",
+              className={`text-xs px-2 py-1 rounded-full ${
                 isPassed
-                  ? "bg-[#ecf8ef] text-[#1f8b4d]"
-                  : "bg-[#ffefef] text-[#d84949]"
-              )}
+                  ? "bg-green-500/20 text-green-600"
+                  : "bg-red-500/20 text-red-600"
+              }`}
             >
               {isPassed ? "통과" : "미통과"}
             </span>
-            <span className="rounded-full bg-[#f4f6fb] px-2.5 py-1 text-[12px] font-semibold text-[#8b90a3]">
+            <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
               정답률 {correctRate}%
             </span>
           </div>

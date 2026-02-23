@@ -1,8 +1,7 @@
 "use client";
 
 import { isAxiosError } from "axios";
-import type { DocumentProps } from "@react-pdf/renderer";
-import type { ReactElement } from "react";
+import { pdf } from "@react-pdf/renderer";
 
 import {
   getGradeReportFileDownloadUrl,
@@ -11,7 +10,6 @@ import {
   uploadGradeReportFile,
 } from "@/services/exams/report.service";
 import type { ReportTemplateExamData } from "@/types/report";
-import { createReportPreviewImageFile } from "@/utils/report-preview-image";
 
 import { SimpleReportPdf } from "../_components/SimpleReportPdf";
 
@@ -24,11 +22,6 @@ type AlertFn = (payload: {
 
 const sanitizeFileName = (value: string) =>
   value.replace(/[/\\?%*:|"<>]/g, "_");
-
-const renderPdfBlob = async (element: ReactElement<DocumentProps>) => {
-  const { pdf } = await import("@react-pdf/renderer");
-  return pdf(element).toBlob();
-};
 
 const shouldFallbackToLegacyStudentSave = (error: unknown) => {
   if (!isAxiosError(error)) return false;
@@ -143,21 +136,9 @@ export const useSimpleReportTemplateActions = ({
 
     state.setIsGeneratingPdf(true);
     try {
-      const blob = await renderPdfBlob(
+      const blob = await pdf(
         <SimpleReportPdf data={buildPdfData()} />
-      );
-      const previewImageFile = await createReportPreviewImageFile({
-        template: "simple",
-        studentName: examData.studentName,
-        examName: examData.examName,
-        className: examData.className,
-        examDate: examData.examDate,
-        score: examData.score,
-      });
-      const imageUploadResult = await uploadGradeReportFile(
-        examData.gradeId,
-        previewImageFile
-      );
+      ).toBlob();
 
       const fileName = `${sanitizeFileName(examData.studentName)}_${sanitizeFileName(
         examData.examName
@@ -176,9 +157,8 @@ export const useSimpleReportTemplateActions = ({
 
       await showAlert({
         title: "발송 준비 완료",
-        description: imageUploadResult.reportUrl
-          ? "PDF와 미리보기 이미지 업로드가 완료되었습니다. 카카오톡 발송 기능은 현재 연동 준비 중입니다."
-          : "성적표 파일 업로드가 완료되었습니다. 카카오톡 발송 기능은 현재 연동 준비 중입니다.",
+        description:
+          "성적표 파일 업로드가 완료되었습니다. 카카오톡 발송 기능은 현재 연동 준비 중입니다.",
       });
     } catch (error) {
       console.error("Report send failed:", error);
@@ -202,17 +182,16 @@ export const useSimpleReportTemplateActions = ({
 
     state.setIsGeneratingPdf(true);
     try {
-      const blob = await renderPdfBlob(
+      const blob = await pdf(
         <SimpleReportPdf data={buildPdfData()} />
-      );
-      const fileName = `${sanitizeFileName(examData.studentName)}_${sanitizeFileName(
-        examData.examName
-      )}_심플리포트.pdf`;
+      ).toBlob();
 
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = fileName;
+      link.download = `${sanitizeFileName(examData.studentName)}_${sanitizeFileName(
+        examData.examName
+      )}_심플리포트.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

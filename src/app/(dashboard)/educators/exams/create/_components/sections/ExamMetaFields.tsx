@@ -28,10 +28,7 @@ export function ExamMetaFields({
   return (
     <>
       <div>
-        <label
-          htmlFor="exam-name"
-          className="mb-2 block text-[14px] font-semibold text-[#8b90a3]"
-        >
+        <label htmlFor="exam-name" className="block text-sm font-medium mb-2">
           시험 <span className="text-red-500">*</span>
         </label>
         <Controller
@@ -44,7 +41,6 @@ export function ExamMetaFields({
               value={field.value ?? ""}
               placeholder="예: 2024년 1학기 중간고사 수학"
               disabled={disabled}
-              className="h-11 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
             />
           )}
         />
@@ -56,7 +52,7 @@ export function ExamMetaFields({
       <div>
         <label
           htmlFor="exam-subject"
-          className="mb-2 block text-[14px] font-semibold text-[#8b90a3]"
+          className="block text-sm font-medium mb-2"
         >
           과목 <span className="text-red-500">*</span>
         </label>
@@ -70,10 +66,7 @@ export function ExamMetaFields({
               onValueChange={field.onChange}
               disabled={disabled}
             >
-              <SelectTrigger
-                id="exam-subject"
-                className="h-11 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
-              >
+              <SelectTrigger id="exam-subject">
                 <SelectValue placeholder="과목 선택" />
               </SelectTrigger>
               <SelectContent>
@@ -94,7 +87,7 @@ export function ExamMetaFields({
       <div>
         <label
           htmlFor="exam-category"
-          className="mb-2 block text-[14px] font-semibold text-[#8b90a3]"
+          className="block text-sm font-medium mb-2"
         >
           시험지 유형
         </label>
@@ -108,17 +101,13 @@ export function ExamMetaFields({
               value={field.value ?? ""}
               placeholder="예: 모의고사, 단원 평가"
               disabled={disabled}
-              className="h-11 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
             />
           )}
         />
       </div>
 
       <div>
-        <label
-          htmlFor="exam-source"
-          className="mb-2 block text-[14px] font-semibold text-[#8b90a3]"
-        >
+        <label htmlFor="exam-source" className="block text-sm font-medium mb-2">
           출처
         </label>
         <Controller
@@ -131,7 +120,6 @@ export function ExamMetaFields({
               value={field.value ?? ""}
               placeholder="예: 자체 제작, 기출"
               disabled={disabled}
-              className="h-11 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
             />
           )}
         />

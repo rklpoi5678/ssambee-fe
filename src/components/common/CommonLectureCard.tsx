@@ -1,6 +1,5 @@
 import { Clock3, Users } from "lucide-react";
 
-import { StudentProfileAvatar } from "@/components/common/avatar/StudentProfileAvatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +12,7 @@ export interface CommonLectureCardProps {
   hasSchedule: boolean;
   currentStudents?: number;
   instructorName: string;
+  instructorInitial: string;
   onClick?: () => void;
   action?: React.ReactNode;
   className?: string;
@@ -27,6 +27,7 @@ export function CommonLectureCard({
   hasSchedule,
   currentStudents,
   instructorName,
+  instructorInitial,
   onClick,
   action,
   className,
@@ -82,13 +83,9 @@ export function CommonLectureCard({
 
       <div className="border-t border-[#f4f6fa] bg-white px-5 py-3">
         <div className="flex items-center gap-3 text-[16px] font-medium leading-6 tracking-[-0.16px] text-[#8b90a3]">
-          <StudentProfileAvatar
-            size={36}
-            sizePreset="Medium"
-            seedKey={`${instructorName}-${title}`}
-            label={`${instructorName} 프로필 이미지`}
-            className="border-[1.5px] border-[#f4f6fa] bg-[#f7f8fb]"
-          />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-[#f4f6fa] bg-[#f7f8fb] text-[13px] font-semibold text-[#6b6f80]">
+            {instructorInitial}
+          </div>
           <div className="flex items-center gap-[6px]">
             <span>담당 강사</span>
             <span>{instructorName}</span>

@@ -48,25 +48,21 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
       open={vm.isCategoryModalOpen}
       onOpenChange={vm.handleModalOpenChange}
     >
-      <DialogContent className="max-h-[94vh] max-w-6xl overflow-y-auto rounded-[24px] border border-[#eaecf2] p-5 text-base sm:p-7">
-        <DialogHeader className="border-b border-[#eaecf2] pb-4">
-          <DialogTitle className="text-[22px] font-bold tracking-[-0.22px] text-[#040405]">
-            카테고리
-          </DialogTitle>
+      <DialogContent className="max-w-6xl max-h-[94vh] overflow-y-auto text-base">
+        <DialogHeader>
+          <DialogTitle>카테고리</DialogTitle>
         </DialogHeader>
 
-        <div className="grid gap-5 py-1 lg:grid-cols-[1.3fr_1fr]">
+        <div className="grid gap-6 py-4 lg:grid-cols-[1.3fr_1fr]">
           <div className="space-y-4 lg:order-2">
-            <div className="flex items-center justify-between rounded-[14px] border border-[#eaecf2] bg-[#fcfcfd] px-4 py-3">
+            <div className="flex items-center justify-between rounded-lg border bg-muted/10 px-3 py-2">
               <div className="space-y-0.5">
-                <h3 className="text-[16px] font-semibold tracking-[-0.16px] text-[#4a4d5c]">
-                  고급 설정
-                </h3>
+                <h3 className="text-base font-semibold">고급 설정</h3>
               </div>
               <Button
                 type="button"
                 variant="outline"
-                className="h-9 rounded-[10px] border-[#d6d9e0] px-4 text-[13px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
+                className="h-9 px-4 text-sm"
                 onClick={() => vm.setIsAdvancedCategoryOpen((prev) => !prev)}
               >
                 {vm.isAdvancedCategoryOpen
@@ -76,7 +72,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
             </div>
 
             {!vm.isAdvancedCategoryOpen ? (
-              <p className="rounded-[12px] border border-dashed border-[#d6d9e0] px-3 py-2 text-[13px] font-medium text-[#8b90a3]">
+              <p className="text-sm text-muted-foreground rounded-md border border-dashed px-3 py-2">
                 기본 작업은 우측 &quot;시험에 과제 추가&quot; 영역에서
                 완료됩니다.
               </p>
@@ -84,7 +80,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
 
             {vm.isAdvancedCategoryOpen ? (
               <>
-                <div className="space-y-3 rounded-[14px] border border-dashed border-[#d6d9e0] bg-[#fcfcfd] p-4">
+                <div className="space-y-3 rounded-lg border border-dashed p-4 bg-muted/10">
                   <Input
                     value={vm.categoryName}
                     onChange={(event) => {
@@ -93,7 +89,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                     }}
                     placeholder="카테고리명 (예: 단어 테스트)"
                     disabled={vm.isBusy}
-                    className="h-10 rounded-[10px] border-[#e9ebf0] bg-white text-[14px] font-medium placeholder:text-[#8b90a3]"
+                    className="h-9 text-sm"
                   />
 
                   <div className="flex gap-2">
@@ -111,12 +107,12 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                       }}
                       placeholder="프리셋 입력 후 Enter"
                       disabled={vm.isBusy}
-                      className="h-10 rounded-[10px] border-[#e9ebf0] bg-white text-[14px] font-medium placeholder:text-[#8b90a3]"
+                      className="h-9 text-sm"
                     />
                     <Button
                       type="button"
                       variant="outline"
-                      className="h-10 rounded-[10px] border-[#d6d9e0] px-4 text-[13px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
+                      className="h-9 px-4 text-sm"
                       onClick={vm.pushPresetDraft}
                       disabled={vm.isBusy}
                     >
@@ -130,7 +126,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                         key={snippet.label}
                         type="button"
                         variant="outline"
-                        className="h-8 rounded-[10px] border-[#d6d9e0] px-3 text-[12px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
+                        className="h-8 px-3 text-sm"
                         onClick={() => vm.applySnippet(snippet)}
                         disabled={vm.isBusy}
                       >
@@ -139,9 +135,9 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                     ))}
                   </div>
 
-                  <div className="flex min-h-[36px] flex-wrap gap-1.5 rounded-[12px] border border-[#eaecf2] bg-white p-2">
+                  <div className="flex flex-wrap gap-1.5 rounded-md border bg-background p-2 min-h-[36px]">
                     {vm.presetDrafts.length === 0 ? (
-                      <span className="text-[13px] font-medium text-[#8b90a3]">
+                      <span className="text-sm text-muted-foreground">
                         프리셋을 추가해주세요.
                       </span>
                     ) : (
@@ -149,7 +145,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                         <button
                           key={preset}
                           type="button"
-                          className="inline-flex items-center gap-1 rounded-full border border-[#d6d9e0] bg-[#fcfcfd] px-2 py-0.5 text-[12px] font-medium text-[#6b6f80]"
+                          className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-sm bg-secondary"
                           onClick={() => vm.removePresetDraft(preset)}
                         >
                           {preset}
@@ -159,11 +155,9 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                     )}
                   </div>
 
-                  {vm.createError ? (
-                    <p className="text-[13px] font-medium text-[#dc2626]">
-                      {vm.createError}
-                    </p>
-                  ) : null}
+                  {vm.createError && (
+                    <p className="text-sm text-destructive">{vm.createError}</p>
+                  )}
 
                   <Button
                     type="button"
@@ -173,7 +167,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                       vm.duplicatedCategoryName ||
                       vm.isBusy
                     }
-                    className="h-10 w-full gap-2 rounded-[10px] bg-[#3863f6] text-[13px] font-semibold text-white hover:bg-[#2f57e8]"
+                    className="w-full h-9 gap-2 text-sm"
                   >
                     {vm.isCreatingCategory ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -185,11 +179,11 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <p className="text-[16px] font-semibold tracking-[-0.16px] text-[#4a4d5c]">
+                  <p className="text-base font-semibold">
                     등록된 카테고리 ({vm.categories.length})
                   </p>
                   {vm.isCategoryMutationBlocked ? (
-                    <p className="text-[13px] font-medium text-amber-700">
+                    <p className="text-sm text-amber-600">
                       임시 안내: BE ID validation 핫픽스 후 카테고리 수정/삭제가
                       활성화됩니다.
                     </p>
@@ -197,24 +191,24 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                   <div className="max-h-[200px] space-y-2 overflow-y-auto pr-1">
                     {vm.isFetchingCategories && vm.categories.length === 0 ? (
                       <div className="flex justify-center py-4">
-                        <Loader2 className="h-5 w-5 animate-spin text-[#8b90a3]" />
+                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                       </div>
                     ) : vm.categories.length === 0 ? (
-                      <p className="rounded-[12px] border border-dashed border-[#d6d9e0] py-4 text-center text-[13px] font-medium text-[#8b90a3]">
+                      <p className="text-xs text-muted-foreground text-center py-4 border rounded-lg border-dashed">
                         등록된 카테고리가 없습니다.
                       </p>
                     ) : (
                       vm.categories.map((category) => (
                         <div
                           key={category.id}
-                          className="flex flex-col gap-2 rounded-[12px] border border-[#eaecf2] bg-white p-2.5"
+                          className="flex flex-col gap-2 rounded-md border p-2 bg-background"
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <p className="text-[14px] font-semibold text-[#4a4d5c]">
+                              <p className="text-sm font-medium">
                                 {category.name}
                               </p>
-                              <p className="text-[13px] font-medium text-[#8b90a3]">
+                              <p className="text-sm text-muted-foreground">
                                 연결 과제{" "}
                                 {vm.assignmentCountByCategory[category.id] ?? 0}
                                 개
@@ -226,7 +220,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                                   <Button
                                     type="button"
                                     variant="outline"
-                                    className="h-8 w-8 rounded-[10px] border-[#d6d9e0] p-0 text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
+                                    className="h-8 w-8 p-0"
                                     disabled={
                                       vm.isBusy || vm.isCategoryMutationBlocked
                                     }
@@ -276,7 +270,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                           </div>
 
                           {vm.editingCategoryId === category.id ? (
-                            <div className="space-y-2 rounded-[10px] border border-dashed border-[#d6d9e0] p-2.5">
+                            <div className="space-y-2 rounded-md border border-dashed p-2">
                               <Input
                                 value={vm.editingCategoryName}
                                 onChange={(event) => {
@@ -284,7 +278,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                                   vm.setEditingError(null);
                                 }}
                                 disabled={vm.isBusy}
-                                className="h-9 rounded-[10px] border-[#e9ebf0] bg-white text-[13px] font-medium"
+                                className="h-8 text-xs"
                               />
 
                               <div className="flex gap-1">
@@ -304,12 +298,12 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                                   }}
                                   placeholder="프리셋 입력 후 Enter"
                                   disabled={vm.isBusy}
-                                  className="h-9 rounded-[10px] border-[#e9ebf0] bg-white text-[13px] font-medium placeholder:text-[#8b90a3]"
+                                  className="h-8 text-xs"
                                 />
                                 <Button
                                   type="button"
                                   variant="outline"
-                                  className="h-9 rounded-[10px] border-[#d6d9e0] px-2 text-[12px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
+                                  className="h-8 px-2 text-xs"
                                   onClick={vm.handlePushEditPreset}
                                   disabled={vm.isBusy}
                                 >
@@ -322,7 +316,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                                   <button
                                     key={`${category.id}-edit-${preset}`}
                                     type="button"
-                                    className="inline-flex items-center gap-1 rounded-full border border-[#d6d9e0] bg-[#fcfcfd] px-2 py-0.5 text-[11px] font-medium text-[#6b6f80]"
+                                    className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] bg-muted"
                                     onClick={() =>
                                       vm.handleRemoveEditPreset(preset)
                                     }
@@ -334,7 +328,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                               </div>
 
                               {vm.editingError ? (
-                                <p className="text-[13px] font-medium text-[#dc2626]">
+                                <p className="text-sm text-destructive">
                                   {vm.editingError}
                                 </p>
                               ) : null}
@@ -343,7 +337,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                                 <Button
                                   type="button"
                                   variant="outline"
-                                  className="h-9 rounded-[10px] border-[#d6d9e0] px-3 text-[13px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
+                                  className="h-9 px-3 text-sm"
                                   onClick={vm.handleCancelEditCategory}
                                   disabled={vm.isBusy}
                                 >
@@ -351,7 +345,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                                 </Button>
                                 <Button
                                   type="button"
-                                  className="h-9 rounded-[10px] bg-[#3863f6] px-3 text-[13px] font-semibold text-white hover:bg-[#2f57e8]"
+                                  className="h-9 px-3 text-sm"
                                   onClick={() =>
                                     void vm.handleSubmitEditCategory()
                                   }
@@ -369,7 +363,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                               {category.presets.map((preset) => (
                                 <span
                                   key={`${category.id}-${preset}`}
-                                  className="rounded-full border border-[#d6d9e0] bg-[#fcfcfd] px-2 py-0.5 text-[11px] font-medium text-[#8b90a3]"
+                                  className="rounded-full bg-muted px-1.5 py-0.5 text-xs text-muted-foreground"
                                 >
                                   {preset}
                                 </span>
@@ -386,17 +380,17 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
           </div>
 
           <div className="space-y-4 lg:order-1">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <h3 className="text-[18px] font-semibold tracking-[-0.18px] text-[#4a4d5c]">
+                <h3 className="text-lg font-semibold">
                   시험에 과제 추가 (과제 단위)
                 </h3>
               </div>
-              <div className="flex flex-wrap items-center gap-1.5">
+              <div className="flex items-center gap-1">
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-9 rounded-[10px] border-[#d6d9e0] px-3 text-[13px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
+                  className="h-9 px-3 text-sm"
                   onClick={() => vm.setIsTargetSelectorOpen((prev) => !prev)}
                   disabled={!vm.effectiveExamId || vm.isBusy}
                 >
@@ -404,13 +398,8 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                 </Button>
                 <Button
                   type="button"
-                  variant="outline"
-                  className={cn(
-                    "h-9 rounded-[10px] px-3 text-[13px] font-semibold",
-                    vm.showIncludedOnly
-                      ? "border-[#3863f6] bg-[#3863f6] text-white hover:bg-[#2f57e8] hover:text-white"
-                      : "border-[#d6d9e0] bg-white text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
-                  )}
+                  variant={vm.showIncludedOnly ? "default" : "outline"}
+                  className="h-9 px-3 text-sm"
                   onClick={() => vm.setShowIncludedOnly((prev) => !prev)}
                   disabled={
                     !vm.effectiveExamId ||
@@ -424,9 +413,9 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
             </div>
 
             {vm.isTargetSelectorOpen ? (
-              <div className="grid gap-3 rounded-[14px] border border-[#eaecf2] bg-[#fcfcfd] p-3 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1.5">
-                  <span className="text-[13px] font-semibold text-[#8b90a3]">
+                  <span className="text-sm font-medium text-muted-foreground">
                     클래스 선택
                   </span>
                   <Select
@@ -434,7 +423,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                     onValueChange={vm.setSelectedClassKey}
                     disabled={vm.isBusy || vm.filteredClassOptions.length === 0}
                   >
-                    <SelectTrigger className="h-10 rounded-[10px] border-[#e9ebf0] bg-white text-[14px] font-medium">
+                    <SelectTrigger className="h-9 text-sm">
                       <SelectValue placeholder="클래스 선택" />
                     </SelectTrigger>
                     <SelectContent>
@@ -452,7 +441,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <span className="text-[13px] font-semibold text-[#8b90a3]">
+                  <span className="text-sm font-medium text-muted-foreground">
                     시험 선택
                   </span>
                   <Select
@@ -462,7 +451,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                       vm.isBusy || vm.filteredExamsInSelectedClass.length === 0
                     }
                   >
-                    <SelectTrigger className="h-10 rounded-[10px] border-[#e9ebf0] bg-white text-[14px] font-medium">
+                    <SelectTrigger className="h-9 text-sm">
                       <SelectValue placeholder="시험 선택" />
                     </SelectTrigger>
                     <SelectContent>
@@ -483,44 +472,42 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
 
             <div
               className={cn(
-                "rounded-[14px] border border-[#eaecf2] bg-[#fcfcfd] p-3",
+                "rounded-lg bg-muted/30 p-2",
                 vm.isModalTargetMismatch
-                  ? "border-amber-300/60 bg-amber-50/60 ring-1 ring-amber-500/40"
+                  ? "ring-1 ring-amber-500/40 bg-amber-50/50"
                   : ""
               )}
             >
-              <div className="flex flex-wrap items-center justify-between gap-2 text-[13px]">
-                <div className="flex flex-wrap gap-3">
-                  <span className="font-medium text-[#8b90a3]">
-                    현재 적용 대상:
-                  </span>
-                  <span className="font-medium text-[#8b90a3]">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                <div className="flex gap-3">
+                  <span className="text-muted-foreground">현재 적용 대상:</span>
+                  <span className="text-muted-foreground">
                     클래스:{" "}
-                    <span className="font-semibold text-[#4a4d5c]">
+                    <span className="text-foreground font-medium">
                       {vm.modalSelectedExam?.lectureName ?? "-"}
                     </span>
                   </span>
-                  <span className="font-medium text-[#8b90a3]">
+                  <span className="text-muted-foreground">
                     시험:{" "}
-                    <span className="font-semibold text-[#4a4d5c]">
+                    <span className="text-foreground font-medium">
                       {vm.modalSelectedExam?.name ?? "-"}
                     </span>
                   </span>
                 </div>
-                <span className="font-semibold text-[#3863f6]">
+                <span className="font-medium text-primary">
                   과제 {vm.availableAssignments.length}개 중 포함{" "}
                   {vm.includedAssignmentIds.length}개
                 </span>
               </div>
               {vm.isModalTargetMismatch ? (
-                <p className="mt-2 text-[13px] font-medium text-amber-700">
+                <p className="mt-2 text-sm text-amber-700">
                   주의: 현재 페이지 선택 시험(
                   {vm.selectedExamMeta?.examName ?? "미선택"})과 모달 적용 시험(
                   {vm.modalSelectedExam?.name ?? "미선택"})이 다릅니다.
                 </p>
               ) : null}
               {vm.includeLimitReached ? (
-                <p className="mt-1 text-[13px] font-medium text-amber-700">
+                <p className="mt-1 text-sm text-amber-700">
                   현재 시험은 포함 가능한 과제 최대 개수(
                   {MAX_INCLUDED_ASSIGNMENTS}
                   개)에 도달했습니다.
@@ -528,13 +515,13 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
               ) : null}
             </div>
 
-            <div className="space-y-2 rounded-[14px] border border-dashed border-[#d6d9e0] bg-[#fcfcfd] p-3">
+            <div className="space-y-2 rounded-lg border border-dashed p-3 bg-muted/5">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-[14px] font-semibold text-[#4a4d5c]">
+                <p className="text-sm font-semibold">
                   새 과제 만들기 + 현재 시험 포함
                 </p>
                 {!vm.canCreateAssignmentForSelectedExam ? (
-                  <span className="text-[12px] font-medium text-amber-700">
+                  <span className="text-sm text-amber-700">
                     강의가 연결된 시험에서만 생성 가능
                   </span>
                 ) : null}
@@ -547,7 +534,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                 }}
                 placeholder="과제명 (예: 단어 1회차)"
                 disabled={vm.isBusy}
-                className="h-10 rounded-[10px] border-[#e9ebf0] bg-white text-[14px] font-medium placeholder:text-[#8b90a3]"
+                className="h-9 text-sm"
               />
 
               <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
@@ -556,7 +543,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                   onValueChange={vm.setAssignmentCategoryId}
                   disabled={vm.isBusy || vm.categories.length === 0}
                 >
-                  <SelectTrigger className="h-10 rounded-[10px] border-[#e9ebf0] bg-white text-[14px] font-medium">
+                  <SelectTrigger className="h-9 text-sm">
                     <SelectValue placeholder="카테고리 선택" />
                   </SelectTrigger>
                   <SelectContent>
@@ -579,7 +566,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                     !vm.canCreateAssignmentForSelectedExam ||
                     vm.isBusy
                   }
-                  className="h-10 gap-1.5 rounded-[10px] bg-[#3863f6] px-3 text-[13px] font-semibold text-white hover:bg-[#2f57e8]"
+                  className="h-9 gap-1.5 px-3 text-sm"
                 >
                   {vm.isCreatingAssignment ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -591,25 +578,25 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
               </div>
 
               {vm.createAssignmentError ? (
-                <p className="text-[13px] font-medium text-[#dc2626]">
+                <p className="text-sm text-destructive">
                   {vm.createAssignmentError}
                 </p>
               ) : null}
             </div>
 
             <div className="space-y-1.5">
-              <span className="text-[13px] font-semibold text-[#8b90a3]">
+              <span className="text-sm font-medium text-muted-foreground">
                 포함 과제 검색
               </span>
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#b0b4c2]" />
+                <Search className="absolute left-2 top-2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   value={vm.assignmentSearchQuery}
                   onChange={(event) =>
                     vm.setAssignmentSearchQuery(event.target.value)
                   }
                   placeholder="과제명/카테고리 검색"
-                  className="h-10 rounded-[10px] border-[#e9ebf0] bg-white pl-9 text-[14px] font-medium placeholder:text-[#8b90a3]"
+                  className="h-9 pl-8 text-sm"
                   disabled={vm.isBusy || vm.visibleAssignments.length === 0}
                 />
               </div>
@@ -617,7 +604,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-9 rounded-[10px] border-[#d6d9e0] px-3 text-[13px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
+                  className="h-9 px-3 text-sm"
                   onClick={vm.handlePrefillAssignmentTitleFromSearch}
                   disabled={vm.isBusy}
                 >
@@ -628,8 +615,8 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
 
             <div className="max-h-[300px] space-y-2 overflow-y-auto pr-1">
               {vm.filteredVisibleAssignments.length === 0 ? (
-                <div className="flex flex-col items-center justify-center rounded-[14px] border border-dashed border-[#d6d9e0] bg-[#fcfcfd] py-8">
-                  <p className="text-[13px] font-medium text-[#8b90a3]">
+                <div className="flex flex-col items-center justify-center py-8 border rounded-lg border-dashed bg-muted/5">
+                  <p className="text-xs text-muted-foreground">
                     {vm.normalizedAssignmentSearchQuery
                       ? "검색 결과가 없습니다. 다른 검색어를 시도해주세요."
                       : vm.showIncludedOnly
@@ -639,14 +626,14 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                   {!vm.showIncludedOnly &&
                   !vm.normalizedAssignmentSearchQuery ? (
                     <div className="mt-2 flex flex-col items-center gap-2">
-                      <p className="text-[13px] font-medium text-[#8b90a3]">
+                      <p className="text-sm text-muted-foreground">
                         카테고리 생성 후, 해당 카테고리의 과제를 먼저 생성하면
                         포함 목록에 표시됩니다.
                       </p>
                       <Button
                         type="button"
                         variant="outline"
-                        className="h-9 rounded-[10px] border-[#d6d9e0] px-3 text-[13px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
+                        className="h-9 px-3 text-sm"
                         onClick={() =>
                           void vm.handleOpenAssignmentCreationGuide()
                         }
@@ -664,20 +651,20 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                   return (
                     <div
                       key={assignment.id}
-                      className="flex flex-col gap-2 rounded-[12px] border border-[#eaecf2] bg-white p-3 transition-colors hover:bg-[#fcfcfd] sm:flex-row sm:items-center sm:justify-between"
+                      className="flex items-center justify-between rounded-md border p-2 bg-background hover:bg-muted/5 transition-colors"
                     >
                       <div className="space-y-0.5">
-                        <p className="text-[14px] font-semibold text-[#4a4d5c]">
+                        <p className="text-sm font-medium">
                           {assignment.title}
                         </p>
-                        <p className="text-[13px] font-medium text-[#8b90a3]">
+                        <p className="text-sm text-muted-foreground">
                           {assignment.categoryName}
                         </p>
                         <div className="flex flex-wrap gap-1">
                           {assignment.presets.map((p) => (
                             <span
                               key={`${assignment.id}-${p}`}
-                              className="rounded bg-[#f4f6fa] px-1.5 py-0.5 text-[11px] font-medium text-[#8b90a3]"
+                              className="text-xs text-muted-foreground bg-muted px-1 rounded"
                             >
                               {p}
                             </span>
@@ -686,13 +673,8 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                       </div>
                       <div className="flex items-center gap-1">
                         <Button
-                          className={cn(
-                            "h-9 min-w-[96px] rounded-[10px] px-3 text-[13px] font-semibold",
-                            included
-                              ? "border-[#3863f6] bg-[#3863f6] text-white hover:bg-[#2f57e8]"
-                              : "border-[#d6d9e0] bg-white text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
-                          )}
-                          variant="outline"
+                          className="h-9 min-w-[96px] px-3 text-sm"
+                          variant={included ? "default" : "outline"}
                           onClick={() =>
                             vm.toggleIncludedAssignment(assignment.id)
                           }
@@ -720,7 +702,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
                         <Button
                           type="button"
                           variant="outline"
-                          className="h-9 w-9 rounded-[10px] border-[#d6d9e0] p-0 text-[#ef4444] hover:bg-[#fff1f2] hover:text-[#dc2626]"
+                          className="h-9 w-9 p-0 text-destructive"
                           onClick={() =>
                             void vm.handleDeleteAssignment({
                               assignmentId: assignment.id,
@@ -747,8 +729,8 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
           </div>
         </div>
 
-        <DialogFooter className="flex flex-wrap items-center justify-end gap-2 border-t border-[#eaecf2] pt-4">
-          <p className="mr-auto w-full text-[13px] font-medium text-[#8b90a3] sm:w-auto">
+        <DialogFooter className="flex items-center justify-end border-t pt-4">
+          <p className="mr-auto text-sm text-muted-foreground">
             {vm.hasPendingChanges
               ? `포함 변경 ${vm.pendingAssignmentDeltaCount}건이 아직 저장되지 않았습니다.`
               : ""}
@@ -756,7 +738,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              className="h-9 rounded-[10px] border-[#d6d9e0] px-3 text-[13px] font-semibold text-[#6b6f80] hover:bg-[#fcfcfd] hover:text-[#5e6275]"
+              className="h-9 px-3 text-sm"
               onClick={() => vm.handleModalOpenChange(false)}
             >
               취소
@@ -764,7 +746,7 @@ export function MiniTestsCategoryModal({ vm }: MiniTestsCategoryModalProps) {
             <Button
               onClick={() => void vm.handleQuickSaveModal()}
               disabled={vm.isBusy || !vm.hasPendingChanges}
-              className="h-9 rounded-[10px] bg-[#3863f6] px-6 text-[13px] font-semibold text-white hover:bg-[#2f57e8]"
+              className="h-9 px-6 text-sm"
             >
               {vm.isSavingAssignments ? (
                 <Loader2 className="mr-2 h-3 w-3 animate-spin" />

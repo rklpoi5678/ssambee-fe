@@ -20,10 +20,10 @@ const STATUS_LABEL: Record<AttendanceStatus, string> = {
 };
 
 const STATUS_COLOR: Record<AttendanceStatus, string> = {
-  PRESENT: "text-[#16a34a]",
-  LATE: "text-[#d97706]",
-  ABSENT: "text-[#dc2626]",
-  EARLY_LEAVE: "text-[#2563eb]",
+  PRESENT: "text-green-600",
+  LATE: "text-yellow-600",
+  ABSENT: "text-red-600",
+  EARLY_LEAVE: "text-blue-600",
 };
 
 type AttendanceTableColumn = {
@@ -66,14 +66,11 @@ export default function AttendanceDetailTable({
   records: AttendanceList[];
 }) {
   return (
-    <Table className="min-w-[620px]">
+    <Table>
       <TableHeader>
-        <TableRow className="border-[#e9ebf0] bg-white hover:bg-white">
+        <TableRow>
           {ATTENDANCE_TABLE_COLUMNS.map((col) => (
-            <TableHead
-              key={col.key}
-              className="whitespace-nowrap text-[14px] font-semibold text-[#8b90a3]"
-            >
+            <TableHead key={col.key} className="whitespace-nowrap">
               {col.label}
             </TableHead>
           ))}
@@ -83,15 +80,9 @@ export default function AttendanceDetailTable({
       <TableBody>
         {records.length > 0 ? (
           records.map((record) => (
-            <TableRow
-              key={record.date}
-              className="border-[#e9ebf0] hover:bg-[#f8f9fc]"
-            >
+            <TableRow key={record.date}>
               {ATTENDANCE_TABLE_COLUMNS.map((col) => (
-                <TableCell
-                  key={col.key}
-                  className="whitespace-nowrap text-sm text-[#16161b]/88"
-                >
+                <TableCell key={col.key} className="whitespace-nowrap text-sm">
                   {col.render(record)}
                 </TableCell>
               ))}
@@ -101,7 +92,7 @@ export default function AttendanceDetailTable({
           <TableRow>
             <TableCell
               colSpan={ATTENDANCE_TABLE_COLUMNS.length}
-              className="text-center text-[#8b90a3]"
+              className="text-center"
             >
               출결 기록이 없습니다.
             </TableCell>

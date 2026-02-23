@@ -124,18 +124,18 @@ export function SettingsSecurityModal({ email }: SettingsSecurityModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="w-[calc(100vw-32px)] max-h-[88vh] max-w-[620px] gap-0 overflow-y-auto rounded-[24px] border-0 bg-white p-0 shadow-[0_0_14px_rgba(138,138,138,0.16)]">
-        <DialogHeader className="gap-2 border-b border-[#e9ebf0] px-6 pb-5 pt-6 sm:px-8">
-          <DialogTitle className="text-[24px] font-bold leading-8 tracking-[-0.02em] text-[#040405]">
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold">
             {viewMode === "menu" ? "설정 및 보안" : "비밀번호 변경"}
           </DialogTitle>
         </DialogHeader>
 
         {viewMode === "menu" ? (
-          <div className="space-y-4 px-6 pb-6 pt-6 sm:px-8 sm:pb-8">
+          <div className="space-y-3 py-4">
             <Button
               variant="outline"
-              className="h-14 w-full justify-start rounded-[12px] border border-[#d6d9e0] bg-white px-5 text-[16px] font-semibold tracking-[-0.02em] text-[#4a4d5c] shadow-[0_0_14px_rgba(138,138,138,0.08)] hover:bg-[#fcfcfd]"
+              className="w-full justify-start h-14 text-base cursor-pointer"
               onClick={handlePasswordChange}
             >
               <Lock className="mr-3 h-5 w-5" />
@@ -143,7 +143,7 @@ export function SettingsSecurityModal({ email }: SettingsSecurityModalProps) {
             </Button>
             <Button
               variant="outline"
-              className="h-14 w-full justify-start rounded-[12px] border border-[#fee2e2] bg-[#fff7f7] px-5 text-[16px] font-semibold tracking-[-0.02em] text-[#dc2626] shadow-[0_0_14px_rgba(138,138,138,0.08)] hover:bg-[#ffefef] hover:text-[#b91c1c]"
+              className="w-full justify-start h-14 text-base text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
               onClick={handleWithdrawal}
             >
               <UserX className="mr-3 h-5 w-5" />
@@ -151,25 +151,16 @@ export function SettingsSecurityModal({ email }: SettingsSecurityModalProps) {
             </Button>
           </div>
         ) : (
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-5 px-6 pb-6 pt-6 sm:px-8 sm:pb-8"
-          >
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
             <div className="space-y-2">
-              <InputForm
-                id="email"
-                label="이메일"
-                value={email}
-                disabled
-                className="h-14 rounded-[12px] border-[#d6d9e0] bg-[#f7f8fa] px-4 text-[16px] font-medium tracking-[-0.02em] text-[#8b90a3]"
-              />
+              <InputForm id="email" label="이메일" value={email} disabled />
             </div>
 
             <div className="flex gap-2">
               <Button
                 type="button"
                 variant="outline"
-                className="h-14 flex-1 rounded-[12px] border border-[#ced9fd] bg-[#f4f6fe] text-[14px] font-semibold tracking-[-0.02em] text-[#3863f6] shadow-[0_0_14px_rgba(138,138,138,0.08)] hover:bg-[#e8edfe]"
+                className="h-[58px] flex-1 cursor-pointer"
                 onClick={handleSendCode}
                 disabled={isCodeSent}
               >
@@ -191,12 +182,11 @@ export function SettingsSecurityModal({ email }: SettingsSecurityModalProps) {
                       setCodeValue("code", "");
                     }}
                     maxLength={6}
-                    className="h-14 rounded-[12px] border-[#d6d9e0] bg-white px-4 text-[16px] font-medium tracking-[-0.02em] text-[#2b2e3a]"
                   />
                 </div>
                 <Button
                   type="button"
-                  className="h-14 min-w-[120px] rounded-[12px] bg-[#3863f6] px-5 text-[14px] font-semibold tracking-[-0.02em] text-white shadow-[0_0_14px_rgba(138,138,138,0.08)] hover:bg-[#2f57e8]"
+                  className="h-[58px] cursor-pointer"
                   disabled={!isCodeValid || isVerified}
                   onClick={() => {
                     void handleVerifyCode();
@@ -219,13 +209,12 @@ export function SettingsSecurityModal({ email }: SettingsSecurityModalProps) {
                   setValue("newPassword", "", { shouldValidate: true });
                   clearErrors("newPassword");
                 }}
-                className="h-14 rounded-[12px] border-[#d6d9e0] bg-white px-4 pr-12 text-[16px] font-medium tracking-[-0.02em] text-[#2b2e3a]"
               />
               {newPasswordValue && isVerified && (
                 <button
                   type="button"
                   onClick={() => setShowNewPwd(!showNewPwd)}
-                  className="absolute right-3 top-[29px] -translate-y-1/2 rounded-md p-1 text-[#8b90a3] hover:bg-[#f4f6fa]"
+                  className="absolute right-13 top-[30px] -translate-y-1/2 cursor-pointer"
                 >
                   {showNewPwd ? (
                     <EyeOpenIcon size={20} />
@@ -248,13 +237,12 @@ export function SettingsSecurityModal({ email }: SettingsSecurityModalProps) {
                   setValue("confirmPassword", "", { shouldValidate: true });
                   clearErrors("confirmPassword");
                 }}
-                className="h-14 rounded-[12px] border-[#d6d9e0] bg-white px-4 pr-12 text-[16px] font-medium tracking-[-0.02em] text-[#2b2e3a]"
               />
               {confirmPasswordValue && isVerified && (
                 <button
                   type="button"
                   onClick={() => setShowConfirmPwd(!showConfirmPwd)}
-                  className="absolute right-3 top-[29px] -translate-y-1/2 rounded-md p-1 text-[#8b90a3] hover:bg-[#f4f6fa]"
+                  className="absolute right-13 top-[30px] -translate-y-1/2 cursor-pointer"
                 >
                   {showConfirmPwd ? (
                     <EyeOpenIcon size={20} />
@@ -265,11 +253,11 @@ export function SettingsSecurityModal({ email }: SettingsSecurityModalProps) {
               )}
             </div>
 
-            <div className="mt-6 flex gap-2 border-t border-[#e9ebf0] pt-5">
+            <div className="flex gap-2 pt-4">
               <Button
                 type="button"
                 variant="outline"
-                className="h-12 flex-1 rounded-[12px] border border-[#ced9fd] bg-[#f4f6fe] text-[14px] font-semibold tracking-[-0.02em] text-[#3863f6] shadow-[0_0_14px_rgba(138,138,138,0.08)] hover:bg-[#e8edfe]"
+                className="flex-1 cursor-pointer"
                 onClick={handleBack}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -277,7 +265,7 @@ export function SettingsSecurityModal({ email }: SettingsSecurityModalProps) {
               </Button>
               <Button
                 type="submit"
-                className="h-12 flex-1 rounded-[12px] bg-[#3863f6] text-[14px] font-semibold tracking-[-0.02em] text-white shadow-[0_0_14px_rgba(138,138,138,0.08)] hover:bg-[#2f57e8]"
+                className="flex-1 cursor-pointer"
                 disabled={!isVerified || !isValid}
               >
                 변경하기

@@ -1,19 +1,16 @@
-import { Mail, Phone } from "lucide-react";
+import { Phone, Mail } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import type { LearnerProfile } from "@/types/learners-profile.type";
+import type { Profile } from "@/types/profile.type";
 
-type LearnersBasicInfoProps = {
-  profile: LearnerProfile;
+type BasicInfoProps = {
+  profile: Profile;
   onPhoneChangeClick: () => void;
 };
 
-export function LearnersBasicInfo({
-  profile,
-  onPhoneChangeClick,
-}: LearnersBasicInfoProps) {
+export function BasicInfo({ profile, onPhoneChangeClick }: BasicInfoProps) {
   return (
     <Card className="w-full">
       <CardContent className="space-y-4 p-6 flex flex-col justify-center">
@@ -50,16 +47,6 @@ export function LearnersBasicInfo({
             </Button>
           </div>
         </div>
-
-        {profile.userType === "STUDENT" ? (
-          <div>
-            <Label className="text-sm text-neutral-400">학부모 연락처</Label>
-            <div className="mt-1 flex items-center gap-2 rounded-lg bg-neutral-50 p-3">
-              <Phone className="h-4 w-4 text-neutral-400" />
-              <p className="text-neutral-800">{profile.parentPhone || "-"}</p>
-            </div>
-          </div>
-        ) : null}
       </CardContent>
     </Card>
   );

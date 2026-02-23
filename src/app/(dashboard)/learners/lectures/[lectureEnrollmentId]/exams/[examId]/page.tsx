@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import EmptyState from "@/components/common/EmptyState";
+import Title from "@/components/common/header/Title";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -77,12 +78,12 @@ export default function LearnersExamDetailPage() {
   const formattedExamDate = formatYMDFromISO(detail.examDateLabel);
 
   return (
-    <div className="container mx-auto space-y-8 p-6">
+    <div className="container mx-auto max-w-[1400px] space-y-8 px-6 py-10">
       <div className="flex items-center justify-between">
         <Button
           asChild
           variant="outline"
-          className="h-12 rounded-[12px] border border-[#d6d9e0] bg-white px-5 text-[14px] font-semibold text-[#6b6f80] shadow-none hover:bg-[#fcfcfd]"
+          className="-ml-2 h-9 gap-2 border-none bg-transparent text-muted-foreground shadow-none hover:bg-accent hover:text-foreground"
         >
           <Link href={`/learners/lectures/${lectureEnrollmentId}`}>
             <ArrowLeft className="h-4 w-4" />
@@ -93,22 +94,20 @@ export default function LearnersExamDetailPage() {
 
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-sm font-medium">
-          <span className="rounded-full bg-[#e9ebf0] px-3 py-0.5 text-xs font-semibold text-[#5e6275]">
+          <span className="rounded-full bg-secondary px-3 py-0.5 text-xs font-semibold text-secondary-foreground">
             {detail.examType}
           </span>
-          <span className="text-[#8b90a3]">·</span>
-          <span className="text-[#8b90a3]">{detail.subjectLabel}</span>
+          <span className="text-muted-foreground">·</span>
+          <span className="text-muted-foreground">{detail.subjectLabel}</span>
         </div>
-        <section className="rounded-[24px] border border-[#eaecf2] bg-white px-6 py-6 sm:px-8 sm:py-7">
-          <h1 className="text-[30px] font-bold leading-[1.2] tracking-[-0.03em] text-[#040405] sm:text-[36px] sm:leading-[48px]">
-            {detail.examTitle}
-          </h1>
-          <p className="text-[16px] font-medium leading-6 tracking-[-0.01em] text-[rgba(22,22,27,0.4)] sm:text-[20px] sm:leading-7 sm:tracking-[-0.02em]">
-            {formattedExamDate
+        <Title
+          title={detail.examTitle}
+          description={
+            formattedExamDate
               ? `${detail.lectureTitle} · ${formattedExamDate}`
-              : detail.lectureTitle}
-          </p>
-        </section>
+              : detail.lectureTitle
+          }
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -142,10 +141,10 @@ export default function LearnersExamDetailPage() {
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-[380px_1fr]">
         <div className="space-y-6">
-          <Card className="h-[320px] overflow-hidden rounded-[24px] border border-[#eaecf2] bg-white">
-            <div className="border-b border-[#e9ebf0] bg-[#fcfcfd] px-4 py-4">
-              <h3 className="flex items-center gap-2 text-base font-semibold text-[#4a4d5c]">
-                <User className="h-4 w-4 text-[#3863f6]" />
+          <Card className="h-[320px] overflow-hidden border-none shadow-sm ring-1 ring-border">
+            <div className="border-b bg-muted/30 px-4 py-4">
+              <h3 className="flex items-center gap-2 text-base font-semibold">
+                <User className="h-4 w-4 text-primary" />
                 시험 정보
               </h3>
             </div>
@@ -165,25 +164,25 @@ export default function LearnersExamDetailPage() {
             </CardContent>
           </Card>
 
-          <Card className="h-[320px] overflow-hidden rounded-[24px] border border-[#eaecf2] bg-white">
-            <div className="border-b border-[#e9ebf0] bg-[#fcfcfd] px-4 py-4">
-              <h3 className="flex items-center gap-2 text-base font-semibold text-[#4a4d5c]">
-                <ClipboardList className="h-4 w-4 text-[#3863f6]" />
+          <Card className="h-[320px] overflow-hidden border-none shadow-sm ring-1 ring-border">
+            <div className="border-b bg-muted/30 px-4 py-4">
+              <h3 className="flex items-center gap-2 text-base font-semibold">
+                <ClipboardList className="h-4 w-4 text-primary" />
                 미니테스트
               </h3>
             </div>
             <CardContent className="p-0">
               <div className="max-h-[260px] overflow-y-auto">
                 <Table>
-                  <TableHeader className="sticky top-0 z-10 bg-[#f7f8fa]">
+                  <TableHeader className="sticky top-0 z-10 bg-muted/50">
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="h-10 text-xs font-bold text-[#8b90a3]">
+                      <TableHead className="h-10 text-xs font-bold">
                         카테고리
                       </TableHead>
-                      <TableHead className="h-10 text-xs font-bold text-[#8b90a3]">
+                      <TableHead className="h-10 text-xs font-bold">
                         항목
                       </TableHead>
-                      <TableHead className="h-10 text-right text-xs font-bold text-[#8b90a3]">
+                      <TableHead className="h-10 text-right text-xs font-bold">
                         결과
                       </TableHead>
                     </TableRow>
@@ -192,14 +191,14 @@ export default function LearnersExamDetailPage() {
                     {detail.miniTests.length > 0 ? (
                       detail.miniTests.map((item) => (
                         <TableRow key={item.id} className="group">
-                          <TableCell className="py-3 text-xs text-[#8b90a3]">
+                          <TableCell className="py-3 text-xs text-muted-foreground">
                             {item.categoryName}
                           </TableCell>
-                          <TableCell className="py-3 text-sm font-medium text-[#16161b]/88">
+                          <TableCell className="py-3 text-sm font-medium">
                             {item.title}
                           </TableCell>
                           <TableCell className="py-3 text-right">
-                            <span className="inline-flex items-center rounded-md border border-[#d6d9e0] px-2 py-0.5 text-xs font-semibold text-[#4a4d5c]">
+                            <span className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-semibold">
                               {item.resultLabel}
                             </span>
                           </TableCell>
@@ -209,7 +208,7 @@ export default function LearnersExamDetailPage() {
                       <TableRow>
                         <TableCell
                           colSpan={3}
-                          className="h-24 text-center text-[#8b90a3]"
+                          className="h-24 text-center text-muted-foreground"
                         >
                           표시할 미니테스트 결과가 없습니다.
                         </TableCell>
@@ -222,11 +221,11 @@ export default function LearnersExamDetailPage() {
           </Card>
         </div>
 
-        <Card className="overflow-hidden rounded-[24px] border border-[#eaecf2] bg-white">
-          <div className="border-b border-[#e9ebf0] bg-[#fcfcfd] px-4 py-4">
+        <Card className="overflow-hidden border-none shadow-sm ring-1 ring-border">
+          <div className="border-b bg-muted/30 px-4 py-4">
             <div className="flex items-center justify-between">
-              <h3 className="flex items-center gap-2 text-base font-semibold text-[#4a4d5c]">
-                <BarChart3 className="h-4 w-4 text-[#3863f6]" />
+              <h3 className="flex items-center gap-2 text-base font-semibold">
+                <BarChart3 className="h-4 w-4 text-primary" />
                 문항별 상세 분석
               </h3>
             </div>
@@ -244,30 +243,30 @@ export default function LearnersExamDetailPage() {
                   <col className="w-[100px]" />
                   <col className="w-[100px]" />
                 </colgroup>
-                <TableHeader className="sticky top-0 z-10 bg-[#f7f8fa] backdrop-blur-sm">
+                <TableHeader className="sticky top-0 z-10 bg-muted/80 backdrop-blur-sm">
                   <TableRow className="hover:bg-transparent">
-                    <TableHead className="whitespace-nowrap text-center text-xs font-bold uppercase tracking-wider text-[#8b90a3]">
+                    <TableHead className="whitespace-nowrap text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       No.
                     </TableHead>
-                    <TableHead className="whitespace-nowrap text-right text-xs font-bold uppercase tracking-wider text-[#8b90a3]">
+                    <TableHead className="whitespace-nowrap text-right text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       배점
                     </TableHead>
-                    <TableHead className="whitespace-nowrap text-center text-xs font-bold uppercase tracking-wider text-[#8b90a3]">
+                    <TableHead className="whitespace-nowrap text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       결과
                     </TableHead>
-                    <TableHead className="whitespace-nowrap text-center text-xs font-bold uppercase tracking-wider text-[#8b90a3]">
+                    <TableHead className="whitespace-nowrap text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       유형
                     </TableHead>
-                    <TableHead className="whitespace-nowrap text-center text-xs font-bold uppercase tracking-wider text-[#8b90a3]">
+                    <TableHead className="whitespace-nowrap text-center text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       카테고리
                     </TableHead>
-                    <TableHead className="whitespace-nowrap text-xs font-bold uppercase tracking-wider text-[#8b90a3]">
+                    <TableHead className="whitespace-nowrap text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       출처
                     </TableHead>
-                    <TableHead className="whitespace-nowrap text-right text-xs font-bold uppercase tracking-wider text-[#8b90a3]">
+                    <TableHead className="whitespace-nowrap text-right text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       오답률
                     </TableHead>
-                    <TableHead className="whitespace-nowrap text-right text-xs font-bold uppercase tracking-wider text-[#8b90a3]">
+                    <TableHead className="whitespace-nowrap text-right text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       정답률
                     </TableHead>
                   </TableRow>
@@ -351,7 +350,7 @@ export default function LearnersExamDetailPage() {
                     <TableRow>
                       <TableCell
                         colSpan={8}
-                        className="h-32 text-center text-[#8b90a3]"
+                        className="h-32 text-center text-muted-foreground"
                       >
                         <div className="flex flex-col items-center justify-center gap-2">
                           <ClipboardList className="h-8 w-8 opacity-20" />
@@ -388,36 +387,34 @@ const MetricCard = ({
   trend,
 }: MetricCardProps) => {
   return (
-    <Card className="overflow-hidden rounded-[24px] border border-[#eaecf2] bg-white">
+    <Card className="overflow-hidden border-none shadow-sm ring-1 ring-border">
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-[#8b90a3]">{label}</p>
+            <p className="text-sm font-medium text-muted-foreground">{label}</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-bold tracking-tight text-[#4a4d5c]">
-                {value}
-              </span>
+              <span className="text-3xl font-bold tracking-tight">{value}</span>
               {total != null && (
-                <span className="text-sm font-medium text-[#8b90a3]">
+                <span className="text-sm font-medium text-muted-foreground">
                   / {total}
                 </span>
               )}
               {unit && (
-                <span className="text-sm font-medium text-[#8b90a3]">
+                <span className="text-sm font-medium text-muted-foreground">
                   {unit}
                 </span>
               )}
             </div>
           </div>
-          <div className="rounded-xl bg-[#e1e7fe] p-2.5 text-[#3863f6]">
+          <div className="rounded-xl bg-primary/10 p-2.5 text-primary">
             <Icon className="h-5 w-5" />
           </div>
         </div>
         {trend === "score" && (
           <div className="mt-4 flex items-center gap-2">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#e9ebf0]">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
               <div
-                className="h-full bg-[#3863f6] transition-all duration-500"
+                className="h-full bg-primary transition-all duration-500"
                 style={{
                   width: `${Math.max(0, Math.min(Number(value), 100))}%`,
                 }}
@@ -441,11 +438,11 @@ const InfoRow = ({
 }) => {
   return (
     <div className="flex items-center justify-between py-2.5">
-      <span className="text-sm text-[#8b90a3]">{label}</span>
+      <span className="text-sm text-muted-foreground">{label}</span>
       <span
         className={cn(
           "text-sm font-semibold",
-          highlight ? "text-[#3863f6]" : "text-[#16161b]/88"
+          highlight ? "text-primary" : "text-foreground"
         )}
       >
         {value}

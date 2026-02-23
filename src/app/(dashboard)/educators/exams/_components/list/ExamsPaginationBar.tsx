@@ -20,21 +20,19 @@ export function ExamsPaginationBar({
   onPageChange,
 }: ExamsPaginationBarProps) {
   return (
-    <div className="border-t border-[#eaecf2] pt-4">
-      <Pagination
-        pagination={{
-          totalCount,
-          totalPage: totalPages,
-          currentPage,
-          limit: itemsPerPage,
-          hasNextPage: !isDisabled && currentPage < totalPages,
-          hasPrevPage: !isDisabled && currentPage > 1,
-        }}
-        onPageChange={(page) => {
-          if (isDisabled) return;
-          onPageChange(page);
-        }}
-      />
-    </div>
+    <Pagination
+      pagination={{
+        totalCount,
+        totalPage: totalPages,
+        currentPage,
+        limit: itemsPerPage,
+        hasNextPage: !isDisabled && currentPage < totalPages,
+        hasPrevPage: !isDisabled && currentPage > 1,
+      }}
+      onPageChange={(page) => {
+        if (isDisabled) return;
+        onPageChange(page);
+      }}
+    />
   );
 }

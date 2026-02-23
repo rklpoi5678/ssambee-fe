@@ -55,13 +55,8 @@ export default function ScoreChart({
   }
 
   return (
-    <div className="w-full h-[350px] min-w-0">
-      <ResponsiveContainer
-        width="100%"
-        height="100%"
-        minWidth={0}
-        minHeight={350}
-      >
+    <div className="w-full h-[350px]">
+      <ResponsiveContainer>
         <LineChart data={chartData}>
           <CartesianGrid stroke="#E9EBF0" strokeDasharray="0" />
           <XAxis
