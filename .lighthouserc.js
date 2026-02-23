@@ -2,7 +2,7 @@ module.exports = {
   ci: {
     collect: {
       startServerCommand: "pnpm start", // 빌드 후 서버를 띄우는 명령어
-      url: ["https://www.ssambee.com"], // 검사할 URL
+      url: ["http://localhost:3000"], // 검사할 URL
       numberOfRuns: 3, // 측정 신뢰도를 위해 3번 실행
     },
     upload: {
