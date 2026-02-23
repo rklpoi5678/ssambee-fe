@@ -33,7 +33,7 @@ export function StudentFilter({
   lectureOptions,
 }: StudentFilterProps) {
   return (
-    <div className="border rounded-[20px] px-[40px] py-[32px] mt-[74px]">
+    <div className="border rounded-[20px] px-[40px] py-[32px] mt-[34px]">
       <div className="w-full flex flex-col items-start gap-2">
         <h2 className="text-[24px] font-semibold mb-[16px]">수업 선택</h2>
 

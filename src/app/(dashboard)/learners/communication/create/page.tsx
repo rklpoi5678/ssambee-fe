@@ -103,41 +103,50 @@ export default function CreateInquiryPostPageSVC() {
 
   return (
     <div className="container mx-auto space-y-8 p-6">
-      <div className="flex items-center justify-between gap-4">
-        <Title title="게시글 등록" description="새로운 게시글을 작성합니다." />
+      <section className="-mx-6 -mt-6 border-b border-[#e9ebf0] bg-white px-6 py-6 sm:px-8 sm:py-7">
+        <h1 className="text-[30px] font-bold leading-[1.2] tracking-[-0.03em] text-[#040405] sm:text-[36px] sm:leading-[48px]">
+          게시글 등록
+        </h1>
+        <p className="mt-[6px] text-[16px] font-medium leading-6 tracking-[-0.01em] text-[rgba(22,22,27,0.4)] sm:text-[20px] sm:leading-7 sm:tracking-[-0.02em]">
+          새로운 게시글을 작성합니다.
+        </p>
+      </section>
 
-        <Button
-          variant="outline"
-          onClick={() => router.back()}
-          className="max-w-[180px] h-[50px] w-full rounded-lg text-base cursor-pointer"
-        >
-          <ArrowLeft className="h-5 w-5" />
-          뒤로가기
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="space-y-6">
-          <WriterTypeSelect selectedAuthorRole={authorRole} />
-
-          <LectureOptionSelect
-            selectedLectureId={selectedLectureId}
-            onLectureIdChange={setSelectedLectureId}
-          />
+      <div className="space-y-8">
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <Button
+            variant="outline"
+            onClick={() => router.back()}
+            className="h-14 w-[140px] gap-2.5 rounded-xl border-neutral-200 px-0 text-base font-semibold tracking-[-0.01em] text-neutral-500 shadow-none hover:border-brand-500 hover:text-brand-500 transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="h-5 w-5" />
+            뒤로가기
+          </Button>
         </div>
 
-        <div className="lg:col-span-2 space-y-6">
-          <CreateContentSVC
-            title={title}
-            setTitle={setTitle}
-            content={content} // JSONContent 객체를 그대로 전달
-            setContent={setContent}
-            handleSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-            onCancel={() => router.back()}
-            attachment={attachment} // 현재 파일 상태 (미리보기용)
-            setAttachment={setAttachment} // 파일 변경 함수 (추가/삭제 공용)
-          />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="space-y-6">
+            <WriterTypeSelect selectedAuthorRole={authorRole} />
+
+            <LectureOptionSelect
+              selectedLectureId={selectedLectureId}
+              onLectureIdChange={setSelectedLectureId}
+            />
+          </div>
+
+          <div className="lg:col-span-2 space-y-6">
+            <CreateContentSVC
+              title={title}
+              setTitle={setTitle}
+              content={content}
+              setContent={setContent}
+              handleSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
+              onCancel={() => router.back()}
+              attachment={attachment}
+              setAttachment={setAttachment}
+            />
+          </div>
         </div>
       </div>
     </div>
