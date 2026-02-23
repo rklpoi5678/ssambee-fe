@@ -1,7 +1,8 @@
 "use client";
 
 import { isAxiosError } from "axios";
-import { pdf } from "@react-pdf/renderer";
+import type { DocumentProps } from "@react-pdf/renderer";
+import type { ReactElement } from "react";
 
 import {
   getGradeReportFileDownloadUrl,
@@ -23,6 +24,11 @@ type AlertFn = (payload: {
 
 const sanitizeFileName = (value: string) =>
   value.replace(/[/\\?%*:|"<>]/g, "_");
+
+const renderPdfBlob = async (element: ReactElement<DocumentProps>) => {
+  const { pdf } = await import("@react-pdf/renderer");
+  return pdf(element).toBlob();
+};
 
 const shouldFallbackToLegacyStudentSave = (error: unknown) => {
   if (!isAxiosError(error)) return false;
@@ -137,9 +143,9 @@ export const useSimpleReportTemplateActions = ({
 
     state.setIsGeneratingPdf(true);
     try {
-      const blob = await pdf(
+      const blob = await renderPdfBlob(
         <SimpleReportPdf data={buildPdfData()} />
-      ).toBlob();
+      );
       const previewImageFile = await createReportPreviewImageFile({
         template: "simple",
         studentName: examData.studentName,
@@ -196,9 +202,9 @@ export const useSimpleReportTemplateActions = ({
 
     state.setIsGeneratingPdf(true);
     try {
-      const blob = await pdf(
+      const blob = await renderPdfBlob(
         <SimpleReportPdf data={buildPdfData()} />
-      ).toBlob();
+      );
       const fileName = `${sanitizeFileName(examData.studentName)}_${sanitizeFileName(
         examData.examName
       )}_심플리포트.pdf`;

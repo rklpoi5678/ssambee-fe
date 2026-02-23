@@ -10,6 +10,7 @@ import {
   Pencil,
   Eye,
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -19,10 +20,24 @@ import { Separator } from "@/components/ui/separator";
 import { useSetBreadcrumb } from "@/hooks/useBreadcrumb";
 import { cn } from "@/lib/utils";
 
-import { MiniTestsCategoryModal } from "./_components/MiniTestsCategoryModal";
-import { MiniTestsResultModal } from "./_components/MiniTestsResultModal";
 import { MiniTestsStudentTable } from "./_components/MiniTestsStudentTable";
 import { useMiniTestsPage } from "./_hooks/useMiniTestsPage";
+
+const MiniTestsCategoryModal = dynamic(
+  () =>
+    import("./_components/MiniTestsCategoryModal").then(
+      (module) => module.MiniTestsCategoryModal
+    ),
+  { ssr: false, loading: () => null }
+);
+
+const MiniTestsResultModal = dynamic(
+  () =>
+    import("./_components/MiniTestsResultModal").then(
+      (module) => module.MiniTestsResultModal
+    ),
+  { ssr: false, loading: () => null }
+);
 
 export default function MiniTestsPage() {
   useSetBreadcrumb([
@@ -333,19 +348,23 @@ export default function MiniTestsPage() {
         </div>
       </div>
 
-      <MiniTestsCategoryModal vm={vm} />
+      {vm.isCategoryModalOpen ? <MiniTestsCategoryModal vm={vm} /> : null}
 
-      <MiniTestsResultModal
-        open={isResultModalOpen}
-        onOpenChange={setIsResultModalOpen}
-        selectedExamId={selectedExamId}
-        includedAssignments={includedAssignments}
-        filteredResultRows={filteredResultRows}
-        resultSearchTerm={resultSearchTerm}
-        onResultSearchTermChange={setResultSearchTerm}
-        showOnlyMissingResults={showOnlyMissingResults}
-        onToggleMissingFilter={() => setShowOnlyMissingResults((prev) => !prev)}
-      />
+      {isResultModalOpen ? (
+        <MiniTestsResultModal
+          open={isResultModalOpen}
+          onOpenChange={setIsResultModalOpen}
+          selectedExamId={selectedExamId}
+          includedAssignments={includedAssignments}
+          filteredResultRows={filteredResultRows}
+          resultSearchTerm={resultSearchTerm}
+          onResultSearchTermChange={setResultSearchTerm}
+          showOnlyMissingResults={showOnlyMissingResults}
+          onToggleMissingFilter={() =>
+            setShowOnlyMissingResults((prev) => !prev)
+          }
+        />
+      ) : null}
     </div>
   );
 }

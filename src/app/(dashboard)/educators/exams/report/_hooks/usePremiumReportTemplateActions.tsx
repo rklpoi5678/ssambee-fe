@@ -1,7 +1,8 @@
 "use client";
 
 import { isAxiosError } from "axios";
-import { pdf } from "@react-pdf/renderer";
+import type { DocumentProps } from "@react-pdf/renderer";
+import type { ReactElement } from "react";
 
 import {
   getGradeReportFileDownloadUrl,
@@ -34,6 +35,11 @@ type ConfirmFn = (payload: {
 
 const sanitizeFileName = (value: string) =>
   value.replace(/[/\\?%*:|"<>]/g, "_");
+
+const renderPdfBlob = async (element: ReactElement<DocumentProps>) => {
+  const { pdf } = await import("@react-pdf/renderer");
+  return pdf(element).toBlob();
+};
 
 const shouldFallbackToLegacyStudentSave = (error: unknown) => {
   if (!isAxiosError(error)) return false;
@@ -185,14 +191,14 @@ export const usePremiumReportTemplateActions = ({
 
     state.setIsGeneratingPdf(true);
     try {
-      const blob = await pdf(
+      const blob = await renderPdfBlob(
         <PremiumReportPdf
           data={buildPdfData()}
           categoryRows={state.includedCategoryRows}
           questionResults={state.questionResults}
           scoreHistory={state.scoreHistory}
         />
-      ).toBlob();
+      );
       const previewImageFile = await createReportPreviewImageFile({
         template: "premium",
         studentName: examData.studentName,
@@ -241,14 +247,14 @@ export const usePremiumReportTemplateActions = ({
   const handleDownloadPdf = async () => {
     state.setIsGeneratingPdf(true);
     try {
-      const blob = await pdf(
+      const blob = await renderPdfBlob(
         <PremiumReportPdf
           data={buildPdfData()}
           categoryRows={state.includedCategoryRows}
           questionResults={state.questionResults}
           scoreHistory={state.scoreHistory}
         />
-      ).toBlob();
+      );
       const fileName = `${sanitizeFileName(examData.studentName)}_${sanitizeFileName(
         examData.examName
       )}_프리미엄리포트.pdf`;

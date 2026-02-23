@@ -1,11 +1,43 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useMemo } from "react";
+
+import type { ReportTemplateExamData } from "@/types/report";
 
 import { useReportPage } from "../_hooks/useReportPage";
 
-import { SimpleReportTemplate } from "./SimpleReportTemplate";
-import { PremiumReportTemplate } from "./PremiumReportTemplate";
+function ReportTemplateLoading() {
+  return (
+    <div className="flex min-h-[560px] items-center justify-center rounded-[24px] border border-[#eaecf2] bg-white">
+      <p className="text-[14px] font-medium text-[#8b90a3]">
+        리포트를 불러오는 중입니다...
+      </p>
+    </div>
+  );
+}
+
+const SimpleReportTemplate = dynamic<{ examData: ReportTemplateExamData }>(
+  () =>
+    import("./SimpleReportTemplate").then(
+      (module) => module.SimpleReportTemplate
+    ),
+  {
+    ssr: false,
+    loading: () => <ReportTemplateLoading />,
+  }
+);
+
+const PremiumReportTemplate = dynamic<{ examData: ReportTemplateExamData }>(
+  () =>
+    import("./PremiumReportTemplate").then(
+      (module) => module.PremiumReportTemplate
+    ),
+  {
+    ssr: false,
+    loading: () => <ReportTemplateLoading />,
+  }
+);
 
 export function ReportPreview() {
   const {
