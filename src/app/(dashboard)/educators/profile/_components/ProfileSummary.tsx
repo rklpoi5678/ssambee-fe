@@ -31,8 +31,6 @@ export function ProfileSummary({
   const parsedCreatedAt = profile.createdAt
     ? new Date(profile.createdAt)
     : null;
-  const hasValidCreatedAt =
-    parsedCreatedAt !== null && !Number.isNaN(parsedCreatedAt.getTime());
 
   const avatarSeedKey = profile.id || "default-profile";
 
@@ -116,7 +114,8 @@ export function ProfileSummary({
               가입일
             </p>
             <p className="text-base font-medium text-[#16161b]/88">
-              {hasValidCreatedAt
+              {parsedCreatedAt !== null &&
+              !Number.isNaN(parsedCreatedAt.getTime())
                 ? format(parsedCreatedAt, "yy. MM. dd", { locale: ko })
                 : "-"}
             </p>
