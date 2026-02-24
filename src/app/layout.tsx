@@ -3,14 +3,22 @@ import type { Metadata, Viewport } from "next";
 import "@/styles/globals.css";
 import { pretendard } from "@/styles/fonts";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const DEFAULT_SITE_URL = "http://localhost:3000";
 const SITE_NAME = "SSam B";
 const DEFAULT_TITLE = "SSam B | 수업 운영부터 학생 관리까지";
 const DEFAULT_DESCRIPTION =
   "수업 운영, 학생 관리, 조교 관리, 일정 확인을 하나의 대시보드에서 운영하는 학원 관리 플랫폼";
 
+const metadataBase = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL);
+  } catch {
+    return new URL(DEFAULT_SITE_URL);
+  }
+})();
+
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
+  metadataBase,
   applicationName: SITE_NAME,
   title: {
     default: DEFAULT_TITLE,
@@ -27,7 +35,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/landing-hero-bg.svg",
+        url: "/opengraph-image",
         alt: "SSam B 랜딩 배경",
       },
     ],
@@ -36,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
-    images: ["/landing-hero-bg.svg"],
+    images: ["/opengraph-image"],
   },
   robots: {
     index: true,

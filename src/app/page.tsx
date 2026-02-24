@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/landing-hero-bg.svg",
+        url: "/opengraph-image",
         alt: "SSam B 랜딩 대시보드 배경",
       },
     ],
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${SITE_NAME} | ${PAGE_TITLE}`,
     description: PAGE_DESCRIPTION,
-    images: ["/landing-hero-bg.svg"],
+    images: ["/opengraph-image"],
   },
 };
 
@@ -58,14 +58,12 @@ export default function HomePage() {
   return (
     <>
       <LandingPageView />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }}
-      />
+      <script type="application/ld+json">
+        {JSON.stringify(organizationJsonLd)}
+      </script>
+      <script type="application/ld+json">
+        {JSON.stringify(webSiteJsonLd)}
+      </script>
     </>
   );
 }
