@@ -27,6 +27,12 @@ export const useCompleteGrading = (options?: UseCompleteGradingOptions) => {
       queryClient.invalidateQueries({
         queryKey: examKeys.detail(variables.examId),
       });
+      queryClient.invalidateQueries({
+        queryKey: examKeys.grades(variables.examId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: examKeys.statistics(variables.examId),
+      });
       options?.onSuccess?.(result);
     },
     onError: (error) => {

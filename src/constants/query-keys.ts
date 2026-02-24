@@ -59,6 +59,8 @@ type DashboardHomeQuery = {
   taskPage: number;
   taskLimit: number;
   taskStatus?: "PENDING" | "IN_PROGRESS" | "END";
+  viewerType?: "INSTRUCTOR" | "ASSISTANT";
+  viewerId?: string;
 };
 
 export const dashboardKeys = {
