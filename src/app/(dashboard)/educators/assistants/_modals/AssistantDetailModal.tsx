@@ -59,6 +59,13 @@ export default function AssistantDetailModal({
   onCloseDetail,
   onStartEdit,
 }: AssistantDetailModalProps) {
+  const nameFieldId = "assistant-detail-name";
+  const phoneFieldId = "assistant-detail-phone";
+  const emailFieldId = "assistant-detail-email";
+  const statusFieldId = "assistant-detail-status";
+  const statusLabelId = "assistant-detail-status-label";
+  const memoFieldId = "assistant-detail-memo";
+
   const avatarSeed =
     selectedAssistant?.id ?? selectedAssistant?.name ?? "assistant";
   const avatarSort = getTeacherAvatarSortByRole("ASSISTANT", avatarSeed);
@@ -88,29 +95,53 @@ export default function AssistantDetailModal({
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <label className="text-sm font-semibold">이름</label>
-            <Input value={selectedAssistant?.name ?? ""} readOnly />
+            <label htmlFor={nameFieldId} className="text-sm font-semibold">
+              이름
+            </label>
+            <Input
+              id={nameFieldId}
+              value={selectedAssistant?.name ?? ""}
+              readOnly
+            />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold">연락처</label>
-            <Input value={selectedAssistant?.phone ?? ""} readOnly />
+            <label htmlFor={phoneFieldId} className="text-sm font-semibold">
+              연락처
+            </label>
+            <Input
+              id={phoneFieldId}
+              value={selectedAssistant?.phone ?? ""}
+              readOnly
+            />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold">이메일</label>
-            <Input value={selectedAssistant?.email ?? ""} readOnly />
+            <label htmlFor={emailFieldId} className="text-sm font-semibold">
+              이메일
+            </label>
+            <Input
+              id={emailFieldId}
+              value={selectedAssistant?.email ?? ""}
+              readOnly
+            />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-semibold">상태</label>
-            {isEditingAssistantDetail ? (
+            <label
+              id={statusLabelId}
+              htmlFor={statusFieldId}
+              className="text-sm font-semibold"
+            >
+              상태
+            </label>
+            {isEditingAssistantDetail &&
+            assistantDetailDraft.status !== "퇴사" ? (
               <Select
-                value={
-                  assistantDetailDraft.status === "퇴사"
-                    ? "근무중"
-                    : assistantDetailDraft.status
-                }
+                value={assistantDetailDraft.status}
                 onValueChange={onChangeStatus}
               >
-                <SelectTrigger>
+                <SelectTrigger
+                  id={statusFieldId}
+                  aria-labelledby={statusLabelId}
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -122,14 +153,21 @@ export default function AssistantDetailModal({
                 </SelectContent>
               </Select>
             ) : (
-              <Input value={assistantDetailDraft.status} readOnly />
+              <Input
+                id={statusFieldId}
+                value={assistantDetailDraft.status}
+                readOnly
+              />
             )}
           </div>
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-semibold">메모</label>
+          <label htmlFor={memoFieldId} className="text-sm font-semibold">
+            메모
+          </label>
           <Textarea
+            id={memoFieldId}
             value={assistantDetailDraft.memo}
             readOnly={!isEditingAssistantDetail}
             className="min-h-[100px]"
