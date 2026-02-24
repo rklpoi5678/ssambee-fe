@@ -17,6 +17,8 @@ import {
 import { useDownloadMaterial } from "@/hooks/useMaterials";
 import { CommonPostAttachment } from "@/types/communication/commonPost";
 import { useDialogAlert } from "@/hooks/useDialogAlert";
+import { useModal } from "@/providers/ModalProvider";
+import { CheckModal } from "@/components/common/modals/CheckModal";
 import {
   GetInstructorPostDetailResponse,
   WorkStatus,
@@ -36,6 +38,7 @@ export default function CommunicationDetailPage() {
   const type = searchParams.get("type") as "notice" | "inquiry" | "works";
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { showAlert } = useDialogAlert();
+  const { openModal } = useModal();
 
   const isNoticePost = type === "notice";
   const isWorksPost = type === "works";
@@ -220,19 +223,26 @@ export default function CommunicationDetailPage() {
 
   //댓글 삭제
   const handleDeleteComment = (commentId: string) => {
-    if (!confirm("댓글을 삭제하시겠습니까?")) return;
-
-    if (isNoticePost) {
-      deleteInstructorPostCommentMutation.mutate({
-        postId: communicationId,
-        commentId,
-      });
-    } else {
-      deleteStudentPostCommentMutation.mutate({
-        postId: communicationId,
-        commentId,
-      });
-    }
+    openModal(
+      <CheckModal
+        title="댓글 삭제"
+        description="댓글을 삭제하시겠습니까?"
+        confirmText="삭제"
+        onConfirm={() => {
+          if (isNoticePost) {
+            deleteInstructorPostCommentMutation.mutate({
+              postId: communicationId,
+              commentId,
+            });
+          } else {
+            deleteStudentPostCommentMutation.mutate({
+              postId: communicationId,
+              commentId,
+            });
+          }
+        }}
+      />
+    );
   };
 
   // 자료 변경
