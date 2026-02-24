@@ -107,7 +107,7 @@ export default function AssistantsApprovalApplicationsCard({
 
                   <div className="ml-auto flex flex-wrap gap-2">
                     <Button
-                      variant="secondary"
+                      variant="default"
                       className="h-10 cursor-pointer rounded-[12px] bg-[#3863f6] px-4 text-white hover:bg-[#2f57e8]"
                       onClick={() =>
                         void vm.handleSignAction(application, "approve")

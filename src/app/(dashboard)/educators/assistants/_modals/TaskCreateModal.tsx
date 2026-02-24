@@ -95,6 +95,10 @@ export default function TaskCreateModal({
   onSubmit,
   isSubmitting,
 }: TaskCreateModalProps) {
+  const assigneeFieldId = "task-create-assignee";
+  const instructorFieldId = "task-create-instructor";
+  const titleFieldId = "task-create-title";
+
   const selectedAssistant =
     assistantOptions.find((assistant) => assistant.id === taskAssigneeId) ??
     null;
@@ -135,9 +139,17 @@ export default function TaskCreateModal({
         </div>
 
         <div className="space-y-2">
-          <p className="text-[16px] font-semibold">대상 조교</p>
+          <label
+            htmlFor={assigneeFieldId}
+            className="text-[16px] font-semibold"
+          >
+            대상 조교
+          </label>
           <Select value={taskAssigneeId} onValueChange={onChangeTaskAssigneeId}>
-            <SelectTrigger className="h-10 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[#6b6f80]">
+            <SelectTrigger
+              id={assigneeFieldId}
+              className="h-10 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[#6b6f80]"
+            >
               <SelectValue placeholder="조교를 선택하세요" />
             </SelectTrigger>
             <SelectContent>
@@ -169,12 +181,20 @@ export default function TaskCreateModal({
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <p className="text-[16px] font-medium">지시자</p>
-            <Input value={instructorName} readOnly />
+            <label
+              htmlFor={instructorFieldId}
+              className="text-[16px] font-medium"
+            >
+              지시자
+            </label>
+            <Input id={instructorFieldId} value={instructorName} readOnly />
           </div>
           <div className="space-y-2">
-            <p className="text-[16px] font-medium">업무명</p>
+            <label htmlFor={titleFieldId} className="text-[16px] font-medium">
+              업무명
+            </label>
             <Input
+              id={titleFieldId}
               placeholder="예: 중등 2학년 1학기 기말고사 채점"
               value={taskTitle}
               onChange={(event) => onChangeTaskTitle(event.target.value)}
@@ -269,7 +289,7 @@ export default function TaskCreateModal({
             <Button
               type="button"
               variant="outline"
-              className="rounded-full"
+              className="rounded-[12px]"
               onClick={onOpenResourceLibraryModal}
             >
               자료실에서 선택
