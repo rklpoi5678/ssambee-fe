@@ -1,7 +1,6 @@
 "use client";
 
 import { UseFormReturn, useFormState, useWatch } from "react-hook-form";
-import { ChevronDown } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,9 +26,14 @@ export function LectureInfoSection({
 
   const schoolYearValue =
     useWatch({ control: form.control, name: "schoolYear" }) ?? "";
+  const statusValue = useWatch({ control: form.control, name: "status" }) ?? "";
   const schoolYearOptions = LECTURE_GRADES.map((grade) => ({
     label: grade,
     value: grade,
+  }));
+  const statusOptions = LECTURE_STATUS_OPTIONS.map((option) => ({
+    label: option.label,
+    value: option.value,
   }));
 
   return (
@@ -40,6 +44,7 @@ export function LectureInfoSection({
         </h2>
         <div className="mt-10 flex flex-col gap-8">
           <input type="hidden" {...register("schoolYear")} />
+          <input type="hidden" {...register("status")} />
 
           <div>
             <label htmlFor="lecture-name" className="sr-only">
@@ -129,21 +134,22 @@ export function LectureInfoSection({
             <label htmlFor="lecture-status" className="sr-only">
               수업 상태
             </label>
-            <div className="relative">
-              <select
-                id="lecture-status"
-                {...register("status")}
-                disabled={disabled}
-                className="flex h-14 w-full appearance-none rounded-[12px] border border-[#d6d9e0] bg-white px-4 pr-10 text-[16px] font-medium leading-6 tracking-[-0.16px] text-[#8b90a3] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {LECTURE_STATUS_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#2b2e3a]" />
-            </div>
+            <SelectBtn
+              id="lecture-status"
+              value={statusValue}
+              placeholder="수업 상태"
+              options={statusOptions}
+              onChange={(value) =>
+                setValue("status", value, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
+              variant="figma"
+              className="font-medium tracking-[-0.16px] text-[#8b90a3]"
+              isError={Boolean(errors.status)}
+              disabled={disabled}
+            />
             {errors.status && (
               <p className="mt-1 text-xs text-red-500">
                 {errors.status.message}

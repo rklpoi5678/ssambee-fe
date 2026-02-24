@@ -6,14 +6,17 @@ import {
   Path,
   UseFormReturn,
   useFormState,
+  useWatch,
 } from "react-hook-form";
 import { Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import SelectBtn from "@/components/common/button/SelectBtn";
 import { LectureFormInput } from "@/validation/lecture.validation";
 import { formatPhoneNumber } from "@/utils/phone";
 import { DatePickerField } from "@/components/common/input/DatePickerField";
+import { LECTURE_GRADES } from "@/constants/lectures.constants";
 
 type ManualStudentFormProps = {
   form: UseFormReturn<LectureFormInput>;
@@ -32,6 +35,11 @@ export function ManualStudentForm({
 
   const { register, trigger, setValue } = form;
   const { errors } = useFormState({ control: form.control });
+  const studentsValues = useWatch({ control: form.control, name: "students" });
+  const studentGradeOptions = LECTURE_GRADES.map((grade) => ({
+    label: grade,
+    value: grade,
+  }));
 
   const handlePhoneChange = (
     index: number,
@@ -143,12 +151,26 @@ export function ManualStudentForm({
                 >
                   학년
                 </label>
-                <Input
-                  id={`student-${index}-studentGrade`}
+                <input
+                  type="hidden"
                   {...register(`students.${index}.studentGrade`)}
+                  id={`student-${index}-studentGrade`}
+                />
+                <SelectBtn
+                  id={`student-${index}-studentGrade-select`}
+                  value={studentsValues?.[index]?.studentGrade ?? ""}
                   placeholder="학년"
+                  options={studentGradeOptions}
+                  onChange={(value) =>
+                    setValue(`students.${index}.studentGrade`, value, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    })
+                  }
+                  variant="figma"
+                  className="!bg-transparent font-medium tracking-[-0.16px] text-[#8b90a3]"
+                  isError={Boolean(fieldErrors?.studentGrade)}
                   disabled={isLocked}
-                  className="h-14 rounded-[12px] border-[#d6d9e0] text-[16px] placeholder:text-[#8b90a3]"
                 />
                 {fieldErrors?.studentGrade?.message && (
                   <p className="mt-1 text-xs text-red-500">
