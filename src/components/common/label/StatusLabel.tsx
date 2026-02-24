@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 type LabelColor = "green" | "yellow" | "red" | "blue" | "gray";
 
 type LabelProps = {
@@ -37,7 +39,11 @@ export default function StatusLabel({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium whitespace-nowrap ${finalClass} ${className ?? ""}`}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium whitespace-nowrap",
+        finalClass,
+        className
+      )}
     >
       {showDot && (
         <span
