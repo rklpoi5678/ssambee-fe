@@ -74,7 +74,7 @@ export const InputForm = forwardRef<HTMLInputElement, InputFormProps>(
             <button
               type="button"
               onClick={onReset}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-1 hover:bg-gray-100 rounded-full transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 cursor-pointer p-1 hover:bg-gray-100 rounded-full transition-colors"
               tabIndex={-1}
               aria-label="Reset input"
             >
