@@ -35,7 +35,7 @@ export default function OpenGraphImage() {
           letterSpacing: "-0.02em",
         }}
       >
-        SSam B
+        SSam Bee
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
