@@ -61,7 +61,7 @@ export function ExamDateField({
                 variant="outline"
                 disabled={disabled}
                 className={cn(
-                  "h-11 w-full justify-start rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-left text-[14px] font-medium text-[#4a4d5c]",
+                  "h-12 w-full justify-start rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-left text-[14px] font-medium text-[#4a4d5c]",
                   !field.value && "text-[#8b90a3]"
                 )}
               >

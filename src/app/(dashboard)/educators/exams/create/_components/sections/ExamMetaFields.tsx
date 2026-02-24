@@ -44,7 +44,7 @@ export function ExamMetaFields({
               value={field.value ?? ""}
               placeholder="예: 2024년 1학기 중간고사 수학"
               disabled={disabled}
-              className="h-11 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
+              className="h-12 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
             />
           )}
         />
@@ -72,7 +72,7 @@ export function ExamMetaFields({
             >
               <SelectTrigger
                 id="exam-subject"
-                className="h-11 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
+                className="h-12 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
               >
                 <SelectValue placeholder="과목 선택" />
               </SelectTrigger>
@@ -108,7 +108,7 @@ export function ExamMetaFields({
               value={field.value ?? ""}
               placeholder="예: 모의고사, 단원 평가"
               disabled={disabled}
-              className="h-11 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
+              className="h-12 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
             />
           )}
         />
@@ -131,7 +131,7 @@ export function ExamMetaFields({
               value={field.value ?? ""}
               placeholder="예: 자체 제작, 기출"
               disabled={disabled}
-              className="h-11 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
+              className="h-12 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
             />
           )}
         />

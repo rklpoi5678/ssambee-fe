@@ -75,7 +75,7 @@ export function ExamSelectionSection({
               disabled={disabled || isLecturesLoading || lectures.length === 0}
             >
               <SelectTrigger
-                className="h-11 w-full rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
+                className="h-12 w-full rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
                 aria-label="수업 선택"
               >
                 <SelectValue placeholder="수업을 선택하세요" />
@@ -108,7 +108,7 @@ export function ExamSelectionSection({
               disabled={disabled}
             >
               <SelectTrigger
-                className="h-11 w-full rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
+                className="h-12 w-full rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
                 aria-label="등록된 시험 선택"
               >
                 <SelectValue placeholder="새 시험 등록" />
