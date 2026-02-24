@@ -168,7 +168,7 @@ export function useAuth() {
       setUser(null);
       queryClient.clear();
 
-      window.location.href = targetPath;
+      window.location.replace(targetPath);
     } catch (err) {
       console.error("로그아웃 처리 중 문제가 발생했습니다.", err);
       setLoading(false);
