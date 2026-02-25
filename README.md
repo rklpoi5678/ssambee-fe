@@ -4,12 +4,8 @@
 
 **학원/수업 운영을 위한 통합 플랫폼**
 
-강사/조교(MGMT)와 학생/학부모(SVC)를 위한 직관적인 대시보드와 관리 시스템
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-19.2.4-61DAFB?logo=react)](https://reactjs.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
+수업 운영부터 학생 관리까지 SSam B에서 한번에 운영하세요
 
 ![Ssam B Landing](assets/landing.png)
 
@@ -17,15 +13,29 @@
 
 ---
 
+- ### **URL** | www.ssambee.com
+- ### **FE** | https://github.com/EduOps-Lab/ssambee-fe
+- ### **BE** | https://github.com/EduOps-Lab/ssambee-be
+
+---
+
 ## 📋 목차
 
-- [주요 기능](#-주요-기능)
-- [기술 스택](#-기술-스택)
-- [빠른 시작](#-빠른-시작)
-- [프로젝트 구조](#-프로젝트-구조)
-- [권한 및 인증](#-권한-및-인증)
-- [사용 가능한 스크립트](#-사용-가능한-스크립트)
-- [배포 및 운영](#-배포-및-운영)
+- [❤️ 프로젝트 개요](#-프로젝트-개요)
+- [✨ 주요 기능](#-주요-기능)
+- [🛠 기술 스택](#-기술-스택)
+- [🌐 시스템 아키텍처](#-시스템-아키텍처)
+- [🛸 팀 소개](#-팀-소개)
+- [🚀 빠른 시작](#-빠른-시작)
+- [📂 프로젝트 구조](#-프로젝트-구조)
+- [🔒 권한 및 인증](#-권한-및-인증)
+- [📜 스크립트 가이드](#-스크립트-가이드)
+- [🚢 배포 및 운영](#-배포-및-운영)
+
+---
+## ❤️ 프로젝트 개요
+
+~~
 
 ---
 
@@ -79,37 +89,57 @@
 
 ## 🛠 기술 스택
 
-### Core
+### 🏗 Core
+<p>
+  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white"/>
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white"/>
+  <img src="https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white"/>
+</p>
 
-- **Framework:** Next.js `16.1.6` (App Router, RSC)
-- **Language:** TypeScript `^5`
-- **Runtime:** Node.js `24.13.0`
-- **Package Manager:** pnpm `10.28.0`
+### 🎨 UI / UX
+<p>
+  <img src="https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black"/>
+  <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white"/>
+  <img src="https://img.shields.io/badge/shadcn/ui-111111?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Radix_UI-161618?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Recharts-FF6384?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/TipTap-000000?style=for-the-badge"/>
+</p>
 
-### UI/UX
+### ⚙ State & Data
+<p>
+  <img src="https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Zustand-443E38?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white"/>
+  <img src="https://img.shields.io/badge/React_Hook_Form-EC5990?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Zod-3E67B1?style=for-the-badge"/>
+</p>
 
-- **Library:** React `19.2.4`
-- **Styling:** Tailwind CSS `4`
-- **Component Library:** shadcn/ui + Radix UI
-- **Charts:** Recharts
-- **Calendar:** react-big-calendar, react-day-picker
-- **Editor:** TipTap
-- **PDF:** @react-pdf/renderer
+### 🩺 Quality
+<p>
+  <img src="https://img.shields.io/badge/Sentry-362D59?style=for-the-badge&logo=sentry&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white"/>
+  <img src="https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=black"/>
+</p>
 
-### State & Data Management
+---
+## 🌐 시스템 아키텍처
 
-- **Server State:** TanStack Query (React Query)
-- **Client State:** Zustand
-- **HTTP Client:** Axios
-- **Form Management:** React Hook Form
-- **Validation:** Zod
+~~
 
-### Quality & Monitoring
+---
 
-- **Observability:** Sentry (server/edge/client)
-- **Testing:** Jest
-- **Linting:** ESLint
-- **Formatting:** Prettier
+## 🛸 팀 소개
+
+
+## 👥 팀원 소개
+
+| 👑 박창기 | 이유리 | 임경민 | 김윤기 |
+| :---: | :---: | :---: | :---: |
+| ![창기](https://github.com/p-changki.png?s=20) | ![유리](https://github.com/yoorrll.png?s=20)| ![경민](https://github.com/play-ancora-gyungmin.png?s=20) | ![윤기](https://github.com/rklpoi5678.png?s=20) |
+| PM & 프론트 | 프론트 | 백엔드 | 백엔드 & 배포 |
 
 ---
 
@@ -221,7 +251,7 @@ SSam B는 URL 기반으로 사용자 역할을 구분합니다:
 
 ---
 
-## 📜 사용 가능한 스크립트
+## 📜 스크립트 가이드
 
 ### 개발 및 빌드
 
