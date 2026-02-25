@@ -51,6 +51,8 @@ export const useLectureCreateForm = ({
 
   const handleSave = lectureForm.handleSubmit(
     (lectureData) => {
+      if (createLecture.isPending) return;
+
       const hasInvalidSchedule = schedules.some(
         (id) => !scheduleSchema.safeParse(scheduleData[id]).success
       );
