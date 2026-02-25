@@ -83,25 +83,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <head>
-        {isProd && (
-          <Script id="microsoft-clarity" strategy="afterInteractive">
-            {`
-                (function(c,l,a,r,i,t,y){
-                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-                })(window, document, "clarity", "script", "vmrhru1kzt");
-            `}
-          </Script>
-        )}
-      </head>
       <body className={`${pretendard.variable} antialiased`}>
         {children}
         <Analytics />
         <SpeedInsights />
       </body>
       {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
+      {isProd && (
+        <Script id="microsoft-clarity" strategy="afterInteractive">
+          {`
+                (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                })(window, document, "clarity", "script", "vmrhru1kzt");
+            `}
+        </Script>
+      )}
     </html>
   );
 }
