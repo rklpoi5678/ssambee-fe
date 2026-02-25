@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -24,6 +25,7 @@ const metadataBase = (() => {
 })();
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+const isProd = process.env.NEXT_PUBLIC_APP_ENV === "production";
 
 export const metadata: Metadata = {
   metadataBase,
@@ -87,6 +89,17 @@ export default function RootLayout({
         <SpeedInsights />
       </body>
       {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
+      {isProd && (
+        <Script id="microsoft-clarity" strategy="afterInteractive">
+          {`
+                (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                })(window, document, "clarity", "script", "vmrhru1kzt");
+            `}
+        </Script>
+      )}
     </html>
   );
 }
