@@ -1,9 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  createElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import type { View } from "react-big-calendar";
 import { isSameDay } from "date-fns";
 
+import { CheckModal } from "@/components/common/modals/CheckModal";
+import { useModal } from "@/providers/ModalProvider";
 import {
   buildSchedulesRangeQuery,
   mapScheduleApiToCalendarEvent,
@@ -125,6 +133,7 @@ const migrateSchedulesToOtherCategory = async (
 };
 
 export function useScheduleEvents() {
+  const { openModal } = useModal();
   const {
     timetableOpen,
     setTimetableOpen,
@@ -485,75 +494,80 @@ export function useScheduleEvents() {
         return;
       }
 
-      if (
-        !confirm(
-          "이 분류를 삭제하면 연결된 일정은 기타로 이동합니다. 계속할까요?"
-        )
-      ) {
-        return;
-      }
+      openModal(
+        createElement(CheckModal, {
+          title: "분류를 삭제할까요?",
+          description: "이 분류를 삭제하면 연결된 일정은 기타로 이동됩니다.",
+          confirmText: isCategoryDeleting ? "삭제 중..." : "삭제",
+          cancelText: "취소",
+          confirmDisabled: isCategoryDeleting || isCategoryUpdating,
+          onConfirm: async () => {
+            setDeletingCategoryId(categoryId);
+            setCategoryUpdateError(null);
+            setIsCategoryDeleting(true);
 
-      setDeletingCategoryId(categoryId);
-      setCategoryUpdateError(null);
-      setIsCategoryDeleting(true);
+            try {
+              const schedulesToMigrate = await fetchSchedulesAPI({
+                ...CATEGORY_MIGRATION_RANGE,
+                category: categoryId,
+              });
 
-      try {
-        const schedulesToMigrate = await fetchSchedulesAPI({
-          ...CATEGORY_MIGRATION_RANGE,
-          category: categoryId,
-        });
+              if (schedulesToMigrate.length > 0) {
+                const failedScheduleIds =
+                  await migrateSchedulesToOtherCategory(schedulesToMigrate);
 
-        if (schedulesToMigrate.length > 0) {
-          const failedScheduleIds =
-            await migrateSchedulesToOtherCategory(schedulesToMigrate);
+                if (failedScheduleIds.length > 0) {
+                  throw new Error(
+                    `일정 ${failedScheduleIds.length}건을 기타로 이동하지 못해 분류 삭제를 중단했습니다. 잠시 후 다시 시도해 주세요.`
+                  );
+                }
+              }
 
-          if (failedScheduleIds.length > 0) {
-            throw new Error(
-              `일정 ${failedScheduleIds.length}건을 기타로 이동하지 못해 분류 삭제를 중단했습니다. 잠시 후 다시 시도해 주세요.`
-            );
-          }
-        }
+              await deleteScheduleCategoryAPI(categoryId);
 
-        await deleteScheduleCategoryAPI(categoryId);
+              const withoutTarget = categories.filter(
+                (category) =>
+                  category.id !== OTHER_CATEGORY_KEY &&
+                  category.id !== categoryId
+              );
+              const nextCategories = normalizeScheduleCategories(withoutTarget);
 
-        const withoutTarget = categories.filter(
-          (category) =>
-            category.id !== OTHER_CATEGORY_KEY && category.id !== categoryId
-        );
-        const nextCategories = normalizeScheduleCategories(withoutTarget);
+              setCategories(nextCategories);
 
-        setCategories(nextCategories);
+              setFilters((prev) => {
+                const synced = syncFiltersWithCategories(prev, nextCategories);
+                delete synced[categoryId];
+                return synced;
+              });
 
-        setFilters((prev) => {
-          const synced = syncFiltersWithCategories(prev, nextCategories);
-          delete synced[categoryId];
-          return synced;
-        });
+              const nextDefaultCategoryId =
+                nextCategories[0]?.id ?? OTHER_CATEGORY_KEY;
 
-        const nextDefaultCategoryId =
-          nextCategories[0]?.id ?? OTHER_CATEGORY_KEY;
+              setFormState((prev) => ({
+                ...prev,
+                categoryId:
+                  prev.categoryId === categoryId
+                    ? nextDefaultCategoryId
+                    : prev.categoryId,
+              }));
 
-        setFormState((prev) => ({
-          ...prev,
-          categoryId:
-            prev.categoryId === categoryId
-              ? nextDefaultCategoryId
-              : prev.categoryId,
-        }));
+              if (editingCategoryId === categoryId) {
+                handleCancelCategoryEdit();
+              }
 
-        if (editingCategoryId === categoryId) {
-          handleCancelCategoryEdit();
-        }
-
-        await loadSchedules();
-      } catch (error) {
-        setCategoryUpdateError(getCategoryActionErrorMessage(error));
-      } finally {
-        setDeletingCategoryId(null);
-        setIsCategoryDeleting(false);
-      }
+              await loadSchedules();
+            } catch (error) {
+              setCategoryUpdateError(getCategoryActionErrorMessage(error));
+            } finally {
+              setDeletingCategoryId(null);
+              setIsCategoryDeleting(false);
+            }
+          },
+        })
+      );
     },
     [
+      openModal,
       categories,
       editingCategoryId,
       handleCancelCategoryEdit,

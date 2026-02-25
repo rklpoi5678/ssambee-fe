@@ -19,6 +19,8 @@ export default function EducatorsLoginPage() {
     <AuthLayout
       title="반가워요!"
       description="강사 또는 조교를 선택해 로그인 해주세요."
+      role={selectedRole === "INSTRUCTOR" ? "instructor" : "assistant"}
+      type="login"
     >
       <RoleSelectorBtn
         options={EDUCATOR_ROLES}

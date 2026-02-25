@@ -19,6 +19,8 @@ export default function LearnersLoginPage() {
     <AuthLayout
       title="반가워요!"
       description="학생 또는 학부모를 선택해 로그인 해주세요."
+      role="student"
+      type="login"
     >
       <RoleSelectorBtn
         options={LEARNER_ROLES}

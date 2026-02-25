@@ -7,6 +7,8 @@ export default function AssistantRegisterPage() {
     <AuthLayout
       title="조교 회원가입"
       description="강사님께 받은 인증 코드를 사용해 가입해주세요."
+      role="assistant"
+      type="register"
     >
       <AuthenticationCodeForm />
       <RegisterForm

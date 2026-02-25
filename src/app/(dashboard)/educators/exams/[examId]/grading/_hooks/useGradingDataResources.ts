@@ -8,6 +8,9 @@ import { useExamDetail } from "@/hooks/exams/useExamDetail";
 import { useStudentGradeWithAnswers } from "@/hooks/grades/useStudentGradeWithAnswers";
 import { fetchExamGradesAPI } from "@/services/exams/grades.service";
 
+const GRADING_CACHE_STALE_TIME = 1000 * 60 * 5;
+const GRADING_CACHE_GC_TIME = 1000 * 60 * 30;
+
 export const useGradingPrimaryResources = (examId: string) => {
   const {
     data: examDetail,
@@ -19,7 +22,8 @@ export const useGradingPrimaryResources = (examId: string) => {
     queryKey: examKeys.grades(examId),
     queryFn: () => fetchExamGradesAPI(examId),
     enabled: Boolean(examId),
-    staleTime: 1000 * 30,
+    staleTime: GRADING_CACHE_STALE_TIME,
+    gcTime: GRADING_CACHE_GC_TIME,
     refetchOnWindowFocus: false,
   });
 

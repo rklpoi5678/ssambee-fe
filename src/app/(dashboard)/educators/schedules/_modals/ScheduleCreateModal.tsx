@@ -1,7 +1,6 @@
 "use client";
 
 import { memo } from "react";
-import { ChevronDown } from "lucide-react";
 
 import SelectBtn from "@/components/common/button/SelectBtn";
 import { DatePickerInput } from "@/components/common/input/DatePickerField";
@@ -74,7 +73,6 @@ function ScheduleCreateModalComponent({
   onDelete,
 }: ScheduleCreateModalProps) {
   const isEditMode = mode === "view" || mode === "edit";
-  const isEditableMode = mode === "edit";
   const isReadonlyView = mode === "view";
   const isActionLocked = isSubmitting || isDeleting;
   const isFormDisabled = isActionLocked || isReadonlyView;
@@ -237,9 +235,8 @@ function ScheduleCreateModalComponent({
                   placeholder="시간 선택"
                   inputMode="numeric"
                   maxLength={5}
-                  className={`${fieldInputClass} pr-11`}
+                  className={fieldInputClass}
                 />
-                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8b90a3]" />
               </div>
             </div>
 
@@ -262,9 +259,8 @@ function ScheduleCreateModalComponent({
                   placeholder="시간 선택"
                   inputMode="numeric"
                   maxLength={5}
-                  className={`${fieldInputClass} pr-11`}
+                  className={fieldInputClass}
                 />
-                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8b90a3]" />
               </div>
             </div>
 
@@ -321,7 +317,7 @@ function ScheduleCreateModalComponent({
             <span />
           )}
 
-          {isEditableMode ? (
+          {isEditMode ? (
             <Button
               type="button"
               variant="outline"
@@ -329,7 +325,7 @@ function ScheduleCreateModalComponent({
               onClick={onDelete}
               disabled={isActionLocked}
             >
-              {isDeleting ? "삭제 중..." : "일정 삭제"}
+              {isDeleting ? "삭제 중..." : "삭제하기"}
             </Button>
           ) : null}
         </div>

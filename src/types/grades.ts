@@ -71,6 +71,7 @@ export type ExamGradeReportAssignmentApi = {
   categoryName: string;
   resultIndex?: number | null;
   resultLabel?: string | null;
+  resultPresets?: string[] | null;
 };
 
 export type ExamGradeReportQuestionApi = {

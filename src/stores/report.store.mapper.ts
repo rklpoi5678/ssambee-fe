@@ -200,13 +200,22 @@ export const mapReportDetailsToStudentFields = (
     })) ?? [];
 
   const assignmentResults: ReportAssignmentResult[] =
-    report.assignments?.map((assignment) => ({
-      id: assignment.assignmentId,
-      title: assignment.title,
-      categoryName: assignment.categoryName,
-      value: assignment.resultLabel?.trim() || "-",
-      resultIndex: assignment.resultIndex,
-    })) ?? [];
+    report.assignments?.map((assignment) => {
+      const labelFromApi = assignment.resultLabel?.trim();
+      const labelFromPreset =
+        typeof assignment.resultIndex === "number" &&
+        Array.isArray(assignment.resultPresets)
+          ? assignment.resultPresets[assignment.resultIndex]?.trim()
+          : undefined;
+
+      return {
+        id: assignment.assignmentId,
+        title: assignment.title,
+        categoryName: assignment.categoryName,
+        value: labelFromApi || labelFromPreset || "-",
+        resultIndex: assignment.resultIndex,
+      };
+    }) ?? [];
 
   const academyName = report.instructor?.academy?.trim() || undefined;
 

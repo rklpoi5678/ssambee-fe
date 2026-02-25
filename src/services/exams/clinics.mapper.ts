@@ -63,6 +63,7 @@ export const mapClinicApiToStudent = (
     ),
     status: statusLabel,
     phone: clinic.student.phone,
-    parentPhone: "",
+    parentPhone:
+      clinic.student.parentPhone ?? clinic.student.parent_phone ?? "",
   };
 };
