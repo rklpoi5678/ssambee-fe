@@ -43,12 +43,13 @@ export function SimpleReportTemplate({ examData }: SimpleReportTemplateProps) {
     <div className="space-y-8 font-sans text-[#4a4d5c]">
       <KakaoNotificationModal
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        openChangeAction={setIsModalOpen}
         recipients={recipients}
+        designVariant="student"
         title="성적표 발송 준비"
         subtitle="심플 리포트 발송 정보 확인"
         defaultMessage=""
-        onSend={handleSendReport}
+        sendAction={handleSendReport}
         mode="prepare"
       />
 

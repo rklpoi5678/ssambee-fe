@@ -118,12 +118,13 @@ export function PremiumReportTemplate({
       {/* 카카오톡 발송 모달 */}
       <KakaoNotificationModal
         open={isModalOpen}
-        onOpenChange={setIsModalOpen}
+        openChangeAction={setIsModalOpen}
         recipients={recipients}
+        designVariant="student"
         title="성적표 발송 준비"
         subtitle="프리미엄 리포트 발송 정보 확인"
         defaultMessage=""
-        onSend={handleSendReport}
+        sendAction={handleSendReport}
         mode="prepare"
       />
       {/* 상단 헤더 */}

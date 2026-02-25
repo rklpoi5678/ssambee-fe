@@ -61,14 +61,14 @@ export function ExamInfoSection({
                   <Input
                     id="exam-pass-score"
                     type="number"
-                    placeholder="80"
+                    placeholder="통과기준 점수"
                     value={field.value ?? ""}
                     onChange={(event) => {
                       const next = event.target.value;
                       field.onChange(next === "" ? undefined : Number(next));
                     }}
                     disabled={disabled}
-                    className="h-11 flex-1 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
+                    className="h-12 flex-1 rounded-[12px] border-[#e9ebf0] bg-[#fcfcfd] text-[14px] font-medium text-[#4a4d5c]"
                   />
                 )}
               />

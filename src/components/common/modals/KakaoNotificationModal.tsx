@@ -11,7 +11,9 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -19,6 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import SelectBtn from "@/components/common/button/SelectBtn";
+import { StudentProfileAvatar } from "@/components/common/avatar/StudentProfileAvatar";
 import { useDialogAlert } from "@/hooks/useDialogAlert";
 
 // 공통 수신자 타입
@@ -37,7 +41,7 @@ type TargetType = "all" | "student" | "parent";
 
 type KakaoNotificationModalProps = {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  openChangeAction: (open: boolean) => void;
   recipients: NotificationRecipient[];
   // 모달 타입에 따른 제목 변경
   title?: string;
@@ -45,25 +49,28 @@ type KakaoNotificationModalProps = {
   // 기본 메시지
   defaultMessage?: string;
   // 발송 핸들러
-  onSend?: (
+  sendAction?: (
     recipients: NotificationRecipient[],
     message: string,
     targetType: TargetType
   ) => void | Promise<void>;
   mode?: "send" | "prepare";
+  designVariant?: "default" | "student";
 };
 
 export function KakaoNotificationModal({
   open,
-  onOpenChange,
+  openChangeAction,
   recipients,
   title = "알림톡 전송",
   subtitle = "수업 알림 발송",
   defaultMessage = "",
-  onSend,
+  sendAction,
   mode = "send",
+  designVariant = "default",
 }: KakaoNotificationModalProps) {
   // TODO: defaultMessage 변경 시 message 상태 동기화(useEffect) 필요
+  const [sendChannel, setSendChannel] = useState("kakao");
   const [message, setMessage] = useState(defaultMessage);
   const [targetType, setTargetType] = useState<TargetType>("all");
   const [isSending, setIsSending] = useState(false);
@@ -85,10 +92,10 @@ export function KakaoNotificationModal({
   }, [recipients, targetType]);
 
   const handleSend = async () => {
-    if (onSend) {
+    if (sendAction) {
       setIsSending(true);
       try {
-        await onSend(recipients, message, targetType);
+        await sendAction(recipients, message, targetType);
         handleClose();
       } catch (error) {
         console.error("Failed to send notification:", error);
@@ -114,15 +121,183 @@ export function KakaoNotificationModal({
   };
 
   const handleClose = () => {
-    onOpenChange(false);
+    openChangeAction(false);
+    setSendChannel("kakao");
     setMessage(defaultMessage);
     setTargetType("all");
   };
 
   const handleDialogOpenChange = (nextOpen: boolean) => {
     if (!nextOpen && isSending) return;
-    onOpenChange(nextOpen);
+    openChangeAction(nextOpen);
   };
+
+  if (designVariant === "student") {
+    return (
+      <Dialog open={open} onOpenChange={handleDialogOpenChange}>
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto p-[32px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-[24px] font-bold text-label-normal">
+              {title}
+            </DialogTitle>
+            <p className="text-[18px] font-medium text-label-alternative">
+              {subtitle}
+            </p>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            <div className="space-y-4 rounded-[20px] border bg-surface-normal-light-alternative px-[24px] py-[16px]">
+              <div className="flex items-center justify-between">
+                <h3 className="py-[11px] text-[18px] font-semibold text-label-neutral">
+                  발송 설정
+                </h3>
+                <p className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600">
+                  총 예상 수신: {targetInfo.count}명
+                </p>
+              </div>
+
+              <div className="grid w-full grid-cols-2 items-start gap-4 pb-2">
+                <div className="space-y-2">
+                  <Label className="ml-1 text-muted-foreground">
+                    발송 채널
+                  </Label>
+                  <RadioGroup
+                    value={sendChannel}
+                    onValueChange={setSendChannel}
+                  >
+                    <div className="flex h-[58px] w-full items-center space-x-3 rounded-[12px] border border-neutral-200 bg-white px-4 shadow-sm">
+                      <RadioGroupItem
+                        value="kakao"
+                        id="kakao"
+                        className="text-blue-600"
+                      />
+                      <Label
+                        htmlFor="kakao"
+                        className="flex-1 cursor-pointer text-base font-normal"
+                      >
+                        카카오톡
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="ml-1 text-muted-foreground">
+                    발송 대상
+                  </Label>
+                  <SelectBtn
+                    className="h-[58px] w-full rounded-[12px] border border-neutral-200 bg-white px-4 text-base"
+                    value={targetType}
+                    placeholder="발송 대상 선택"
+                    optionSize="lg"
+                    options={[
+                      { label: "전체", value: "all" },
+                      { label: "학생만", value: "student" },
+                      { label: "학부모만", value: "parent" },
+                    ]}
+                    onChange={(value) => setTargetType(value as TargetType)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4 rounded-[20px] border bg-surface-normal-light-alternative px-[24px] py-[16px]">
+              <h3 className="py-[11px] text-[18px] font-semibold text-label-neutral">
+                대상 학생 정보
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                  ({recipients.length}명)
+                </span>
+              </h3>
+
+              <div className="custom-scrollbar min-h-[100px] max-h-[400px] space-y-2 overflow-y-auto pr-2">
+                {recipients.length === 0 ? (
+                  <div className="flex h-[100px] items-center justify-center rounded-[12px] border border-dashed border-neutral-200 bg-white">
+                    <p className="text-sm text-muted-foreground">
+                      선택된 학생이 없습니다.
+                    </p>
+                  </div>
+                ) : (
+                  recipients.map((recipient) => (
+                    <div
+                      key={recipient.id}
+                      className="flex items-center gap-4 rounded-[12px] border border-neutral-200 bg-white p-4 shadow-sm transition-colors hover:border-blue-300"
+                    >
+                      <StudentProfileAvatar
+                        seedKey={recipient.id}
+                        sizePreset="Medium"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[15px] font-bold text-label-normal">
+                          {recipient.name}
+                        </p>
+                        <div className="mt-0.5 flex flex-col sm:flex-row sm:gap-3">
+                          <p className="text-[12px] text-label-alternative">
+                            학생 | {recipient.phone ?? "-"}
+                          </p>
+                          <p className="text-[12px] text-label-alternative">
+                            부모 | {recipient.parentPhone ?? "-"}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="hidden items-center rounded-full border border-blue-100 bg-blue-50 px-2.5 py-0.5 text-[11px] font-semibold text-blue-600 sm:inline-flex">
+                        {sendChannel === "kakao" ? "카카오톡" : "SMS"}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-4 rounded-[20px] border bg-surface-normal-light-alternative px-[24px] py-[16px]">
+              <h3 className="py-[11px] text-[18px] font-semibold text-label-neutral">
+                메시지 내용
+              </h3>
+              <div className="space-y-2">
+                <Textarea
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
+                  placeholder="전송할 메시지를 입력하세요"
+                  className="min-h-[160px] w-full rounded-[12px] border border-neutral-200 bg-white p-4 text-base shadow-none focus-visible:ring-blue-500"
+                  rows={6}
+                />
+              </div>
+              <p className="ml-1 text-xs text-muted-foreground">
+                * 전송 버튼 클릭 시 취소가 불가하므로 신중히 확인해주세요.
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
+            <div className="flex w-full justify-end gap-2">
+              <Button
+                className="h-[48px] rounded-[12px] border border-neutral-200 bg-white px-[28px] py-[12px] text-label-normal shadow-none hover:bg-neutral-50"
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                disabled={isSending}
+              >
+                취소
+              </Button>
+              <Button
+                className="h-[48px] rounded-[12px] bg-brand-700 px-[28px] py-[12px] text-white shadow-none hover:bg-brand-800 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-500"
+                variant="default"
+                onClick={handleSend}
+                disabled={targetInfo.count === 0 || isSending}
+              >
+                {isSending
+                  ? mode === "prepare"
+                    ? "준비 중..."
+                    : "전송 중..."
+                  : mode === "prepare"
+                    ? `알림 발송 준비 (${targetInfo.count}명)`
+                    : "알림 전송"}
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={handleDialogOpenChange}>

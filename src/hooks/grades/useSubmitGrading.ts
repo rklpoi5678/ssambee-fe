@@ -1,5 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
+import { examKeys } from "@/constants/query-keys";
 import { submitGradingAPI } from "@/services/exams/grades.service";
 import type { SubmitGradingPayload } from "@/types/grades";
 
@@ -14,10 +15,22 @@ type UseSubmitGradingOptions = {
 };
 
 export const useSubmitGrading = (options?: UseSubmitGradingOptions) => {
+  const queryClient = useQueryClient();
+  const gradeDetailKeyPrefix = [...examKeys.details(), "grade"] as const;
+
   return useMutation({
     mutationFn: ({ examId, payload }: SubmitGradingParams) =>
       submitGradingAPI(examId, payload),
     onSuccess: (_result, variables) => {
+      const examId = variables.examId;
+
+      queryClient.invalidateQueries({ queryKey: examKeys.detail(examId) });
+      queryClient.invalidateQueries({ queryKey: examKeys.grades(examId) });
+      queryClient.invalidateQueries({
+        queryKey: gradeDetailKeyPrefix,
+        exact: false,
+      });
+
       options?.onSuccess?.(variables);
     },
     onError: (error) => {

@@ -1,8 +1,11 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { createElement } from "react";
 import { format } from "date-fns";
 
+import { CheckModal } from "@/components/common/modals/CheckModal";
+import { useModal } from "@/providers/ModalProvider";
 import {
   mapScheduleFormToPayload,
   mapScheduleFormToUpdatePayload,
@@ -72,6 +75,7 @@ export function useScheduleEditor({
   loadSchedules,
   onFocusDate,
 }: UseScheduleEditorParams) {
+  const { openModal } = useModal();
   const [createOpen, setCreateOpen] = useState(false);
   const [scheduleModalMode, setScheduleModalMode] =
     useState<ScheduleModalMode>("create");
@@ -241,7 +245,7 @@ export function useScheduleEditor({
 
   const handleDeleteSchedule = useCallback(async () => {
     if (
-      scheduleModalMode !== "edit" ||
+      scheduleModalMode === "create" ||
       !editingScheduleId ||
       isScheduleDeleting ||
       isScheduleUpdating
@@ -249,24 +253,32 @@ export function useScheduleEditor({
       return;
     }
 
-    if (!confirm("이 일정을 삭제하시겠어요?")) {
-      return;
-    }
+    openModal(
+      createElement(CheckModal, {
+        title: "일정을 삭제할까요?",
+        description: "삭제된 일정은 복구할 수 없습니다.",
+        confirmText: isScheduleDeleting ? "삭제 중..." : "삭제",
+        cancelText: "취소",
+        confirmDisabled: isScheduleDeleting || isScheduleUpdating,
+        onConfirm: async () => {
+          setIsScheduleDeleting(true);
 
-    setIsScheduleDeleting(true);
-
-    try {
-      await deleteScheduleAPI(editingScheduleId);
-      await loadSchedules();
-      closeCreateScheduleModal();
-      setEditingScheduleId(null);
-      resetScheduleForm();
-    } catch (error) {
-      setFormError(getErrorMessage(error));
-    } finally {
-      setIsScheduleDeleting(false);
-    }
+          try {
+            await deleteScheduleAPI(editingScheduleId);
+            await loadSchedules();
+            closeCreateScheduleModal();
+            setEditingScheduleId(null);
+            resetScheduleForm();
+          } catch (error) {
+            setFormError(getErrorMessage(error));
+          } finally {
+            setIsScheduleDeleting(false);
+          }
+        },
+      })
+    );
   }, [
+    openModal,
     closeCreateScheduleModal,
     scheduleModalMode,
     editingScheduleId,

@@ -17,6 +17,8 @@ export type ClinicStudentApi = {
   school: string;
   schoolYear: string;
   phone: string;
+  parentPhone?: string | null;
+  parent_phone?: string | null;
 };
 
 export type ClinicExamApi = {
