@@ -2,7 +2,7 @@
 
 import { UseFormReturn } from "react-hook-form";
 import { UseMutationResult } from "@tanstack/react-query";
-import { createElement } from "react";
+import { createElement, useRef } from "react";
 
 import {
   LectureCreatePayload,
@@ -36,6 +36,7 @@ export const useLectureCreateForm = ({
   onSuccess,
 }: UseLectureCreateFormParams) => {
   const { openModal } = useModal();
+  const submitLockRef = useRef(false);
 
   const openAlertModal = (title: string, description?: string) => {
     openModal(
@@ -49,57 +50,66 @@ export const useLectureCreateForm = ({
     );
   };
 
-  const handleSave = lectureForm.handleSubmit(
-    (lectureData) => {
-      const hasInvalidSchedule = schedules.some(
-        (id) => !scheduleSchema.safeParse(scheduleData[id]).success
+  const onValidSubmit = (lectureData: LectureFormInput) => {
+    if (submitLockRef.current || createLecture.isPending) return;
+
+    const hasInvalidSchedule = schedules.some(
+      (id) => !scheduleSchema.safeParse(scheduleData[id]).success
+    );
+
+    if (hasInvalidSchedule) {
+      openAlertModal(
+        "시간표 입력 오류",
+        "요일/시작/종료 시간을 모두 입력해주세요."
       );
-
-      if (hasInvalidSchedule) {
-        openAlertModal(
-          "시간표 입력 오류",
-          "요일/시작/종료 시간을 모두 입력해주세요."
-        );
-        return;
-      }
-
-      const lectureTimes = schedules.map((id) => ({
-        day: scheduleData[id]?.day || "",
-        startTime: scheduleData[id]?.startTime || "",
-        endTime: scheduleData[id]?.endTime || "",
-      }));
-
-      const enrollments = lectureData.students.map((student) => ({
-        school: student.school,
-        schoolYear: student.studentGrade,
-        studentName: student.name,
-        studentPhone: student.phone,
-        parentPhone: student.parentPhone,
-      }));
-
-      const payload: LectureCreatePayload = {
-        title: lectureData.name,
-        schoolYear: lectureData.schoolYear,
-        subject: lectureData.subject,
-        status: mapLectureStatusToApi(lectureData.status as LectureStatus),
-        startAt: lectureData.startDate
-          ? new Date(lectureData.startDate).toISOString()
-          : null,
-        lectureTimes,
-        enrollments,
-      };
-
-      createLecture.mutate(payload, {
-        onSuccess,
-        onError: () => {
-          openAlertModal("저장 실패", "저장 중 오류가 발생했습니다.");
-        },
-      });
-    },
-    () => {
-      openAlertModal("필수 입력값 확인", "필수 입력값을 확인해주세요.");
+      return;
     }
-  );
+
+    const lectureTimes = schedules.map((id) => ({
+      day: scheduleData[id]?.day || "",
+      startTime: scheduleData[id]?.startTime || "",
+      endTime: scheduleData[id]?.endTime || "",
+    }));
+
+    const enrollments = lectureData.students.map((student) => ({
+      school: student.school,
+      schoolYear: student.studentGrade,
+      studentName: student.name,
+      studentPhone: student.phone,
+      parentPhone: student.parentPhone,
+    }));
+
+    const payload: LectureCreatePayload = {
+      title: lectureData.name,
+      schoolYear: lectureData.schoolYear,
+      subject: lectureData.subject,
+      status: mapLectureStatusToApi(lectureData.status as LectureStatus),
+      startAt: lectureData.startDate
+        ? new Date(lectureData.startDate).toISOString()
+        : null,
+      lectureTimes,
+      enrollments,
+    };
+
+    submitLockRef.current = true;
+    createLecture.mutate(payload, {
+      onSuccess,
+      onError: () => {
+        openAlertModal("저장 실패", "저장 중 오류가 발생했습니다.");
+      },
+      onSettled: () => {
+        submitLockRef.current = false;
+      },
+    });
+  };
+
+  const onInvalidSubmit = () => {
+    openAlertModal("필수 입력값 확인", "필수 입력값을 확인해주세요.");
+  };
+
+  const handleSave = () => {
+    void lectureForm.handleSubmit(onValidSubmit, onInvalidSubmit)();
+  };
 
   const handleCancel = (isSaved: boolean, onBack: () => void) => {
     if (isSaved) {
