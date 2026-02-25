@@ -14,7 +14,7 @@ import {
   CheckedIcon,
   EyeClosedIcon,
   EyeOpenIcon,
-  GoogleIcon,
+  // GoogleIcon,
   UncheckedIcon,
 } from "@/components/icons/AuthIcons";
 
@@ -73,10 +73,10 @@ export default function LoginForm({ selectedRole }: LoginFormProps) {
   };
 
   // 구글 로그인
-  const handleGoogleLogin = () => {
-    console.log("구글 로그인 요청");
-    // TODO: 구글 OAuth
-  };
+  // const handleGoogleLogin = () => {
+  //   console.log("구글 로그인 요청");
+  //   // TODO: 구글 OAuth
+  // };
 
   const footerContent =
     FOOTER_CONFIG[selectedRole as keyof typeof FOOTER_CONFIG] ||
@@ -158,12 +158,12 @@ export default function LoginForm({ selectedRole }: LoginFormProps) {
               <span className="text-4 text-neutral-300">로그인 상태 유지</span>
             </label>
           </div>
-          <Link
+          {/* <Link
             href="#"
             className="text-4 font-semibold text-blue-700 hover:text-blue-500 transition-colors duration-200"
           >
             비밀번호 찾기
-          </Link>
+          </Link> */}
         </div>
 
         <button
@@ -181,7 +181,7 @@ export default function LoginForm({ selectedRole }: LoginFormProps) {
         </button>
       </form>
 
-      <div className="relative mt-11 mb-9">
+      {/* <div className="relative mt-11 mb-9">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-gray-300"></div>
         </div>
@@ -198,7 +198,7 @@ export default function LoginForm({ selectedRole }: LoginFormProps) {
       >
         <GoogleIcon size={20} />
         Google로 로그인하기
-      </button>
+      </button> */}
 
       <div className="flex items-center justify-center gap-2 text-center text-4 text-neutral-400 mt-14">
         <p>{footerContent.question}</p>
