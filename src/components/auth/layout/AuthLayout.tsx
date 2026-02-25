@@ -92,8 +92,8 @@ export default function AuthLayout({
 
   return (
     <div className="flex min-h-screen">
-      <div className="hidden lg:flex lg:w-1/2 bg-brand-700 sticky top-0 h-screen items-center justify-center p-12">
-        <div className="flex flex-col items-center justify-center overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-brand-700 sticky top-0 h-screen items-center justify-center p-20">
+        <div className="flex flex-col items-start justify-center overflow-hidden">
           <div>
             <h2
               className="text-[56px] font-bold leading-tight whitespace-pre-line"
