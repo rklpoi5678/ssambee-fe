@@ -26,6 +26,8 @@ export default function ParentRegisterPage() {
     <AuthLayout
       title="회원가입"
       description={DESCRIPTION_BY_ROLE[selectedRole]}
+      role="student"
+      type="register"
     >
       <RoleSelectorBtn
         options={LEARNER_ROLES}
