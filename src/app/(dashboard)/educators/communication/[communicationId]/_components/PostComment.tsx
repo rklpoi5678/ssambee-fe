@@ -88,7 +88,7 @@ export default function PostComment({
               }
               className="h-[200px]"
             />
-            {!isNoticePost && selectedFile && (
+            {selectedFile && (
               <div className="p-3 bg-slate-50 border rounded-xl flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white rounded-lg border shadow-sm">
