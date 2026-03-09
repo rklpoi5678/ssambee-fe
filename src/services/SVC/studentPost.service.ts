@@ -132,12 +132,9 @@ export const myPostServiceSVC = {
     postId: string,
     payload: UpdateStudentPostRequest | FormData
   ) => {
-    const isFormData = payload instanceof FormData;
     const { data } = await axiosClientSVC.patch<
       ApiResponse<GetStudentPostDetailResponse>
-    >(`/student-posts/${postId}`, payload, {
-      headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
-    });
+    >(`/student-posts/${postId}`, payload);
     return data.data;
   },
 
@@ -178,13 +175,9 @@ export const myPostServiceSVC = {
     commentId: string,
     payload: CreateStudentPostCommentRequest | FormData
   ) => {
-    const isFormData = payload instanceof FormData;
     const { data } = await axiosClientSVC.patch<ApiResponse<CommonPostComment>>(
       `/student-posts/${postId}/comments/${commentId}`,
-      payload,
-      {
-        headers: isFormData ? { "Content-Type": "multipart/form-data" } : {},
-      }
+      payload
     );
     return data.data;
   },
