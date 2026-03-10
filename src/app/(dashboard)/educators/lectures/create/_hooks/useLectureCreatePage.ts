@@ -68,6 +68,7 @@ export const useLectureCreatePage = () => {
   }, [resetCreateState]);
 
   const createLectureMutation = useCreateLecture();
+  const isSubmitting = createLectureMutation.isPending;
 
   const { handleSave, handleCancel } = useLectureCreateForm({
     lectureForm,
@@ -85,6 +86,7 @@ export const useLectureCreatePage = () => {
   return {
     state: {
       isSaved,
+      isSubmitting,
     },
     form: {
       lectureForm,
