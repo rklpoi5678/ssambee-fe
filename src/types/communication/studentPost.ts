@@ -40,7 +40,7 @@ export type CreateStudentPostRequest =
       content: string;
       lectureId: string;
       file?: File;
-      attachments?: [];
+      attachments?: string[];
     }
   | FormData;
 
