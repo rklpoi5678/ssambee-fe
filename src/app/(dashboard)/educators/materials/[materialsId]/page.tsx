@@ -217,17 +217,13 @@ export default function MaterialsDetailPage() {
                 삭제
               </Button>
 
-              {mode === "view" && (
-                <div className="flex justify-end">
-                  <Button
-                    variant="outline"
-                    onClick={() => router.back()}
-                    className="h-14 w-[140px] gap-2.5 rounded-xl border-neutral-200 px-0 text-base font-semibold tracking-[-0.01em] text-neutral-500 shadow-none hover:border-brand-500 hover:text-brand-500 transition-colors cursor-pointer"
-                  >
-                    목록으로
-                  </Button>
-                </div>
-              )}
+              <Button
+                variant="outline"
+                onClick={() => router.back()}
+                className="h-14 w-[140px] gap-2.5 rounded-xl border-neutral-200 px-0 text-base font-semibold tracking-[-0.01em] text-neutral-500 shadow-none hover:border-brand-500 hover:text-brand-500 transition-colors cursor-pointer"
+              >
+                목록으로
+              </Button>
             </>
           ) : (
             <>
