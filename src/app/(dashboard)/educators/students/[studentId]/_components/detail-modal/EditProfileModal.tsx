@@ -39,7 +39,6 @@ const getFormDataOnly = (
     schoolYear: data.schoolYear ?? "",
     studentPhone: data.studentPhone ?? "",
     parentPhone: data.parentPhone ?? "",
-    email: data.email ?? "",
     memo: data.memo ?? "",
   };
 };
@@ -78,7 +77,6 @@ export default function EditProfileModal({
   const watchedSchool = useWatch({ control, name: "school" });
   const watchedSchoolYear = useWatch({ control, name: "schoolYear" });
   const watchedStudentPhone = useWatch({ control, name: "studentPhone" });
-  const watchedEmail = useWatch({ control, name: "email" });
   const watchedParentPhone = useWatch({ control, name: "parentPhone" });
 
   const onSubmit = (data: EditProfileFormData) => {
@@ -223,24 +221,6 @@ export default function EditProfileModal({
                     setValue("studentPhone", "", { shouldDirty: true })
                   }
                   showReset={isEditMode && !!watchedStudentPhone}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-muted-foreground">
-                  이메일
-                </Label>
-                <InputForm
-                  id="email"
-                  label="이메일"
-                  placeholder="이메일 입력"
-                  disabled={!isEditMode}
-                  floating={false}
-                  className="bg-white border border-neutral-200 rounded-[12px]"
-                  error={errors.email?.message}
-                  {...register("email")}
-                  onReset={() => setValue("email", "", { shouldDirty: true })}
-                  showReset={isEditMode && !!watchedEmail}
                 />
               </div>
 

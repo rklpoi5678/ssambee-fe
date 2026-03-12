@@ -59,7 +59,10 @@ export default function DataTable<T extends { id: string }>({
                   if (
                     target.closest("button") ||
                     target.closest("a") ||
-                    target.closest("input")
+                    target.closest("input") ||
+                    target.closest('[role="checkbox"]') ||
+                    target.closest("[data-radix-select-trigger]") ||
+                    target.closest(".prevent-click")
                   ) {
                     return;
                   }
@@ -75,7 +78,11 @@ export default function DataTable<T extends { id: string }>({
                 {columns.map((col) => (
                   <TableCell
                     key={`${record.id}-${col.key}`}
-                    className="text-lg font-medium text-label-normal px-6 whitespace-nowrap"
+                    className={`text-lg font-medium text-label-normal px-6 whitespace-nowrap ${
+                      col.key === "select" || col.key === "statusSelect"
+                        ? "prevent-click"
+                        : ""
+                    }`}
                   >
                     {col.render(record)}
                   </TableCell>
