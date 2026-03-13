@@ -150,7 +150,7 @@ export default function TabSectionSVC() {
         />
       )}
 
-      <div className="min-h-[550px]">
+      <div>
         {isLoading ? (
           <div className="flex items-center justify-center h-[550px]">
             <p className="text-muted-foreground">로딩 중...</p>

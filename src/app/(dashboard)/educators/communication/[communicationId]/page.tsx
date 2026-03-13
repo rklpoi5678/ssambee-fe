@@ -354,23 +354,24 @@ export default function CommunicationDetailPage() {
 
   return (
     <div className="container mx-auto space-y-8 p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <Title
-          title={
-            isNoticePost
-              ? "공지사항 상세"
-              : isWorksPost
-                ? "조교 업무 상세"
-                : "문의 상세"
-          }
-          description={
-            isEditing
-              ? "게시글을 수정 중입니다."
-              : isWorksPost
-                ? "업무의 상세 내용을 확인하세요."
-                : "게시글의 상세 내용을 확인하세요."
-          }
-        />
+      <Title
+        title={
+          isNoticePost
+            ? "공지사항 상세"
+            : isWorksPost
+              ? "조교 업무 상세"
+              : "문의 상세"
+        }
+        description={
+          isEditing
+            ? "게시글을 수정 중입니다."
+            : isWorksPost
+              ? "업무의 상세 내용을 확인하세요."
+              : "게시글의 상세 내용을 확인하세요."
+        }
+      />
+
+      <div className="flex items-center justify-end">
         <PostAction
           isEditing={isEditing}
           isMine={
