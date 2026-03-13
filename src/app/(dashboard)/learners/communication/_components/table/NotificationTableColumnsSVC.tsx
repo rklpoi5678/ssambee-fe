@@ -49,23 +49,6 @@ export const NOTICE_TABLE_COLUMNS_SVC: ColumnDefinition<NoticeRow>[] = [
     },
   },
   {
-    key: "authorRole",
-    label: "열람 권한",
-    render: (row) => {
-      const info =
-        NOTICE_TYPE_LABEL[row.targetRole as keyof typeof NOTICE_TYPE_LABEL] ??
-        NOTICE_TYPE_LABEL.ALL;
-
-      return (
-        <div className="w-[50px] flex items-center">
-          <StatusLabel noBackground color={info.color}>
-            {info.label}
-          </StatusLabel>
-        </div>
-      );
-    },
-  },
-  {
     key: "instructor",
     label: "작성자",
     render: (row) => {
