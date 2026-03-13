@@ -87,7 +87,11 @@ export default function EditProfileModal({
       let value = data[field];
       // registeredAt: YYYY-MM-DD → ISO 8601
       if (field === "registeredAt" && typeof value === "string") {
-        value = toISOFromYMD(value) as EditProfileFormData["registeredAt"];
+        const normalized = value.trim();
+        if (!normalized) {
+          return acc;
+        }
+        value = toISOFromYMD(normalized) as EditProfileFormData["registeredAt"];
       }
       acc[field] = value;
       return acc;

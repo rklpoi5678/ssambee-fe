@@ -330,6 +330,7 @@ function CommentItemSVC({
                 onClick={() => setRemoveExistingImage(false)}
                 className="absolute top-2 right-2 h-8 w-8 p-0 rounded-full hover:bg-red-50 hover:text-red-500"
                 title="복원"
+                aria-label="첨부 이미지 복원"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -344,6 +345,7 @@ function CommentItemSVC({
                 onClick={() => setRemoveExistingImage(true)}
                 className="absolute top-2 right-2 z-10 h-8 w-8 p-0 rounded-full bg-white/95 hover:bg-red-50 hover:text-red-600 border shadow-sm"
                 title="삭제"
+                aria-label="첨부 이미지 삭제"
               >
                 <X className="h-4 w-4" />
               </Button>
