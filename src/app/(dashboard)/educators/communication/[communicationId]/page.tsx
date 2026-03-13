@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { JSONContent } from "@tiptap/react";
 
@@ -39,7 +39,6 @@ export default function CommunicationDetailPage() {
   const searchParams = useSearchParams();
   const communicationId = params.communicationId as string;
   const type = searchParams.get("type") as "notice" | "inquiry" | "works";
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { showAlert } = useDialogAlert();
   const { openModal } = useModal();
 
@@ -219,7 +218,6 @@ export default function CommunicationDetailPage() {
     const handleSuccess = () => {
       setAnswerContent({});
       setSelectedFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
     const formData = new FormData();
@@ -303,12 +301,6 @@ export default function CommunicationDetailPage() {
     );
   };
 
-  // 자료 변경
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) setSelectedFile(file);
-  };
-
   // 자료 다운로드
   const handleAttachmentClick = (file: CommonPostAttachment) => {
     const isVideo =
@@ -362,23 +354,24 @@ export default function CommunicationDetailPage() {
 
   return (
     <div className="container mx-auto space-y-8 p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <Title
-          title={
-            isNoticePost
-              ? "공지사항 상세"
-              : isWorksPost
-                ? "조교 업무 상세"
-                : "문의 상세"
-          }
-          description={
-            isEditing
-              ? "게시글을 수정 중입니다."
-              : isWorksPost
-                ? "업무의 상세 내용을 확인하세요."
-                : "게시글의 상세 내용을 확인하세요."
-          }
-        />
+      <Title
+        title={
+          isNoticePost
+            ? "공지사항 상세"
+            : isWorksPost
+              ? "조교 업무 상세"
+              : "문의 상세"
+        }
+        description={
+          isEditing
+            ? "게시글을 수정 중입니다."
+            : isWorksPost
+              ? "업무의 상세 내용을 확인하세요."
+              : "게시글의 상세 내용을 확인하세요."
+        }
+      />
+
+      <div className="flex items-center justify-end">
         <PostAction
           isEditing={isEditing}
           isMine={
@@ -445,8 +438,6 @@ export default function CommunicationDetailPage() {
               setAnswerContent={setAnswerContent}
               selectedFile={selectedFile}
               setSelectedFile={setSelectedFile}
-              fileInputRef={fileInputRef as React.RefObject<HTMLInputElement>}
-              handleFileChange={handleFileChange}
               handleSubmitAnswer={handleSubmitAnswer}
               onUpdateComment={handleUpdateComment}
               onDeleteComment={handleDeleteComment}

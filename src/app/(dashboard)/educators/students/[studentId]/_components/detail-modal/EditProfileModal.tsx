@@ -24,7 +24,7 @@ import { GRADE_SELECTING_OPTIONS } from "@/constants/students.default";
 import { Textarea } from "@/components/ui/textarea";
 import { InputForm } from "@/components/common/input/InputForm";
 import SelectBtn from "@/components/common/button/SelectBtn";
-import { useDialogAlert } from "@/hooks/useDialogAlert";
+import { formatYMDFromISO, toISOFromYMD } from "@/utils/date";
 
 type EditProfileModalProps = {
   studentData: EditProfileFormDataType;
@@ -39,6 +39,8 @@ const getFormDataOnly = (
     schoolYear: data.schoolYear ?? "",
     studentPhone: data.studentPhone ?? "",
     parentPhone: data.parentPhone ?? "",
+    registeredAt:
+      formatYMDFromISO(data.registeredAt) ?? data.registeredAt ?? "",
     memo: data.memo ?? "",
   };
 };
@@ -48,7 +50,6 @@ export default function EditProfileModal({
 }: EditProfileModalProps) {
   const { isOpen, closeModal } = useModal();
   const [isEditMode, setIsEditMode] = useState(false);
-  const { showAlert } = useDialogAlert();
 
   // 수강생 정보 수정
   const { mutate: updateStudent, isPending } = useUpdateEnrollment();
@@ -83,7 +84,16 @@ export default function EditProfileModal({
     // dirtyFields 기준으로 변경된 데이터만 추출
     const changedData = Object.keys(dirtyFields).reduce((acc, key) => {
       const field = key as keyof EditProfileFormData;
-      acc[field] = data[field];
+      let value = data[field];
+      // registeredAt: YYYY-MM-DD → ISO 8601
+      if (field === "registeredAt" && typeof value === "string") {
+        const normalized = value.trim();
+        if (!normalized) {
+          return acc;
+        }
+        value = toISOFromYMD(normalized) as EditProfileFormData["registeredAt"];
+      }
+      acc[field] = value;
       return acc;
     }, {} as Partial<EditProfileFormData>);
 
@@ -93,24 +103,11 @@ export default function EditProfileModal({
       return;
     }
 
-    updateStudent(
-      { id: studentData.id, data: changedData },
-      {
-        onSuccess: () => {
-          console.log("수강생 정보 수정 성공:", changedData);
-
-          setIsEditMode(false);
-          closeModal();
-        },
-        onError: async () => {
-          await showAlert({ description: "수강생 정보 수정에 실패했습니다." });
-        },
-      }
-    );
+    updateStudent({ id: studentData.id, data: changedData });
   };
 
   const handleClose = () => {
-    reset(studentData); // 변경사항 초기화
+    reset(getFormDataOnly(studentData)); // 변경사항 초기화
     setIsEditMode(false);
     closeModal();
   };
@@ -124,7 +121,7 @@ export default function EditProfileModal({
       open={isOpen}
       onOpenChange={(open) => {
         if (!open) {
-          reset(studentData);
+          reset(getFormDataOnly(studentData));
           setIsEditMode(false);
           closeModal();
         }
@@ -241,6 +238,23 @@ export default function EditProfileModal({
                     setValue("parentPhone", "", { shouldDirty: true })
                   }
                   showReset={isEditMode && !!watchedParentPhone}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="registeredAt" className="text-muted-foreground">
+                  학생 등록일
+                </Label>
+                <InputForm
+                  id="registeredAt"
+                  label="학생 등록일"
+                  {...register("registeredAt")}
+                  type="date"
+                  placeholder="등록일 선택"
+                  disabled={!isEditMode}
+                  floating={false}
+                  className="bg-white border border-neutral-200 rounded-[12px]"
+                  error={errors.registeredAt?.message}
                 />
               </div>
 

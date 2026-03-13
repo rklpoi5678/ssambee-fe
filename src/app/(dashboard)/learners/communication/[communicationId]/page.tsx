@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { JSONContent } from "@tiptap/react";
 
@@ -34,7 +34,6 @@ export default function CommunicationDetailPageSVC() {
   const typeParam = searchParams.get("type");
   const type: "notice" | "inquiry" =
     typeParam === "notice" ? "notice" : "inquiry";
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isNoticePost = type === "notice";
 
@@ -219,7 +218,6 @@ export default function CommunicationDetailPageSVC() {
     const handleSuccess = () => {
       setAnswerContent({}); // 초기화 시 빈 객체
       setSelectedFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
     const formData = new FormData();
@@ -303,12 +301,6 @@ export default function CommunicationDetailPageSVC() {
     );
   };
 
-  // 자료 변경
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) setSelectedFile(file);
-  };
-
   // 자료 다운로드
   const handleAttachmentClick = (file: CommonPostAttachment) => {
     const isVideo =
@@ -329,15 +321,16 @@ export default function CommunicationDetailPageSVC() {
 
   return (
     <div className="container mx-auto space-y-8 p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <Title
-          title={isNoticePost ? "공지사항 상세" : "문의 상세"}
-          description={
-            isEditing
-              ? "게시글을 수정 중입니다."
-              : "게시글의 상세 내용을 확인하세요."
-          }
-        />
+      <Title
+        title={isNoticePost ? "공지사항 상세" : "문의 상세"}
+        description={
+          isEditing
+            ? "게시글을 수정 중입니다."
+            : "게시글의 상세 내용을 확인하세요."
+        }
+      />
+
+      <div className="flex items-center justify-end">
         <PostActionSVC
           isEditing={isEditing}
           isMine={currentData.isMine ?? false}
@@ -385,8 +378,6 @@ export default function CommunicationDetailPageSVC() {
             setAnswerContent={setAnswerContent}
             selectedFile={selectedFile}
             setSelectedFile={setSelectedFile}
-            fileInputRef={fileInputRef as React.RefObject<HTMLInputElement>}
-            handleFileChange={handleFileChange}
             handleSubmitAnswer={handleSubmitAnswer}
             onUpdateComment={handleUpdateComment}
             onDeleteComment={handleDeleteComment}
