@@ -22,15 +22,8 @@ export default function LearnersProfilePage() {
   useSetBreadcrumb([{ label: "프로필" }]);
 
   const { openModal, closeModal } = useModal();
-  const {
-    profile,
-    isPending,
-    isError,
-    updateProfile,
-    isUpdating,
-    linkChild,
-    isLinkingChild,
-  } = useMyLearnerProfile();
+  const { profile, isPending, isError, updateProfile, isUpdating, linkChild } =
+    useMyLearnerProfile();
   const { showAlert } = useDialogAlert();
 
   const profileRef = useRef(profile);
@@ -109,7 +102,6 @@ export default function LearnersProfilePage() {
         onLinkChild={
           profile.userType === "PARENT" ? handleLinkChild : undefined
         }
-        isLinkingChild={isLinkingChild}
       />
     );
   };

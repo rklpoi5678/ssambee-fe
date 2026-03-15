@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Lock, Users, UserX } from "lucide-react";
@@ -36,13 +36,11 @@ type ViewMode = "menu" | "password" | "linkChild";
 type SettingsSecurityModalProps = {
   email: string;
   onLinkChild?: (data: LinkChildFormData) => Promise<unknown>;
-  isLinkingChild?: boolean;
 };
 
 export function SettingsSecurityModal({
   email,
   onLinkChild,
-  isLinkingChild,
 }: SettingsSecurityModalProps) {
   const { isOpen, closeModal, openModal } = useModal();
   const { user } = useAuthContext();
@@ -56,6 +54,8 @@ export function SettingsSecurityModal({
   const [feedbackTone, setFeedbackTone] = useState<"success" | "error">(
     "success"
   );
+  const [isLinkingChild, setIsLinkingChild] = useState(false);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     register: registerCode,
@@ -102,12 +102,23 @@ export function SettingsSecurityModal({
     name: "phoneNumber",
   });
 
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
+
   const handleClose = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
     setViewMode("menu");
     setIsCodeSent(false);
     setIsVerified(false);
     setFeedbackMessage(null);
     setFeedbackTone("success");
+    setIsLinkingChild(false);
     resetCode();
     reset();
     resetChild();
@@ -201,13 +212,16 @@ export function SettingsSecurityModal({
   };
 
   const onLinkChildSubmit = async (data: LinkChildFormData) => {
+    if (!onLinkChild) return;
+
     setFeedbackMessage(null);
+    setIsLinkingChild(true);
 
     try {
-      await onLinkChild?.(data);
+      await onLinkChild(data);
       setFeedbackTone("success");
       setFeedbackMessage("자녀가 연동되었습니다.");
-      setTimeout(() => handleClose(), 1000);
+      closeTimerRef.current = setTimeout(() => handleClose(), 1000);
     } catch (error) {
       setFeedbackTone("error");
       setFeedbackMessage(
@@ -215,6 +229,8 @@ export function SettingsSecurityModal({
           ? error.message
           : "자녀 연동 중 오류가 발생했습니다."
       );
+    } finally {
+      setIsLinkingChild(false);
     }
   };
 
