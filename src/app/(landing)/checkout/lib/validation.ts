@@ -39,6 +39,9 @@ export const bankFormBaseSchema = z.object({
   businessName: z.string().trim(),
   ceoName: z.string().trim(),
   businessEmail: z.string().trim(),
+  businessType: z.string().trim(),
+  businessCategory: z.string().trim(),
+  businessAddress: z.string().trim(),
 });
 
 export const bankFormSchema = bankFormBaseSchema.superRefine((data, ctx) => {
@@ -101,6 +104,27 @@ export const bankFormSchema = bankFormBaseSchema.superRefine((data, ctx) => {
         code: "custom",
         message: "올바른 이메일 형식이 아닙니다",
         path: ["businessEmail"],
+      });
+    }
+    if (!data.businessType) {
+      ctx.addIssue({
+        code: "custom",
+        message: "업태를 입력해주세요",
+        path: ["businessType"],
+      });
+    }
+    if (!data.businessCategory) {
+      ctx.addIssue({
+        code: "custom",
+        message: "종목을 입력해주세요",
+        path: ["businessCategory"],
+      });
+    }
+    if (!data.businessAddress) {
+      ctx.addIssue({
+        code: "custom",
+        message: "사업장 주소를 입력해주세요",
+        path: ["businessAddress"],
       });
     }
   }

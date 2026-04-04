@@ -58,20 +58,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
     defaultValues: INITIAL_FORM,
   });
 
-  const nameValue = useWatch({ control, name: "name" });
-  const phoneValue = useWatch({ control, name: "phone" });
-  const emailValue = useWatch({ control, name: "email" });
-  const addressValue = useWatch({ control, name: "address" });
-  const addressDetailValue = useWatch({ control, name: "addressDetail" });
-  const bankValue = useWatch({ control, name: "bank" });
-  const depositorNameValue = useWatch({ control, name: "depositorName" });
-  const receiptTypeValue = useWatch({ control, name: "receiptType" });
-  const customerTypeValue = useWatch({ control, name: "customerType" });
-  const cashReceiptPhoneValue = useWatch({ control, name: "cashReceiptPhone" });
-  const businessNumberValue = useWatch({ control, name: "businessNumber" });
-  const businessNameValue = useWatch({ control, name: "businessName" });
-  const ceoNameValue = useWatch({ control, name: "ceoName" });
-  const businessEmailValue = useWatch({ control, name: "businessEmail" });
+  const formValues = useWatch({ control });
 
   const handleFormSubmit = () => {
     onSubmit();
@@ -87,7 +74,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
             label="이름"
             error={errors.name?.message}
             {...register("name")}
-            showReset={!!nameValue}
+            showReset={!!formValues.name}
             onReset={() => {
               setValue("name", "");
               clearErrors("name");
@@ -104,7 +91,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
                 setValue("phone", formatted);
               },
             })}
-            showReset={!!phoneValue}
+            showReset={!!formValues.phone}
             onReset={() => {
               setValue("phone", "");
               clearErrors("phone");
@@ -116,7 +103,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
             type="email"
             error={errors.email?.message}
             {...register("email")}
-            showReset={!!emailValue}
+            showReset={!!formValues.email}
             onReset={() => {
               setValue("email", "");
               clearErrors("email");
@@ -127,7 +114,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
             label="주소"
             error={errors.address?.message}
             {...register("address")}
-            showReset={!!addressValue}
+            showReset={!!formValues.address}
             onReset={() => {
               setValue("address", "");
               clearErrors("address");
@@ -138,7 +125,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
             label="상세 주소"
             error={errors.addressDetail?.message}
             {...register("addressDetail")}
-            showReset={!!addressDetailValue}
+            showReset={!!formValues.addressDetail}
             onReset={() => {
               setValue("addressDetail", "");
               clearErrors("addressDetail");
@@ -163,7 +150,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
             </label>
             <SelectBtn
               id="bank"
-              value={bankValue}
+              value={formValues.bank || ""}
               onChange={(value) => setValue("bank", value)}
               placeholder="은행 선택"
               optionSize="sm"
@@ -182,7 +169,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
             label="입금자명"
             error={errors.depositorName?.message}
             {...register("depositorName")}
-            showReset={!!depositorNameValue}
+            showReset={!!formValues.depositorName}
             onReset={() => {
               setValue("depositorName", "");
               clearErrors("depositorName");
@@ -200,7 +187,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
               type="button"
               onClick={() => setValue("receiptType", opt.value)}
               className={`py-2.5 rounded-lg text-sm font-medium border transition-all cursor-pointer ${
-                receiptTypeValue === opt.value
+                formValues.receiptType === opt.value
                   ? "bg-brand-700 text-white border-brand-700"
                   : "bg-white text-gray-600 border-gray-200 hover:border-brand-700/50"
               }`}
@@ -210,7 +197,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
           ))}
         </div>
 
-        {receiptTypeValue === "cash" && (
+        {formValues.receiptType === "cash" && (
           <div className="p-4 space-y-4 border border-gray-100 rounded-xl bg-gray-50">
             <div>
               <p className="mb-2 text-xs text-gray-500">발급 유형</p>
@@ -223,7 +210,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
                     <input
                       type="radio"
                       value={t.value}
-                      checked={customerTypeValue === t.value}
+                      checked={formValues.customerType === t.value}
                       {...register("customerType")}
                       className="accent-brand-700"
                     />
@@ -232,7 +219,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
                 ))}
               </div>
             </div>
-            {customerTypeValue === "personal" ? (
+            {formValues.customerType === "personal" ? (
               <InputForm
                 id="cashReceiptPhone"
                 label="현금영수증 발급 휴대폰 번호"
@@ -244,7 +231,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
                     setValue("cashReceiptPhone", formatted);
                   },
                 })}
-                showReset={!!cashReceiptPhoneValue}
+                showReset={!!formValues.cashReceiptPhone}
                 onReset={() => {
                   setValue("cashReceiptPhone", "");
                   clearErrors("cashReceiptPhone");
@@ -256,7 +243,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
                 label="사업자등록번호"
                 error={errors.businessNumber?.message}
                 {...register("businessNumber")}
-                showReset={!!businessNumberValue}
+                showReset={!!formValues.businessNumber}
                 onReset={() => {
                   setValue("businessNumber", "");
                   clearErrors("businessNumber");
@@ -266,7 +253,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
           </div>
         )}
 
-        {receiptTypeValue === "tax" && (
+        {formValues.receiptType === "tax" && (
           <div className="p-4 space-y-4 border border-gray-100 rounded-xl bg-gray-50">
             <p className="text-xs text-gray-500">
               사업자 정보를 입력해 주세요.
@@ -276,7 +263,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
               label="사업자등록번호"
               error={errors.businessNumber?.message}
               {...register("businessNumber")}
-              showReset={!!businessNumberValue}
+              showReset={!!formValues.businessNumber}
               onReset={() => {
                 setValue("businessNumber", "");
                 clearErrors("businessNumber");
@@ -287,7 +274,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
               label="사업체명"
               error={errors.businessName?.message}
               {...register("businessName")}
-              showReset={!!businessNameValue}
+              showReset={!!formValues.businessName}
               onReset={() => {
                 setValue("businessName", "");
                 clearErrors("businessName");
@@ -298,7 +285,7 @@ export function BankFormSection({ amount, onSubmit }: Props) {
               label="대표자명"
               error={errors.ceoName?.message}
               {...register("ceoName")}
-              showReset={!!ceoNameValue}
+              showReset={!!formValues.ceoName}
               onReset={() => {
                 setValue("ceoName", "");
                 clearErrors("ceoName");
@@ -310,10 +297,43 @@ export function BankFormSection({ amount, onSubmit }: Props) {
               type="email"
               error={errors.businessEmail?.message}
               {...register("businessEmail")}
-              showReset={!!businessEmailValue}
+              showReset={!!formValues.businessEmail}
               onReset={() => {
                 setValue("businessEmail", "");
                 clearErrors("businessEmail");
+              }}
+            />
+            <InputForm
+              id="businessType"
+              label="업태"
+              error={errors.businessType?.message}
+              {...register("businessType")}
+              showReset={!!formValues.businessType}
+              onReset={() => {
+                setValue("businessType", "");
+                clearErrors("businessType");
+              }}
+            />
+            <InputForm
+              id="businessCategory"
+              label="종목"
+              error={errors.businessCategory?.message}
+              {...register("businessCategory")}
+              showReset={!!formValues.businessCategory}
+              onReset={() => {
+                setValue("businessCategory", "");
+                clearErrors("businessCategory");
+              }}
+            />
+            <InputForm
+              id="businessAddress"
+              label="사업장 주소"
+              error={errors.businessAddress?.message}
+              {...register("businessAddress")}
+              showReset={!!formValues.businessAddress}
+              onReset={() => {
+                setValue("businessAddress", "");
+                clearErrors("businessAddress");
               }}
             />
           </div>

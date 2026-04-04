@@ -17,6 +17,9 @@ export type BankForm = {
   businessName: string;
   ceoName: string;
   businessEmail: string;
+  businessType: string;
+  businessCategory: string;
+  businessAddress: string;
 };
 
 export const INITIAL_FORM: BankForm = {
@@ -34,6 +37,9 @@ export const INITIAL_FORM: BankForm = {
   businessName: "",
   ceoName: "",
   businessEmail: "",
+  businessType: "",
+  businessCategory: "",
+  businessAddress: "",
 };
 
 export const BANKS = [
