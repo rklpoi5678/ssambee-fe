@@ -14,7 +14,7 @@ import {
   scheduleSchema,
 } from "@/validation/lecture.validation";
 import { CheckModal } from "@/components/common/modals/CheckModal";
-import { useModal } from "@/providers/ModalProvider";
+import { useModal } from "@/shared/common/providers/ModalProvider";
 
 type UseLectureCreateFormParams = {
   lectureForm: UseFormReturn<LectureFormInput>;

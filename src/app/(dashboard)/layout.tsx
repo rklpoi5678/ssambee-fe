@@ -9,9 +9,9 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/common/sidebar/AppSidebar";
 import { DashboardHeader } from "@/components/common/header/DashbardHeader";
-import { BreadcrumbProvider } from "@/providers/BreadcrumbProvider";
-import Providers from "@/providers/Providers";
-import { useAuthContext } from "@/providers/AuthProvider";
+import { BreadcrumbProvider } from "@/shared/common/providers/BreadcrumbProvider";
+import Providers from "@/shared/common/providers/Providers";
+import { useAuthContext } from "@/shared/common/providers/AuthProvider";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuthContext();

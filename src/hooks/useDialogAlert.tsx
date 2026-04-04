@@ -3,7 +3,7 @@
 import { useCallback, useRef } from "react";
 
 import { CheckModal } from "@/components/common/modals/CheckModal";
-import { useModal } from "@/providers/ModalProvider";
+import { useModal } from "@/shared/common/providers/ModalProvider";
 
 type AlertOptions = {
   title?: string;

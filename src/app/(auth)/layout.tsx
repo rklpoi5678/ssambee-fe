@@ -1,4 +1,4 @@
-import Providers from "@/providers/Providers";
+import Providers from "@/shared/common/providers/Providers";
 
 export default function AuthLayout({
   children,

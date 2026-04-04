@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
-import { useAuthContext } from "@/providers/AuthProvider";
+import { useAuthContext } from "@/shared/common/providers/AuthProvider";
 import { useDialogAlert } from "@/hooks/useDialogAlert";
 import {
   signinAPI,
@@ -168,7 +168,7 @@ export function useAuth() {
       setUser(null);
       queryClient.clear();
 
-      window.location.replace(targetPath);
+      router.replace(targetPath);
     } catch (err) {
       console.error("로그아웃 처리 중 문제가 발생했습니다.", err);
       setLoading(false);
