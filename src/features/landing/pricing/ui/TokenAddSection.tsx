@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { TOKENS, TokenAdd } from "../_types/types";
+import { TOKENS, TokenAdd } from "@/features/landing/pricing/lib/types";
 
 function CheckIcon() {
   return (

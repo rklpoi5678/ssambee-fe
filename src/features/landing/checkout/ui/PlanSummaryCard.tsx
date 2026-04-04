@@ -1,4 +1,4 @@
-import { Plan, TokenAdd } from "../../pricing/_types/types";
+import { Plan, TokenAdd } from "@/features/landing/pricing/lib/types";
 
 type PlanSummaryCardProps = {
   plan: Plan;

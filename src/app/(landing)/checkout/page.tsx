@@ -1,4 +1,4 @@
-import { CheckoutClient } from "./_components/CheckoutClient";
+import { CheckoutClient } from "@/features/landing/checkout/ui/CheckoutClient";
 
 type SearchParams = {
   planId?: string;

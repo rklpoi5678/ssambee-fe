@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { KR_PHONE_REGEX } from "@/constants/regex";
 
-import { BANKS } from "../_types/types";
+import { BANKS } from "./types";
 
 export const bankFormBaseSchema = z.object({
   name: z

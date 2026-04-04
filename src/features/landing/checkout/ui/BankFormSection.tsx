@@ -6,15 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { InputForm } from "@/components/common/input/InputForm";
 import SelectBtn from "@/components/common/button/SelectBtn";
 import { phoneNumberFormatter } from "@/utils/phone";
-
 import {
   BankForm,
   ReceiptType,
   CustomerType,
   BANKS,
   INITIAL_FORM,
-} from "../_types/types";
-import { bankFormSchema } from "../lib/validation";
+} from "@/features/landing/checkout/lib/types";
+import { bankFormSchema } from "@/features/landing/checkout/lib/validation";
 
 const RECEIPT_TYPE_OPTIONS: { value: ReceiptType; label: string }[] = [
   { value: "none", label: "미신청" },

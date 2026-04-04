@@ -1,7 +1,7 @@
-import { FeatureGrid } from "./_components/FeatureGrid";
-import { TrustBadges } from "./_components/TrustBadges";
-import { TokenAddSection } from "./_components/TokenAddSection";
-import { PlanCardList } from "./_components/PlanCardList";
+import { FeatureGrid } from "@/features/landing/pricing/ui/FeatureGrid";
+import { TrustBadges } from "@/features/landing/pricing/ui/TrustBadges";
+import { TokenAddSection } from "@/features/landing/pricing/ui/TokenAddSection";
+import { PlanCardList } from "@/features/landing/pricing/ui/PlanCardList";
 
 export default function PricingPage() {
   return (

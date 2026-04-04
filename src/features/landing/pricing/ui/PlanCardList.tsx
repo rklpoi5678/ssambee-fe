@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { Plan, PLANS } from "../_types/types";
+import { Plan, PLANS } from "@/features/landing/pricing/lib/types";
 
 import { PlanCard } from "./PlanCard";
 

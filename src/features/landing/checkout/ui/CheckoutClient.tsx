@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { PLANS, TOKENS } from "../../pricing/_types/types";
-import { PaymentMethod } from "../_types/types";
+import { PLANS, TOKENS } from "@/features/landing/pricing/lib/types";
+import { PaymentMethod } from "@/features/landing/checkout/lib/types";
 
 import { PlanSummaryCard } from "./PlanSummaryCard";
 import { TossPaymentsWidget } from "./TossPaymentsWidget";

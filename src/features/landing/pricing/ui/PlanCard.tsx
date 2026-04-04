@@ -1,4 +1,4 @@
-import { Plan } from "../_types/types";
+import { Plan } from "@/features/landing/pricing/lib/types";
 
 export function PlanCard({
   plan,
