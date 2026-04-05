@@ -26,7 +26,7 @@ import {
   SidebarMenuItem,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { useAuthContext } from "@/shared/common/providers/AuthProvider";
+import { useAuthContext } from "@/app/providers/AuthProvider";
 import { Role } from "@/types/auth.type";
 import { API_URL_TYPE, useAuth } from "@/shared/common/hooks/useAuth";
 

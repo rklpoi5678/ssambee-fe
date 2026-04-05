@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation";
 import { getSessionAPI } from "@/services/auth.service";
 import { Role } from "@/types/auth.type";
 
-type AuthUser = {
+export type AuthUser = {
   id: string;
   email: string;
   name?: string;
@@ -28,16 +28,31 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+type AuthProviderProps = {
+  children: ReactNode;
+  /**
+   * `undefined`: prop 미전달 → 클라이언트에서 세션 API 호출 (게스트 라우트 등)
+   * 그 외: 서버에서 이미 검증된 초기 유저(또는 명시적 null) → 세션 API 재호출 금지
+   */
+  initialUser?: AuthUser | null;
+};
+
+export function AuthProvider({ children, initialUser }: AuthProviderProps) {
+  const serverProvided = initialUser !== undefined;
+  const [user, setUser] = useState<AuthUser | null>(
+    serverProvided ? initialUser : null
+  );
+  const [isLoading, setIsLoading] = useState(!serverProvided);
   const pathname = usePathname();
   const role = pathname.startsWith("/learners") ? "SVC" : "MGMT";
 
   useEffect(() => {
+    if (serverProvided) {
+      return;
+    }
+
     let cancelled = false;
 
-    // 앱이 처음 로드될 때 세션 정보 가져오기
     const initAuth = async () => {
       try {
         const response = await getSessionAPI(role);
@@ -72,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [role]);
+  }, [role, serverProvided]);
 
   return (
     <AuthContext.Provider value={{ user, setUser, isLoading }}>

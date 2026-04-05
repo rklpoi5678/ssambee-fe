@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import {
   useBreadcrumb,
   BreadcrumbItem,
-} from "@/shared/common/providers/BreadcrumbProvider";
+} from "@/app/providers/BreadcrumbProvider";
 
 export function useSetBreadcrumb(items: BreadcrumbItem[]) {
   const { setBreadcrumbs } = useBreadcrumb();
