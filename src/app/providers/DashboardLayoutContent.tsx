@@ -8,6 +8,7 @@ import { AppSidebar } from "@/components/common/sidebar/AppSidebar";
 import { DashboardHeader } from "@/components/common/header/DashbardHeader";
 import { BreadcrumbProvider } from "@/app/providers/BreadcrumbProvider";
 import { useAuthContext } from "@/app/providers/AuthProvider";
+import { DashboardFooter } from "@/shared/common/ui/DashboardFooter";
 
 export function DashboardLayoutContent({
   children,
@@ -31,9 +32,12 @@ export function DashboardLayoutContent({
     <BreadcrumbProvider>
       <SidebarProvider>
         <AppSidebar />
-        <SidebarInset>
-          <DashboardHeader />
-          {children}
+        <SidebarInset className="min-h-screen">
+          <div className="flex min-h-screen flex-col">
+            <DashboardHeader />
+            <div className="flex-1">{children}</div>
+            <DashboardFooter />
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </BreadcrumbProvider>
