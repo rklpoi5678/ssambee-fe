@@ -35,6 +35,30 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // 프로덕션(실제 운영 도메인)일 떄는 프록시를 아예 끕니다.
+  // 2024년 부터 크롬을 비롯한 브라우저들은 개인정보 보호를 위해 타사쿠키 자체를 브라우저 단에서 차단 합니다.
+  // staging 환경에서는 이 부분이 걸리기에 Next 프록시를 오직 스테이징과 개발환경에서만 동작하도록 합니다.
+  async rewrites() {
+    // VERCEL_ENV는 프레임워크 환경 변수이므로 'production', 'preview', 'development'중 하나를 반환한다.
+    // 오직 스테이징(Preview) 환경에서만 타사 쿠키 우회를 위해 Render 서버로 프록시를 켭니다.
+    if (
+      process.env.VERCEL_ENV === "preview" ||
+      process.env.NEXT_PUBLIC_VERCEL_ENV === "preview"
+    ) {
+      // 오직 Vercel Preview(스테이징) 환경에서만 작동합니다.
+      return [
+        {
+          source: "/api/mgmt/:path*",
+          destination: "https://ssambee-be.onrender.com/api/mgmt/:path*",
+        },
+        {
+          source: "/api/auth/:path*",
+          destination: "https://ssambee-be.onrender.com/api/auth/:path*",
+        },
+      ];
+    }
+    return [];
+  },
 };
 
 export default withSentryConfig(nextConfig, {
