@@ -63,13 +63,19 @@ export function BankFormSection({ amount, onSubmit }: Props) {
     onSubmit(data);
   };
 
+  const bankName = process.env.NEXT_PUBLIC_BANK_NAME || "은행명";
+  const accountNumber = process.env.NEXT_PUBLIC_ACCOUNT_NUMBER || "계좌번호";
+  const companyName = process.env.NEXT_PUBLIC_COMPANY_NAME || "예금주명";
+
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <div>
         <StepLabel number={1} label="입금 정보" />
         <div className="p-4 mb-4 text-sm border border-blue-100 bg-blue-50 rounded-xl">
           <p className="font-semibold text-brand-700 mb-1">입금 계좌</p>
-          <p className="text-gray-700">국민은행 123-456-789012 · (주)도코코</p>
+          <p className="text-gray-700">
+            {bankName} {accountNumber} · {companyName}
+          </p>
           <p className="mt-1 text-xs text-gray-500">
             입금 확인 후 영업일 기준 1일 이내 이용 가능
           </p>
