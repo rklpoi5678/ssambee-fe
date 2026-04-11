@@ -163,9 +163,6 @@ export function useAuth() {
   };
 
   const signout = async (apiRole: LoginURLType) => {
-    const targetPath =
-      apiRole === "MGMT" ? "/educators/login" : "/learners/login";
-
     try {
       setLoading(true);
       await signoutAPI(apiRole);
@@ -173,7 +170,7 @@ export function useAuth() {
       setUser(null);
       queryClient.clear();
 
-      window.location.href = targetPath;
+      window.location.href = "/";
     } catch (err) {
       console.error("로그아웃 처리 중 문제가 발생했습니다.", err);
     } finally {
