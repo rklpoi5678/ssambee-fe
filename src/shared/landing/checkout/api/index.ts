@@ -7,7 +7,7 @@ export const createBankPayment = async (
   data: BankPaymentRequest
 ): Promise<ApiResponse<BankPaymentResponse>> => {
   const response = await axiosClient.post<ApiResponse<BankPaymentResponse>>(
-    "/payments/bank-transfer",
+    "billing/payments/bank-transfer",
     data
   );
   return response.data;
