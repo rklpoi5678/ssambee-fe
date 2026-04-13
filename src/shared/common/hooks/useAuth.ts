@@ -139,7 +139,6 @@ export function useAuth() {
         setUser(user);
 
         // 역할별 메인 페이지(대시보드) 이동
-        // TODO: 강사/조교/학생/학부모 구분한 라우팅
         if (apiRole === "MGMT") {
           router.push("/educators");
         } else {

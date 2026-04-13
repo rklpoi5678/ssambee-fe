@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { SESSION_COOKIE_NAMES } from "@/shared/common/lib/auth/session-token";
 import type { AuthUser } from "@/app/providers/AuthProvider";
-import { Role } from "@/types/auth.type";
+import { Role, ActiveEntitlement } from "@/types/auth.type";
 
 // 강사/조교, 학생/학부모 전용 API
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -20,7 +20,8 @@ type SessionUser = {
 };
 
 type SessionProfile = {
-  signStatus: SignStatus;
+  signStatus?: SignStatus;
+  activeEntitlement?: ActiveEntitlement | null;
 };
 
 // 서버 컴포넌트에서 세션 쿠키 존재 여부 확인
@@ -118,6 +119,30 @@ export async function requireAuthWithRole(options: {
   }
 
   return user;
+}
+
+// 강사 활성 이용권 체크
+export async function requireInstructorEntitlement(
+  user: SessionUser & { profile?: SessionProfile | null }
+): Promise<void> {
+  // 강사가 아니면 체크하지 않음
+  if (user.userType !== "INSTRUCTOR") {
+    return;
+  }
+
+  const activeEntitlement = user.profile?.activeEntitlement;
+
+  // 활성 이용권이 없는 경우
+  if (!activeEntitlement) {
+    redirect("/no-entitlement");
+  }
+
+  // 입금 대기 중인 경우
+  if (activeEntitlement.status === "PENDING_DEPOSIT") {
+    redirect("/entitlement-pending");
+  }
+
+  // status === "ACTIVE"인 경우 통과
 }
 
 // 로그인 상태면 대시보드로 리다이렉트

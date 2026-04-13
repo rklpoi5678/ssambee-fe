@@ -14,6 +14,21 @@ export type EducatorRole = "INSTRUCTOR" | "ASSISTANT";
 export type LearnerRole = "STUDENT" | "PARENT";
 export type Role = "INSTRUCTOR" | "ASSISTANT" | "STUDENT" | "PARENT";
 
+// 활성 이용권 타입
+export type EntitlementStatus = "ACTIVE" | "PENDING_DEPOSIT";
+
+export type ActiveEntitlement =
+  | {
+      status: "ACTIVE";
+      id: string;
+      startsAt: string;
+      endsAt: string;
+      includedCreditAmount: number;
+    }
+  | {
+      status: "PENDING_DEPOSIT";
+    };
+
 // 역할 선택 버튼
 export type RoleOption<T extends Role> = {
   label: string;
