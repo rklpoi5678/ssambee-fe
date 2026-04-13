@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { useDialogAlert } from "@/hooks/useDialogAlert";
-import { createBankPayment } from "@/shared/checkout/api";
-import { BankPaymentRequest } from "@/shared/checkout/types";
+import { createBankPayment } from "@/shared/landing/checkout/api";
+import { BankPaymentRequest } from "@/shared/landing/checkout/types";
 
 export const useBankPayment = () => {
   const { showAlert } = useDialogAlert();

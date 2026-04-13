@@ -7,9 +7,12 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useAuthContext } from "@/app/providers/AuthProvider";
 import { PaymentMethod } from "@/features/landing/checkout/types";
 import { PAYMENT_METHODS } from "@/features/landing/checkout/lib/constants";
-import { pricingQueries } from "@/shared/pricing/api/query";
+import { pricingQueries } from "@/shared/landing/pricing/api/query";
 import { useCheckoutStore } from "@/shared/common/store/useCheckoutStore";
-import { PassSingleProduct, CreditPackProduct } from "@/shared/pricing/types";
+import {
+  PassSingleProduct,
+  CreditPackProduct,
+} from "@/shared/landing/pricing/types";
 
 import { PlanSummaryCard } from "./PlanSummaryCard";
 import { TossPaymentsWidget } from "./TossPaymentsWidget";

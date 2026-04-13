@@ -15,7 +15,7 @@ import {
   CUSTOMER_TYPE_OPTIONS,
 } from "@/features/landing/checkout/lib/constants";
 import { useBankPayment } from "@/features/landing/checkout/hooks/useBankPayment";
-import { BankPaymentRequest } from "@/shared/checkout/types";
+import { BankPaymentRequest } from "@/shared/landing/checkout/types";
 
 type Props = {
   amount: number;

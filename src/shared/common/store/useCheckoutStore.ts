@@ -3,7 +3,7 @@ import { create } from "zustand";
 import type {
   PassSingleProduct,
   CreditPackProduct,
-} from "@/shared/pricing/types";
+} from "@/shared/landing/pricing/types";
 
 type CheckoutStore = {
   selectedPlan: PassSingleProduct | null;
