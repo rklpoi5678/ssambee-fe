@@ -19,8 +19,7 @@ export default function EntitlementPendingPage() {
           입금 확인 중입니다
         </h1>
         <p className="mb-8 text-gray-600">
-          입금 완료 후 확인이 완료되면 알림 이메일과 함께 서비스를 사용하실 수
-          있습니다.
+          확인이 완료되면 알림 이메일과 함께 서비스를 이용하실 수 있습니다.
           <br />
           조금만 기다려 주세요!
         </p>

@@ -14,7 +14,7 @@ export default function NoEntitlementPage() {
         <p className="mb-8 text-gray-600">
           서비스를 이용하시려면 요금제를 선택해주세요.
           <br />
-          요금제를 구독하시면 모든 기능을 사용하실 수 있습니다.
+          요금제를 구독하시면 모든 기능을 이용하실 수 있습니다.
         </p>
         <div className="flex flex-col gap-3">
           <Link
