@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { CreditCard } from "lucide-react";
 
-import { useAuthContext } from "@/app/providers/AuthProvider";
 import { PaymentMethod } from "@/features/landing/checkout/types";
 import { PAYMENT_METHODS } from "@/features/landing/checkout/lib/constants";
 import { pricingQueries } from "@/shared/landing/pricing/api/query";
@@ -15,7 +15,7 @@ import {
 } from "@/shared/landing/pricing/types";
 
 import { PlanSummaryCard } from "./PlanSummaryCard";
-import { TossPaymentsWidget } from "./TossPaymentsWidget";
+// import { TossPaymentsWidget } from "./TossPaymentsWidget";
 import { BankFormSection } from "./BankFormSection";
 
 type CheckoutClientProps = {
@@ -28,8 +28,8 @@ export function CheckoutClient({
   initialTokenId,
 }: CheckoutClientProps) {
   const router = useRouter();
-  const { user } = useAuthContext();
-  const userId = user?.id ?? "";
+  // const { user } = useAuthContext();
+  // const userId = user?.id ?? "";
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
 
@@ -115,11 +115,30 @@ export function CheckoutClient({
 
           <div className="p-6 bg-white border border-gray-200 rounded-2xl">
             {paymentMethod === "card" ? (
-              <TossPaymentsWidget
-                amount={amount}
-                userId={userId}
-                productId={productId}
-              />
+              <>
+                {/* 개발 완료 후 아래 주석 해제
+                <TossPaymentsWidget
+                  amount={amount}
+                  userId={userId}
+                  productId={productId}
+                />
+                */}
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="flex items-center justify-center w-20 h-20 mb-6 rounded-full bg-brand-50">
+                    <CreditCard className="w-10 h-10 text-brand-600" />
+                  </div>
+
+                  <h2 className="mb-3 text-xl font-bold text-gray-900">
+                    카드 결제 서비스 준비 중
+                  </h2>
+
+                  <p className="text-[15px] leading-relaxed text-gray-600">
+                    현재 토스 결제 기능을 준비 중입니다.
+                    <br />
+                    무통장 입금 기능을 이용해주세요.
+                  </p>
+                </div>
+              </>
             ) : (
               <BankFormSection
                 amount={amount}
