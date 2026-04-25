@@ -8,6 +8,7 @@ const reactCompilerEnabled =
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactCompiler: reactCompilerEnabled,
+  serverExternalPackages: ["winston-loki", "snappy"],
   turbopack: {
     root: __dirname,
   },
